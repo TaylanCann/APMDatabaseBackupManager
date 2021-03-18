@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApmDbBackupManager", "ApmDbBackupManager.csproj", "{F75EFC23-FC6B-4000-8E50-8DEF1B29B4EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F75EFC23-FC6B-4000-8E50-8DEF1B29B4EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F75EFC23-FC6B-4000-8E50-8DEF1B29B4EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F75EFC23-FC6B-4000-8E50-8DEF1B29B4EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F75EFC23-FC6B-4000-8E50-8DEF1B29B4EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {94FE053F-1A76-4D41-8FE8-61E4284542B2}
+	EndGlobalSection
+EndGlobal

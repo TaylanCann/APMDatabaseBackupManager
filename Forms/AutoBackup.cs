@@ -1,0 +1,470 @@
+﻿using ApmDbBackupManager.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+
+namespace ApmDbBackupManager.Forms
+{
+    public partial class AutoBackup : Form
+    {
+
+        //Drive'a Ftp'ye giden eski diffBackupları sil
+
+        DatabaseContext context = new DatabaseContext();
+        BackupSchedule lastBackup = new BackupSchedule();
+        List<string> names = new List<string>();
+        string pathCTemp = @"C:\TempBackup\";
+        string selectedPath, DriveUserName, FtpLoc;
+        string SqlAddress = "LAPTOP-9VG06RAO";
+
+        public AutoBackup()
+        {
+            InitializeComponent();
+            DatabaseNamesListing();
+            listing();
+            TmpExists(pathCTemp);
+            DriveUsers();
+            FtpAddress();
+        }
+
+        public void TmpExists(string pathCTemp)
+        {
+            try
+            {
+                if (Directory.Exists(pathCTemp))
+                {
+                    return;
+                }
+                DirectoryInfo di = Directory.CreateDirectory(pathCTemp);
+                Console.WriteLine("The directory was created successfully at {0}.", Directory.GetCreationTime(pathCTemp));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Tmp oluştururken hata yapıldı.");
+            }
+        }
+
+        public void DatabaseNamesListing()
+        {
+            try
+            {
+                string connetionString = null;
+                SqlConnection conn;
+                connetionString = @"Data Source=" + SqlAddress + ";Integrated Security=True";
+                conn = new SqlConnection(connetionString);
+                try
+                {
+                    conn.Open();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Can not open connection ! ");
+                }
+
+                SqlCommand com1 = new SqlCommand("SELECT name, database_id, create_date  FROM sys.databases ; ", conn);
+                if (com1.Connection.State != ConnectionState.Open)
+                {
+                    com1.Connection.Open();
+                }
+                SqlDataReader dr = com1.ExecuteReader();
+                while (dr.Read())
+                {
+                    names.Add(dr["name"].ToString());
+                }
+                dr.Close();
+
+                foreach (var item in names)
+                {
+                    cbDatabaseName.Items.Add(item);
+                }
+                conn.Close();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Database isimleri listelenirken hata yaşandı.");
+            }
+
+        }
+
+        public void DriveUsers()
+        {
+            var records = context.DriveUsers
+               .ToList();
+
+            foreach (var item in records)
+            {
+                if (item.User != null)
+                {
+                    cbDriveUsers.Items.Add(item.User.ToString());
+                }
+            }
+        }
+
+        public void FtpAddress()
+        {
+            var records = context.FtpThings
+              .ToList();
+
+            foreach (var item in records)
+            {
+                if (item.FtpLocation != null)
+                {
+                    cbFtp.Items.Add(item.FtpLocation.ToString());
+                }
+            }
+        }
+
+        public void listing()
+        {
+            try
+            {
+                lbBackupSchedule.Items.Clear();
+                foreach (var item in context.BackupSchedules.ToList())
+                {
+                    lbBackupSchedule.Items.Add(item.JustName);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Listelerken hata oluştu");
+            }
+        }
+
+        public void Save()
+        {
+            try
+            {
+                BackupSchedule backupSchedule = new BackupSchedule();
+
+                backupSchedule.IsAuto = true;
+                #region Schame
+                if (rbDaily.Checked == true)
+                {
+
+                    backupSchedule.Time = dtpSetUp.Value;
+                    backupSchedule.BackupScheme = 1;
+                    backupSchedule.DaysAdd = 1;
+                    backupSchedule.DaysAddTerm = 7;
+                    backupSchedule.MonthAdd = 0;
+                    backupSchedule.MonthAddTerm = 0;
+                    backupSchedule.DiffTime = backupSchedule.Time.AddDays((int)backupSchedule.DaysAdd);
+                    context.BackupSchedules.Add(backupSchedule);
+                }
+                else if (rbWeekly.Checked == true)
+                {
+                    backupSchedule.Time = dtpSetUp.Value;
+                    backupSchedule.BackupScheme = 2;
+                    backupSchedule.DaysAdd = 7;
+                    backupSchedule.DaysAddTerm = 28;
+                    backupSchedule.MonthAdd = 0;
+                    backupSchedule.MonthAddTerm = 0;
+                    backupSchedule.DiffTime = backupSchedule.Time.AddDays((int)backupSchedule.DaysAdd);
+                    context.BackupSchedules.Add(backupSchedule);
+                }
+                else if (rbMonthly.Checked == true)
+                {
+                    backupSchedule.Time = dtpSetUp.Value;
+                    backupSchedule.BackupScheme = 3;
+                    backupSchedule.DaysAdd = 0;
+                    backupSchedule.DaysAddTerm = 0;
+                    backupSchedule.MonthAdd = 1;
+                    backupSchedule.MonthAddTerm = 12;
+                    backupSchedule.DiffTime = backupSchedule.Time.AddMonths((int)backupSchedule.MonthAdd);
+                    context.BackupSchedules.Add(backupSchedule);
+                }
+                else if (rbYearly.Checked == true)
+                {
+                    backupSchedule.Time = dtpSetUp.Value;
+                    backupSchedule.BackupScheme = 4;
+                    backupSchedule.DaysAdd = 0;
+                    backupSchedule.DaysAddTerm = 365;
+                    backupSchedule.MonthAdd = 0;
+                    backupSchedule.MonthAddTerm = 0;
+                    context.BackupSchedules.Add(backupSchedule);
+                }
+
+                #endregion
+
+                #region AutoSaveArea
+                if (chbFtp.Checked == true)
+                {
+                    backupSchedule.IsFtp = true;
+                    foreach (var item in context.FtpThings.ToList())
+                    {
+                        if (FtpLoc == item.FtpLocation)
+                        {
+                            backupSchedule.FtpThingId = item.Id;
+                        }
+                    }
+                }
+                else
+                {
+                    backupSchedule.IsFtp = false;
+                }
+                if (chbGoogle.Checked == true)
+                {
+                    backupSchedule.IsDrive = true;
+                    foreach (var item in context.DriveUsers.ToList())
+                    {
+                        if (DriveUserName == item.User)
+                        {
+                            backupSchedule.DriveUserId = item.Id;
+                        }
+                    }
+                }
+                else
+                {
+                    backupSchedule.IsDrive = false;
+                }
+                if (chbLocal.Checked == true)
+                {
+                    backupSchedule.IsLocal = true;
+                    backupSchedule.LocalLocation = selectedPath;
+                }
+                else
+                {
+                    backupSchedule.IsLocal = false;
+                }
+                #endregion
+
+                backupSchedule.HaveIt = false;
+                backupSchedule.BackupName = txtName.Text.ToString();
+                backupSchedule.DbName = cbDatabaseName.SelectedItem.ToString();
+                backupSchedule.IsDiffBackup = false;
+                //Database'e gömülmesi muhtemel Backup bilgileri kontrol için tamamen toplandı.
+
+                #region time4NameFullB
+                string D;
+                if (backupSchedule.BackupScheme == 1)
+                {
+                    D = "Günlük";
+                }
+                else if (backupSchedule.BackupScheme == 2)
+                {
+                    D = "Haftalık";
+                }
+                else if (backupSchedule.BackupScheme == 3)
+                {
+                    D = "Aylık";
+                }
+                else
+                {
+                    D = "Yıllık";
+                }
+                string time4Name = D + "-" + backupSchedule.Time.Date.ToShortDateString() + "-" + backupSchedule.Time.Hour + "." + backupSchedule.Time.Minute + "-";
+                #endregion
+
+                backupSchedule.JustName = time4Name + backupSchedule.BackupName + "-" + backupSchedule.DbName;
+                backupSchedule.DayOfMonth = backupSchedule.Time.Day;
+
+                if (backupSchedule.BackupScheme != 4)
+                {
+                    #region time4NameDiffB
+                    string BS;
+                    if (backupSchedule.BackupScheme == 1)
+                    {
+                        BS = "Günlük";
+                    }
+                    else if (backupSchedule.BackupScheme == 2)
+                    {
+                        BS = "Haftalık";
+                    }
+                    else if (backupSchedule.BackupScheme == 3)
+                    {
+                        BS = "Aylık";
+                    }
+                    else
+                    {
+                        BS = "Yıllık";
+                    }
+                    string time4NameDiff = BS + "-" + backupSchedule.DiffTime.Value.Date.ToShortDateString() + "-" + backupSchedule.DiffTime.Value.Hour + "." + backupSchedule.DiffTime.Value.Minute + "-";
+                    #endregion
+                    backupSchedule.JustDiffName = time4NameDiff + backupSchedule.BackupName + "-" + backupSchedule.DbName;
+
+                }
+
+                //İsim ayarları
+
+                lastBackup = backupSchedule;
+
+                //Form1.cs'de kullanmak için son eklenmesi gereken backup bi değişkene BackupSchedule cinsinde tanımlanır.
+
+                #region Backup Tarih kontrol
+                int count = context.BackupSchedules.ToList().Count, i = 0;
+                if (count == 0)
+                {
+                    context.SaveChanges();
+                }
+                else
+                {
+                    foreach (var item in context.BackupSchedules.ToList())
+                    {
+                        i++;
+                        if (item.BackupScheme == lastBackup.BackupScheme && item.Time.Hour == lastBackup.Time.Hour && item.Time.Minute == lastBackup.Time.Minute && item.DbName == lastBackup.DbName)
+                        {
+                            MessageBox.Show("Bu aralıkta bu backup zaten alınıyor. Lütfen kontrol ediniz. Kayıt sağlanamadı.");
+                            lastBackup = null;
+                            break;
+                        }
+                        else if (i == count)
+                        {
+                            context.SaveChanges();
+                            break;
+                        }
+
+                    }
+                }
+                #endregion
+                //Eklenmeye çalışılan backup saatine ve aralığına göre kontrol edilip, eğer aynı saatte ve aralıkta alınan bir backup varsa 
+                //tekrar kaydedilmesi engelleniyor.
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Otomatik Backup alınırken bir hata oluştu lütfen kontrol edin.");
+            }
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                #region Adres kontrolleri
+                if (chbLocal.Checked == true && selectedPath == null)
+                {
+                    MessageBox.Show("Lütfen Lokalde Backup alınacak yeri belirtin.");
+                    return;
+                }
+                if (cbDriveUsers.SelectedItem != null)
+                {
+                    DriveUserName = cbDriveUsers.SelectedItem.ToString();
+                }
+                if (chbGoogle.Checked == true && DriveUserName == null)
+                {
+                    MessageBox.Show("Lütfen Google Drive'a giriş yapın.");
+                    return;
+                }
+                if (cbFtp.SelectedItem != null)
+                {
+                    FtpLoc = cbFtp.SelectedItem.ToString();
+                }
+                if (chbFtp.Checked == true && FtpLoc == null)
+                {
+                    MessageBox.Show("Lütfen Ftp adresini girin.");
+                    return;
+                }
+                #endregion
+
+                #region Save kontolü
+                if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
+                {
+                    MessageBox.Show("Lütfen kaydedileceği alanı seçin");
+                }
+                else
+                {
+                    Save();
+                    #region Last Backup Control
+                    if (lastBackup == null)
+                    {
+                        return;
+                    }
+                    #endregion
+                }
+                #endregion
+                
+                listing();
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Save alırken hata oluştu.");
+            }
+        }
+
+        #region RadioButtons
+        private void rbDaily_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpSetUp.Format = DateTimePickerFormat.Time;
+        }
+
+        private void rbWeekly_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpSetUp.Format = DateTimePickerFormat.Custom;
+            dtpSetUp.CustomFormat = "'Haftanın günü :'dddd HH:mm";
+        }
+
+        private void rbMonthly_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpSetUp.Format = DateTimePickerFormat.Custom;
+            dtpSetUp.CustomFormat = "'Ayın ' dd '. günü :'   HH:mm";
+        }
+
+        private void rbYearly_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpSetUp.Format = DateTimePickerFormat.Custom;
+            dtpSetUp.CustomFormat = "'Yılın ' MMMMM ' ayı ' dd '. günü :'   HH:mm";
+        }
+
+        #endregion
+
+        #region Checks
+        private void chbGoogle_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chbGoogle.Checked == true)
+            {
+                lblGoogle.Visible = true;
+                cbDriveUsers.Visible = true;
+            }
+            else
+            {
+                lblGoogle.Visible = false;
+                cbDriveUsers.Visible = false;
+            }
+        }
+        private void chbFtp_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chbFtp.Checked == true)
+            {
+                lblFtp.Visible = true;
+                cbFtp.Visible = true;
+            }
+            else
+            {
+                lblFtp.Visible = false;
+                cbFtp.Visible = false;
+            }
+        }
+        private void chbLocal_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chbLocal.Checked == true)
+            {
+                using (FolderBrowserDialog fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
+                    selectedPath = fbd.SelectedPath;
+                }
+                if (selectedPath == "")
+                {
+                    chbLocal.Checked = false;
+                    lblAddress.Visible = false;
+                }
+                else
+                {
+                    lblAddress.Text = selectedPath;
+                    lblAddress.Visible = true;
+                }
+            }
+            else
+            {
+                lblAddress.Visible = false;
+            }
+        }
+        #endregion
+
+    }
+}
