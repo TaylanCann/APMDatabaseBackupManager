@@ -1,25 +1,19 @@
 ﻿using ApmDbBackupManager.Models;
-using Microsoft.SqlServer.Management.Smo;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Timers;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using System.Threading;
 using System.Net;
-using Microsoft.EntityFrameworkCore;
-using System.Drawing;
+using System.Net.Mail;
 
 namespace ApmDbBackupManager.Forms
 {
@@ -28,11 +22,14 @@ namespace ApmDbBackupManager.Forms
         DatabaseContext context = new DatabaseContext();
         List<string> names = new List<string>();
         BackupSchedule lastBackup = new BackupSchedule();
-        // private static System.Timers.Timer aTimer;
-        string pathCTemp = @"C:\TempBackup\";
         string selectedPath, DriveUserName,FtpAddress;
-        string SqlAddress = "LAPTOP-9VG06RAO";
-
+        string pathCTemp = @"" + Properties.Settings.Default.pathCTemp;
+        string SqlAddress = Properties.Settings.Default.SqlAddress;
+        string MailFrom = Properties.Settings.Default.From;
+        string MailTo = Properties.Settings.Default.To;
+        string MailPass = Properties.Settings.Default.Pass;
+        string MailHost = Properties.Settings.Default.Host;
+        int MailPort = Properties.Settings.Default.Port;
 
         static string[] Scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile };
         static string ApplicationName = "SqlBackup"; //Drive ile alakalı
@@ -44,6 +41,7 @@ namespace ApmDbBackupManager.Forms
             TmpExists(pathCTemp);
             DatabaseNamesListing();
             DriveUsers();
+            FtpAddresss();
         }
 
         #region DriveUsers
@@ -61,6 +59,19 @@ namespace ApmDbBackupManager.Forms
             }
         }
         #endregion
+        public void FtpAddresss()
+        {
+            var records = context.FtpThings
+              .ToList();
+
+            foreach (var item in records)
+            {
+                if (item.FtpLocation != null)
+                {
+                    cbFtp.Items.Add(item.FtpLocation.ToString());
+                }
+            }
+        }
 
         public void TmpExists(string pathCTemp)
         {
@@ -119,6 +130,22 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("Database isimleri listelenirken hata yaşandı.");
             }
 
+        }
+
+        public void DeleteBak(string pathCTemp)
+        {
+            try
+            {
+                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains("Backup.bak") || f.Contains("DiffBackup.bak")).ToList();
+                foreach (var DFB in deleteFull)
+                {
+                    File.Delete(DFB);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
+            }
         }
 
         public void Backup(BackupSchedule backup)
@@ -213,7 +240,6 @@ namespace ApmDbBackupManager.Forms
                 CancellationToken.None,
                 new FileDataStore(credPath, true)).Result;
 
-                MessageBox.Show("Login Olundu");
                 //credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                 //GoogleClientSecrets.Load(stream).Secrets,
                 //Scopes,
@@ -398,6 +424,29 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
             }
         }
+        #region Mail
+        public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
+        {
+            MailMessage eMail = new MailMessage();
+            eMail.Subject = SuccestOrNot;
+            eMail.From = new MailAddress(From);
+            eMail.To.Add(new MailAddress(To));
+            eMail.Bcc.Add(new MailAddress("taylancanh@gmail.com", "Proje sorumlusu"));
+            eMail.Body = ErrorMessage;
+            eMail.IsBodyHtml = true;
+            eMail.Priority = MailPriority.High;
+            // Host ve Port Gereklidir!
+            SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
+            // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
+            NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
+            smtp.UseDefaultCredentials = false;
+            smtp.Credentials = AccountInfo;
+            smtp.EnableSsl = true;
+            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtp.Send(eMail);
+        }
+
+        #endregion
 
         public void Save()
         {
@@ -505,6 +554,7 @@ namespace ApmDbBackupManager.Forms
         {   
             try
             {
+                MessageBox.Show("Backup alınmaya başlandı");
                 #region Adres kontrolleri
                 if (chbLocal.Checked == true && selectedPath == null)
                 {
@@ -549,6 +599,10 @@ namespace ApmDbBackupManager.Forms
                 #endregion
 
                 #region SaveThings
+
+                Backup(lastBackup);
+                Rar(lastBackup);
+                DeleteBak(pathCTemp);
                 if (chbGoogle.Checked == true)
                 {
                     DriveUser driveUser = new DriveUser();
@@ -563,36 +617,37 @@ namespace ApmDbBackupManager.Forms
                     DriveLogin(driveUser.User);
 
                     if (driveUser != null)
-                    {
-                        Backup(lastBackup);
-                        Rar(lastBackup);
+                    {   
                         UploadFiles(lastBackup, false);
-                        DeleteFullBackupsFromFolder(pathCTemp);
                     }
                 }
                 if (chbFtp.Checked == true)
                 {
-                    Backup(lastBackup);
-                    Rar(lastBackup);
                     var ftpRecord = context.FtpThings.Where(f => f.Id == lastBackup.FtpThingId).FirstOrDefault();
                     if (ftpRecord != null)
                     {
                         Ftp(pathCTemp + lastBackup.JustName + "Backup.zip", ftpRecord);
                     }
-                    DeleteFullBackupsFromFolder(pathCTemp);
                 }
                 if (chbLocal.Checked == true)
                 {
-                    Backup(lastBackup);
-                    Rar(lastBackup);
                     sendFile(pathCTemp, lastBackup.LocalLocation);
                 }
-
+                DeleteFullBackupsFromFolder(pathCTemp);
                 #endregion
+                SendMail("Alındı", lastBackup.JustName +
+                                     "Backup.bak Başarı ile alındı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
+                
             }
             catch (Exception)
             {
                 MessageBox.Show("Save alırken hata oluştu.");
+                SendMail("Alınamadı", lastBackup.JustName +
+                                     "Backup.bak Başarı ile alındı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
             }
         }
     }

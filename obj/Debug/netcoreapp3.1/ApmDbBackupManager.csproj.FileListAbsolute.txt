@@ -146,4 +146,5 @@ C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupMa
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\Mail.dll
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\System.Text.Encoding.CodePages.dll
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Text.Encoding.CodePages.dll
+C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.Forms.Infos.resources
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.csprojAssemblyReference.cache

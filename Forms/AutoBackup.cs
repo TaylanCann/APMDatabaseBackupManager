@@ -18,9 +18,9 @@ namespace ApmDbBackupManager.Forms
         DatabaseContext context = new DatabaseContext();
         BackupSchedule lastBackup = new BackupSchedule();
         List<string> names = new List<string>();
-        string pathCTemp = @"C:\TempBackup\";
         string selectedPath, DriveUserName, FtpLoc;
-        string SqlAddress = "LAPTOP-9VG06RAO";
+        string pathCTemp = @"" + Properties.Settings.Default.pathCTemp;
+        string SqlAddress = Properties.Settings.Default.SqlAddress;
 
         public AutoBackup()
         {
@@ -361,9 +361,18 @@ namespace ApmDbBackupManager.Forms
                 #endregion
 
                 #region Save kontolü
+                
                 if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
                 {
                     MessageBox.Show("Lütfen kaydedileceği alanı seçin");
+                }
+                else if (txtName.Text == "")
+                {
+                    MessageBox.Show("Lütfen backup ismini verin.");
+                }
+                else if (cbDatabaseName.SelectedIndex <0)
+                {
+                    MessageBox.Show("Lütfen backup alınacak veritabanını seçin");
                 }
                 else
                 {

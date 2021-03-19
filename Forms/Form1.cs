@@ -16,6 +16,8 @@ using System.Threading;
 using System.Net;
 using System.Drawing;
 using System.Net.Mail;
+using ApmDbBackupManager.Forms;
+using System.Threading.Tasks;
 
 
 //İki kere aynı kayıdı yapınca patlıyor bak
@@ -26,8 +28,16 @@ namespace ApmDbBackupManager
     {
         DatabaseContext context = new DatabaseContext();
         private static System.Timers.Timer aTimer;
-        string pathCTemp = @"C:\TempBackup\";
-        string SqlAddress = "LAPTOP-9VG06RAO";
+        string pathCTemp = @""+Properties.Settings.Default.pathCTemp;
+        string SqlAddress = Properties.Settings.Default.SqlAddress;
+        string MailFrom = Properties.Settings.Default.From;
+        string MailTo = Properties.Settings.Default.To;
+        string MailPass = Properties.Settings.Default.Pass;
+        string MailHost = Properties.Settings.Default.Host;
+        int MailPort = Properties.Settings.Default.Port;
+
+        private readonly Task _preLoginTask;
+        private AutoResetEvent _resetEvent = new AutoResetEvent(false);
 
         static string[] Scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile };
         static string ApplicationName = "SqlBackup"; //Drive ile alakalı
@@ -36,8 +46,18 @@ namespace ApmDbBackupManager
         public Form1()
         {
             InitializeComponent();
+            _preLoginTask = PerformPreLoginWorkAsync();
             setTimer();
             btnAutoBackup_Click(currentButton, EventArgs.Empty);
+        }
+
+        private async Task PerformPreLoginWorkAsync()
+        {
+            await Task.Run(() =>
+            {
+                // Long running work runs on thread pool thread
+                Thread.Sleep(TimeSpan.FromSeconds(0));
+            });
         }
 
         #region Buttons&Forms
@@ -88,7 +108,7 @@ namespace ApmDbBackupManager
         }
         private void btnInfos_Click(object sender, EventArgs e)
         {
-
+            OpenChildForm(new Infos(), sender);
         }
         private Form activeForm;
         private void OpenChildForm(Form childForm, object btnSender)
@@ -118,7 +138,7 @@ namespace ApmDbBackupManager
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
         }
-        public void OnTimedEvent(Object source, ElapsedEventArgs e)
+        public async void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             aTimer.Stop();
             foreach (var item in context.BackupSchedules.ToList())
@@ -138,12 +158,16 @@ namespace ApmDbBackupManager
                         #endregion
 
                         #region SaveDbTo
+                        Backup(item); 
+
+                        Rar(item);
+                        await _preLoginTask;
+                        DeleteBak(pathCTemp);
 
                         if (item.IsDrive == true)
                         {
                             DriveUser driveUser = new DriveUser();
-                            Backup(item);
-                            Rar(item);
+                            
                             foreach (var Drives in context.DriveUsers.ToList())
                             {
                                 if (Drives.Id == item.DriveUserId)
@@ -155,43 +179,45 @@ namespace ApmDbBackupManager
                             {
                                 DriveLogin(driveUser.User);
                                 UploadFiles(item, false);
-                                DeleteFullBackupsFromFolder(pathCTemp);
                             }
                         }
 
                         if (item.IsFtp == true)
                         {
-                            Backup(item);
-                            Rar(item);
                             var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
                             if (ftpRecord != null)
                             {
                                 Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
                             }
-                            DeleteFullBackupsFromFolder(pathCTemp);
                         }
 
                         if (item.IsLocal == true)
                         {
-                            Backup(item);
-                            Rar(item);
                             sendFile(pathCTemp, item.LocalLocation);
                         }
 
+                        DeleteFullBackupsFromFolder(pathCTemp);
+
                         #endregion
-                        SendMail("Alındı", item.JustName + "Backup.bak Başarı ile alındı. Hata yok", "taylancanh@gmail.com", "taylancanh@gmail.com", "smtp.gmail.com",587);
+                        SendMail("Alındı", item.JustName + 
+                                 "Backup.bak Başarı ile alındı. Hata yok", 
+                                  MailFrom, MailTo,MailPass,
+                                  MailHost, MailPort);
                     }
                     catch (Exception)
                     {
                         MessageBox.Show("İlk Backup alınamadı (Have it)");
-                        SendMail("Alınamadı", item.JustName + "Backup.bak alınamadı." + "Hata mesajı", "taylancanh@gmail.com", "taylancanh@gmail.com", "smtp.gmail.com", 587);
+                        SendMail("Alınamadı", item.JustName + 
+                                 "Backup.bak alınamadı." + "Hata mesajı",
+                                  MailFrom, MailTo, MailPass, 
+                                  MailHost,MailPort);
                     }
 
                 }
 
                 #endregion
 
-                //-------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------
 
                 #region Yıllık ve dönemi dolmuş backup 
 
@@ -265,8 +291,12 @@ namespace ApmDbBackupManager
                         #endregion
 
                         #region SaveDbTo
+                        Backup(item);
+                        Rar(item);
+                        DeleteBak(pathCTemp);
+
                         if (item.IsDrive == true)
-                        {
+                        {   
                             DriveUser driveUser = new DriveUser();
 
                             foreach (var Drives in context.DriveUsers.ToList())
@@ -280,43 +310,44 @@ namespace ApmDbBackupManager
 
                             if (driveUser != null)
                             {
-                                Backup(item);
-                                Rar(item);
                                 UploadFiles(item, false);
-                                DeleteFullBackupsFromFolder(pathCTemp);
                             }
                         }
 
                         if (item.IsFtp == true)
                         {
-                            Backup(item);
-                            Rar(item);
                             var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
                             if (ftpRecord != null)
                             {
                                 Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
                             }
-                            DeleteFullBackupsFromFolder(pathCTemp);
                         }
                         if (item.IsLocal == true)
                         {
-                            Backup(item);
-                            Rar(item);
                             sendFile(pathCTemp, item.LocalLocation);
                         }
+
+                        DeleteFullBackupsFromFolder(pathCTemp);
+
                         #endregion
-                        SendMail("Alındı", item.JustName + "Backup.bak Başarı ile alındı. Hata yok", "taylancanh@gmail.com", "taylancanh@gmail.com", "smtp.gmail.com", 587);
+                        SendMail("Alındı", item.JustName + 
+                                 "Backup.bak Başarı ile alındı. Hata yok",
+                                 MailFrom, MailTo, MailPass,
+                                 MailHost, MailPort);
                     }
                     catch (Exception)
                     {
                         MessageBox.Show("Yıllık dönemi dolmuş Backup alınamadı.");
-                        SendMail("Alınamadı", item.JustName + "Backup.bak alınamadı." + "Hata mesajı", "taylancanh@gmail.com", "taylancanh@gmail.com", "smtp.gmail.com", 587);
+                        SendMail("Alınamadı", item.JustName + 
+                                 "Backup.bak alınamadı." + "Hata mesajı",
+                                 MailFrom, MailTo, MailPass,
+                                 MailHost, MailPort);
                     }
                 }
 
                 #endregion
 
-                //-------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------
 
                 #region Günlük veya haftalık backup
 
@@ -438,6 +469,9 @@ namespace ApmDbBackupManager
                             #endregion
 
                             #region SaveDbTo
+                            Backup(item);
+                            Rar(item);
+                            DeleteBak(pathCTemp);
                             if (item.IsDrive == true)
                             {
                                 DriveUser driveUser = new DriveUser();
@@ -453,37 +487,37 @@ namespace ApmDbBackupManager
 
                                 if (driveUser != null)
                                 {
-                                    Backup(item);
-                                    Rar(item);
                                     UploadFiles(item, false);
-                                    DeleteFullBackupsFromFolder(pathCTemp);
                                 }
                             }
 
                             if (item.IsFtp == true)
                             {
-                                Backup(item);
-                                Rar(item);
                                 var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
                                 if (ftpRecord != null)
                                 {
                                     Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
                             }
                             if (item.IsLocal == true)
                             {
-                                Backup(item);
-                                Rar(item);
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
+                                DeleteFullBackupsFromFolder(pathCTemp);
+
                             #endregion
-                            SendMail("Alındı", item.JustName + "Backup.bak Başarı ile alındı. Hata yok", "taylancanh@gmail.com", "taylancanh@gmail.com", "smtp.gmail.com", 587);
+                            SendMail("Alındı", item.JustName + 
+                                     "Backup.bak Başarı ile alındı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Dönemi dolmuş günlük yada haftalık Full Backup alınamadı");
-                            SendMail("Alınamadı", item.JustName + "Backup.bak alınamadı." + "Hata mesajı", "taylancanh@gmail.com", "taylancanh@gmail.com", "smtp.gmail.com", 587);
+                            SendMail("Alınamadı", item.JustName + 
+                                     "Backup.bak alınamadı." + "Hata mesajı",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
                         }
                     }
 
@@ -570,6 +604,9 @@ namespace ApmDbBackupManager
                             #endregion
 
                             #region SaveDbTo
+                            DifferentialBackup(item);
+                            DiffRar(item);
+                            DeleteBak(pathCTemp);
                             if (item.IsDrive == true)
                             {
                                 DriveUser driveUser = new DriveUser();
@@ -585,31 +622,25 @@ namespace ApmDbBackupManager
 
                                 if (driveUser != null)
                                 {
-                                    DifferentialBackup(item);
-                                    DiffRar(item);
                                     UploadFiles(item, true);
-                                    DeleteFullBackupsFromFolder(pathCTemp);
                                 }
                             }
 
                             if (item.IsFtp == true)
                             {
-                                DifferentialBackup(item);
-                                DiffRar(item);
                                 var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
                                 if (ftpRecord != null)
                                 {
                                     Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
                             }
 
                             if (item.IsLocal == true)
                             {
-                                DifferentialBackup(item);
-                                DiffRar(item);
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
+                            DeleteFullBackupsFromFolder(pathCTemp);
+
                             #endregion
 
                             #region Edit Datas
@@ -618,22 +649,18 @@ namespace ApmDbBackupManager
                             context.SaveChanges();
                             #endregion
                             SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                     587);
+                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                      MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
 
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Dönemsel Günlük yada Haftalık Backup alınamadı. ");
                             SendMail("Alınamadı", item.JustName + 
-                                "DiffBackup.bak alınamadı." + "Hata mesajı", 
-                                "taylancanh@gmail.com", 
-                                "taylancanh@gmail.com", 
-                                "smtp.gmail.com", 
-                                587);
+                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
 
 
@@ -648,13 +675,13 @@ namespace ApmDbBackupManager
                         try
                         {
                             #region SaveFromDb
-
+                            DifferentialBackup(item);
+                            DiffRar(item);
+                            DeleteBak(pathCTemp);
                             if (item.IsDrive == true)
                             {
                                 DriveUser driveUser = new DriveUser();
-                                DifferentialBackup(item);
-                                DiffRar(item);
-
+                                
                                 foreach (var Drives in context.DriveUsers.ToList())
                                 {
                                     if (Drives.Id == item.DriveUserId)
@@ -666,37 +693,40 @@ namespace ApmDbBackupManager
                                 {
                                     DriveLogin(driveUser.User);
                                     UploadFiles(item, true);
-                                    DeleteFullBackupsFromFolder(pathCTemp);
                                 }
-
                             }
+                            #region oldFtp
+                            //if (item.IsFtp == true)
+                            //{
+                            //    FtpThing ObjectFtp = new FtpThing();
+                            //    foreach (var Ftps in context.FtpThings.ToList())
+                            //    {
+                            //        if (Ftps.Id == item.FtpThingId)
+                            //        {
+                            //            ObjectFtp = Ftps;
+                            //        }
+                            //    }
+                            //    if (ObjectFtp != null)
+                            //    {
+                            //        Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ObjectFtp);
+                            //    }
+                            //}
+                            #endregion
 
                             if (item.IsFtp == true)
                             {
-                                FtpThing ObjectFtp = new FtpThing();
-                                DifferentialBackup(item);
-                                DiffRar(item);
-                                foreach (var Ftps in context.FtpThings.ToList())
+                                var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
+                                if (ftpRecord != null)
                                 {
-                                    if (Ftps.Id == item.FtpThingId)
-                                    {
-                                        ObjectFtp = Ftps;
-                                    }
+                                    Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
                                 }
-                                if (ObjectFtp != null)
-                                {
-                                    Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ObjectFtp);
-                                }
-                                DeleteFullBackupsFromFolder(pathCTemp);
                             }
-
                             if (item.IsLocal == true)
                             {
-                                DifferentialBackup(item);
-                                DiffRar(item);
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
-
+                         
+                            DeleteFullBackupsFromFolder(pathCTemp);
                             #endregion
 
                             #region Edit Datas Diff
@@ -706,21 +736,17 @@ namespace ApmDbBackupManager
                             context.SaveChanges();
                             #endregion
                             SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                     587);
+                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Dönemsel Günlük yada Haftalık ilk Backup alınamadı. ");
                             SendMail("Alınamadı", item.JustName + 
-                                "DiffBackup.bak alınamadı." + "Hata mesajı", 
-                                "taylancanh@gmail.com", 
-                                "taylancanh@gmail.com", 
-                                "smtp.gmail.com", 
-                                587);
+                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
 
                         }
                     }
@@ -729,7 +755,7 @@ namespace ApmDbBackupManager
 
                 #endregion
 
-                //---------------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 
                 #region Aylık Backup
 
@@ -887,7 +913,9 @@ namespace ApmDbBackupManager
                             #endregion
 
                             #region SaveDbTo
-
+                            Backup(item);
+                            Rar(item);
+                            DeleteBak(pathCTemp);
                             if (item.IsDrive == true)
                             {
                                 DriveUser driveUser = new DriveUser();
@@ -903,49 +931,37 @@ namespace ApmDbBackupManager
 
                                 if (driveUser != null)
                                 {
-                                    Backup(item);
-                                    Rar(item);
                                     UploadFiles(item, false);
-                                    DeleteFullBackupsFromFolder(pathCTemp);
                                 }
                             }
 
                             if (item.IsFtp == true)
                             {
-                                Backup(item);
-                                Rar(item);
                                 var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
                                 if (ftpRecord != null)
                                 {
                                     Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
                             }
 
                             if (item.IsLocal == true)
                             {
-                                Backup(item);
-                                Rar(item);
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
-
+                            DeleteFullBackupsFromFolder(pathCTemp);
                             #endregion
                             SendMail("Alındı", item.JustName + 
-                                     "Backup.bak Başarı ile alındı. Hata yok", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                     587);
+                                     "Backup.bak Başarı ile alındı. Hata yok",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
                             SendMail("Alınamadı", item.JustName + 
-                                     "Backup.bak alınamadı." + "Hata mesajı", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                      587);
+                                     "Backup.bak alınamadı." + "Hata mesajı",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
                     }
                     #endregion
@@ -1032,7 +1048,9 @@ namespace ApmDbBackupManager
                             #endregion
 
                             #region SaveDbTo
-
+                            DifferentialBackup(item);
+                            DiffRar(item);
+                            DeleteBak(pathCTemp);
                             if (item.IsDrive == true)
                             {
                                 DriveUser driveUser = new DriveUser();
@@ -1047,31 +1065,25 @@ namespace ApmDbBackupManager
                                 DriveLogin(driveUser.User);
 
                                 if (driveUser != null)
-                                {
-                                    DifferentialBackup(item);
-                                    DiffRar(item);
+                                {       
                                     UploadFiles(item, true);
-                                    DeleteFullBackupsFromFolder(pathCTemp);
                                 }
                             }
 
                             if (item.IsFtp == true)
                             {
-                                DifferentialBackup(item);
-                                DiffRar(item);
                                 var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
                                 if (ftpRecord != null)
                                 {
                                     Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
                             }
                             if (item.IsLocal == true)
                             {
-                                DifferentialBackup(item);
-                                DiffRar(item);
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
+                            DeleteFullBackupsFromFolder(pathCTemp);
+
                             #endregion
 
                             #region Edit Datas
@@ -1109,21 +1121,17 @@ namespace ApmDbBackupManager
                             context.SaveChanges();
                             #endregion
                             SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                      587);
+                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
                             SendMail("Alınamadı", item.JustName + 
-                                     "DiffBackup.bak alınamadı." + "Hata mesajı", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                      587);
+                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
                     }
 
@@ -1136,12 +1144,13 @@ namespace ApmDbBackupManager
                         try
                         {
                             #region SaveDbTo
-
+                            DifferentialBackup(item);
+                            DiffRar(item);
+                            DeleteBak(pathCTemp);
                             if (item.IsDrive == true)
                             {
                                 DriveUser driveUser = new DriveUser();
-                                DifferentialBackup(item);
-                                DiffRar(item);
+                                
 
                                 foreach (var Drives in context.DriveUsers.ToList())
                                 {
@@ -1154,7 +1163,7 @@ namespace ApmDbBackupManager
                                 {
                                     DriveLogin(driveUser.User);
                                     UploadFiles(item, true);
-                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                    
                                 }
 
                             }
@@ -1162,9 +1171,7 @@ namespace ApmDbBackupManager
                             if (item.IsFtp == true)
                             {
                                 FtpThing ObjectFtp = new FtpThing();
-                                DifferentialBackup(item);
-                                DiffRar(item);
-                                foreach (var Ftps in context.FtpThings.ToList())
+                               foreach (var Ftps in context.FtpThings.ToList())
                                 {
                                     if (Ftps.Id == item.FtpThingId)
                                     {
@@ -1174,17 +1181,14 @@ namespace ApmDbBackupManager
                                 if (ObjectFtp != null)
                                 {
                                     Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ObjectFtp);
-                                }
-                                DeleteFullBackupsFromFolder(pathCTemp);
+                                }   
                             }
 
                             if (item.IsLocal == true)
                             {
-                                DifferentialBackup(item);
-                                DiffRar(item);
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
-
+                            DeleteFullBackupsFromFolder(pathCTemp);
                             #endregion
 
                             #region Edit Datas Diff
@@ -1224,21 +1228,17 @@ namespace ApmDbBackupManager
                             context.SaveChanges();
                             #endregion
                             SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                      587);
+                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
                             SendMail("Alınamadı", item.JustName + 
-                                     "DiffBackup.bak alınamadı." + "Hata mesajı", 
-                                     "taylancanh@gmail.com", 
-                                     "taylancanh@gmail.com", 
-                                     "smtp.gmail.com", 
-                                      587);
+                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
                     }
                     #endregion
@@ -1272,7 +1272,6 @@ namespace ApmDbBackupManager
                 CancellationToken.None,
                 new FileDataStore(credPath, true)).Result;
 
-                MessageBox.Show("Login Olundu");
                 //credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                 //GoogleClientSecrets.Load(stream).Secrets,
                 //Scopes,
@@ -1368,7 +1367,7 @@ namespace ApmDbBackupManager
         #endregion
 
         #region Mail
-        public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To,string Host,int Port)
+        public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To,string Pass,string Host,int Port)
         {
             MailMessage eMail = new MailMessage();
             eMail.Subject = SuccestOrNot;
@@ -1381,7 +1380,7 @@ namespace ApmDbBackupManager
             // Host ve Port Gereklidir!
             SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
             // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
-            NetworkCredential AccountInfo = new NetworkCredential("taylancanh@gmail.com", "Istisna-iHareket1");
+            NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
             smtp.UseDefaultCredentials = false;
             smtp.Credentials = AccountInfo;
             smtp.EnableSsl = true;
@@ -1466,6 +1465,21 @@ namespace ApmDbBackupManager
             catch (Exception)
             {
                 MessageBox.Show("Rar Başarısız");
+            }
+        }
+        public void DeleteBak(string pathCTemp)
+        {
+            try
+            {
+                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains("Backup.bak") || f.Contains("DiffBackup.bak")).ToList();
+                foreach (var DFB in deleteFull)
+                {
+                    File.Delete(DFB);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
             }
         }
         public void sendFile(string pathCTemp, string selectedPath)
