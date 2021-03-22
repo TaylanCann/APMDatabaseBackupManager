@@ -29,7 +29,6 @@ namespace ApmDbBackupManager.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.lbBackupSchedule = new System.Windows.Forms.ListBox();
             this.cbDatabaseName = new System.Windows.Forms.ComboBox();
             this.chbLocal = new System.Windows.Forms.CheckBox();
             this.chbFtp = new System.Windows.Forms.CheckBox();
@@ -48,16 +47,10 @@ namespace ApmDbBackupManager.Forms
             this.lblFtp = new System.Windows.Forms.Label();
             this.cbFtp = new System.Windows.Forms.ComboBox();
             this.lblAddress = new System.Windows.Forms.Label();
+            this.dgBackupSchedule = new System.Windows.Forms.DataGridView();
+            this.label3 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.dgBackupSchedule)).BeginInit();
             this.SuspendLayout();
-            // 
-            // lbBackupSchedule
-            // 
-            this.lbBackupSchedule.FormattingEnabled = true;
-            this.lbBackupSchedule.ItemHeight = 20;
-            this.lbBackupSchedule.Location = new System.Drawing.Point(255, 288);
-            this.lbBackupSchedule.Name = "lbBackupSchedule";
-            this.lbBackupSchedule.Size = new System.Drawing.Size(563, 184);
-            this.lbBackupSchedule.TabIndex = 51;
             // 
             // cbDatabaseName
             // 
@@ -234,17 +227,40 @@ namespace ApmDbBackupManager.Forms
             this.lblAddress.Text = "Adres";
             this.lblAddress.Visible = false;
             // 
+            // dgBackupSchedule
+            // 
+            this.dgBackupSchedule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgBackupSchedule.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.dgBackupSchedule.Location = new System.Drawing.Point(0, 337);
+            this.dgBackupSchedule.Name = "dgBackupSchedule";
+            this.dgBackupSchedule.RowHeadersWidth = 51;
+            this.dgBackupSchedule.RowTemplate.Height = 29;
+            this.dgBackupSchedule.Size = new System.Drawing.Size(1184, 307);
+            this.dgBackupSchedule.TabIndex = 68;
+            this.dgBackupSchedule.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgBackupSchedule_CellDoubleClick);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label3.Location = new System.Drawing.Point(0, 317);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(156, 20);
+            this.label3.TabIndex = 69;
+            this.label3.Text = "Silmek için çift tıklayın";
+            // 
             // AutoBackup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 644);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.dgBackupSchedule);
             this.Controls.Add(this.lblAddress);
             this.Controls.Add(this.cbFtp);
             this.Controls.Add(this.lblFtp);
             this.Controls.Add(this.cbDriveUsers);
             this.Controls.Add(this.lblGoogle);
-            this.Controls.Add(this.lbBackupSchedule);
             this.Controls.Add(this.cbDatabaseName);
             this.Controls.Add(this.chbLocal);
             this.Controls.Add(this.chbFtp);
@@ -260,14 +276,13 @@ namespace ApmDbBackupManager.Forms
             this.Controls.Add(this.rbYearly);
             this.Name = "AutoBackup";
             this.Text = "AutoBackup";
+            ((System.ComponentModel.ISupportInitialize)(this.dgBackupSchedule)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.ListBox lbBackupSchedule;
         private System.Windows.Forms.ComboBox cbDatabaseName;
         private System.Windows.Forms.CheckBox chbLocal;
         private System.Windows.Forms.CheckBox chbFtp;
@@ -286,5 +301,7 @@ namespace ApmDbBackupManager.Forms
         private System.Windows.Forms.Label lblFtp;
         private System.Windows.Forms.ComboBox cbFtp;
         private System.Windows.Forms.Label lblAddress;
+        private System.Windows.Forms.DataGridView dgBackupSchedule;
+        private System.Windows.Forms.Label label3;
     }
 }

@@ -28,7 +28,7 @@ namespace ApmDbBackupManager
     {
         DatabaseContext context = new DatabaseContext();
         private static System.Timers.Timer aTimer;
-        string pathCTemp = @""+Properties.Settings.Default.pathCTemp;
+        string pathCTemp = @"" + Properties.Settings.Default.pathCTemp;
         string SqlAddress = Properties.Settings.Default.SqlAddress;
         string MailFrom = Properties.Settings.Default.From;
         string MailTo = Properties.Settings.Default.To;
@@ -143,219 +143,90 @@ namespace ApmDbBackupManager
             aTimer.Stop();
             foreach (var item in context.BackupSchedules.ToList())
             {
-                #region İlk kez FullBackup alıyoru
-
-                if (DateTime.Now > item.Time && item.HaveIt == false)
+                if (item.IsActive == true || item.IsAuto == false)
                 {
-                    try
+                    #region İlk kez FullBackup alıyoru
+
+                    if (DateTime.Now > item.Time && item.HaveIt == false)
                     {
-                        #region Edit Datas
-
-                        item.HaveIt = true;
-                        context.Update(item);
-                        context.SaveChanges();
-
-                        #endregion
-
-                        #region SaveDbTo
-                        Backup(item); 
-
-                        Rar(item);
-                        await _preLoginTask;
-                        DeleteBak(pathCTemp);
-
-                        if (item.IsDrive == true)
+                        try
                         {
-                            DriveUser driveUser = new DriveUser();
-                            
-                            foreach (var Drives in context.DriveUsers.ToList())
+                            #region Edit Datas
+
+                            item.HaveIt = true;
+                            context.Update(item);
+                            context.SaveChanges();
+
+                            #endregion
+
+                            #region SaveDbTo
+                            Backup(item);
+                            await _preLoginTask;
+                            Rar(item);
+                            await _preLoginTask;
+                            DeleteBak(pathCTemp);
+
+                            if (item.IsDrive == true)
                             {
-                                if (Drives.Id == item.DriveUserId)
+                                DriveUser driveUser = new DriveUser();
+
+                                foreach (var Drives in context.DriveUsers.ToList())
                                 {
-                                    driveUser = Drives;
+                                    if (Drives.Id == item.DriveUserId)
+                                    {
+                                        driveUser = Drives;
+                                    }
+                                }
+                                if (driveUser != null)
+                                {
+                                    DriveLogin(driveUser.User);
+                                    UploadFiles(item, false);
+                                    await _preLoginTask;
                                 }
                             }
-                            if (driveUser != null)
+
+                            if (item.IsFtp == true)
                             {
-                                DriveLogin(driveUser.User);
-                                UploadFiles(item, false);
+                                var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
+                                if (ftpRecord != null)
+                                {
+                                    Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
+                                    await _preLoginTask;
+                                }
                             }
-                        }
 
-                        if (item.IsFtp == true)
-                        {
-                            var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
-                            if (ftpRecord != null)
+                            if (item.IsLocal == true)
                             {
-                                Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
+                                sendFile(pathCTemp, item.LocalLocation);
+                                await _preLoginTask;
                             }
-                        }
 
-                        if (item.IsLocal == true)
+                            DeleteFullBackupsFromFolder(pathCTemp);
+
+                            #endregion
+                            SendMail("Alındı", item.JustName +
+                                     "Backup.bak Başarı ile alındı. Hata yok",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
+                        }
+                        catch (Exception)
                         {
-                            sendFile(pathCTemp, item.LocalLocation);
+                            MessageBox.Show("İlk Backup alınamadı (Have it)");
+                            SendMail("Alınamadı", item.JustName +
+                                     "Backup.bak alınamadı." + "Hata mesajı",
+                                      MailFrom, MailTo, MailPass,
+                                      MailHost, MailPort);
                         }
 
-                        DeleteFullBackupsFromFolder(pathCTemp);
-
-                        #endregion
-                        SendMail("Alındı", item.JustName + 
-                                 "Backup.bak Başarı ile alındı. Hata yok", 
-                                  MailFrom, MailTo,MailPass,
-                                  MailHost, MailPort);
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show("İlk Backup alınamadı (Have it)");
-                        SendMail("Alınamadı", item.JustName + 
-                                 "Backup.bak alınamadı." + "Hata mesajı",
-                                  MailFrom, MailTo, MailPass, 
-                                  MailHost,MailPort);
                     }
 
-                }
-
-                #endregion
+                    #endregion
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-                #region Yıllık ve dönemi dolmuş backup 
+                    #region Yıllık ve dönemi dolmuş backup 
 
-                if (item.BackupScheme == 4 && DateTime.Now > item.Time.AddDays((int)item.DaysAddTerm))
-                {
-                    try
-                    {
-                        #region DeleteDiffs
-                        if (item.IsDrive == true)
-                        {
-                            DriveUser driveUser = new DriveUser();
-
-                            foreach (var Drives in context.DriveUsers.ToList())
-                            {
-                                if (Drives.Id == item.DriveUserId)
-                                {
-                                    driveUser = Drives;
-                                }
-                            }
-                            DriveLogin(driveUser.User);
-
-                            var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustName + "Backup.zip"));
-                            foreach (var itemDe in deleteDrive)
-                            {
-                                DeleteFiles(itemDe.Id);
-                            }
-                        }
-
-                        if (item.IsLocal == true)
-                        {
-                            var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where
-                                (f => f.Contains(item.JustName + "Backup.zip")
-                                || f.Contains(item.JustName + "Backup.bak"))
-                                .ToList();
-                            foreach (var dic in deleteDiff)
-                            {
-                                File.Delete(dic);
-                            }
-                        }
-                        if (item.IsFtp)
-                        {
-                            FtpThing ftp = new FtpThing();
-
-                            foreach (var Ftps in context.FtpThings.ToList())
-                            {
-                                if (Ftps.Id == item.FtpThingId)
-                                {
-                                    ftp = Ftps;
-                                }
-                            }
-                            string fileFName = item.JustName + "Backup.zip";
-                            FtpDeleteFile(fileFName, ftp);
-                        }
-                        #endregion
-
-                        #region Edit Datas
-
-                        item.Time = DateTime.Now;
-
-                        #region time4NameFullB
-                        string D = "Yıllık";
-                        string time4Name = D + "-" + item.Time.Date.ToShortDateString() + "-" + item.Time.Hour + "." + item.Time.Minute + "-";
-
-                        #endregion
-
-
-                        item.JustName = time4Name + item.BackupName + "-" + item.DbName;
-                        item.IsDiffBackup = false;
-                        context.Update(item);
-                        context.SaveChanges();
-                        #endregion
-
-                        #region SaveDbTo
-                        Backup(item);
-                        Rar(item);
-                        DeleteBak(pathCTemp);
-
-                        if (item.IsDrive == true)
-                        {   
-                            DriveUser driveUser = new DriveUser();
-
-                            foreach (var Drives in context.DriveUsers.ToList())
-                            {
-                                if (Drives.Id == item.DriveUserId)
-                                {
-                                    driveUser = Drives;
-                                }
-                            }
-                            DriveLogin(driveUser.User);
-
-                            if (driveUser != null)
-                            {
-                                UploadFiles(item, false);
-                            }
-                        }
-
-                        if (item.IsFtp == true)
-                        {
-                            var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
-                            if (ftpRecord != null)
-                            {
-                                Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
-                            }
-                        }
-                        if (item.IsLocal == true)
-                        {
-                            sendFile(pathCTemp, item.LocalLocation);
-                        }
-
-                        DeleteFullBackupsFromFolder(pathCTemp);
-
-                        #endregion
-                        SendMail("Alındı", item.JustName + 
-                                 "Backup.bak Başarı ile alındı. Hata yok",
-                                 MailFrom, MailTo, MailPass,
-                                 MailHost, MailPort);
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show("Yıllık dönemi dolmuş Backup alınamadı.");
-                        SendMail("Alınamadı", item.JustName + 
-                                 "Backup.bak alınamadı." + "Hata mesajı",
-                                 MailFrom, MailTo, MailPass,
-                                 MailHost, MailPort);
-                    }
-                }
-
-                #endregion
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-                #region Günlük veya haftalık backup
-
-                if (item.DaysAdd != 0 /* Sadece günlükte ve haftalıkta 0'dan farklı */ || item.DaysAddTerm == 365)
-                {
-
-                    #region Dönemi dolmuş Full Backup'a dönülüyor 
-                    if (item.IsDiffBackup == true && DateTime.Now > item.Time.AddDays((int)item.DaysAddTerm))
+                    if (item.BackupScheme == 4 && DateTime.Now > item.Time.AddDays((int)item.DaysAddTerm))
                     {
                         try
                         {
@@ -373,7 +244,7 @@ namespace ApmDbBackupManager
                                 }
                                 DriveLogin(driveUser.User);
 
-                                var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip") || f.Name.Contains(item.JustName + "Backup.zip"));
+                                var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustName + "Backup.zip"));
                                 foreach (var itemDe in deleteDrive)
                                 {
                                     DeleteFiles(itemDe.Id);
@@ -383,9 +254,7 @@ namespace ApmDbBackupManager
                             if (item.IsLocal == true)
                             {
                                 var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where
-                                    (f => f.Contains(item.JustDiffName + "DiffBackup.zip")
-                                    || f.Contains(item.JustName + "Backup.zip")
-                                    || f.Contains(item.JustDiffName + "DiffBackup.bak")
+                                    (f => f.Contains(item.JustName + "Backup.zip")
                                     || f.Contains(item.JustName + "Backup.bak"))
                                     .ToList();
                                 foreach (var dic in deleteDiff)
@@ -404,8 +273,6 @@ namespace ApmDbBackupManager
                                         ftp = Ftps;
                                     }
                                 }
-                                string fileDName = item.JustDiffName + "DiffBackup.zip";
-                                FtpDeleteFile(fileDName, ftp);
                                 string fileFName = item.JustName + "Backup.zip";
                                 FtpDeleteFile(fileFName, ftp);
                             }
@@ -413,56 +280,16 @@ namespace ApmDbBackupManager
 
                             #region Edit Datas
 
-                            item.DiffTime = DateTime.Now.AddDays((int)item.DaysAdd);
                             item.Time = DateTime.Now;
 
                             #region time4NameFullB
-
-                            string D;
-                            if (item.BackupScheme == 1)
-                            {
-                                D = "Günlük";
-                            }
-                            else if (item.BackupScheme == 2)
-                            {
-                                D = "Haftalık";
-                            }
-                            else if (item.BackupScheme == 3)
-                            {
-                                D = "Aylık";
-                            }
-                            else
-                            {
-                                D = "Yıllık";
-                            }
+                            string D = "Yıllık";
                             string time4Name = D + "-" + item.Time.Date.ToShortDateString() + "-" + item.Time.Hour + "." + item.Time.Minute + "-";
 
                             #endregion
-                            #region time4NameDiffB
 
-                            string BS;
-                            if (item.BackupScheme == 1)
-                            {
-                                BS = "Günlük";
-                            }
-                            else if (item.BackupScheme == 2)
-                            {
-                                BS = "Haftalık";
-                            }
-                            else if (item.BackupScheme == 3)
-                            {
-                                BS = "Aylık";
-                            }
-                            else
-                            {
-                                BS = "Yıllık";
-                            }
-                            string time4NameDiff = BS + "-" + item.DiffTime.Value.Date.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
-
-                            #endregion
 
                             item.JustName = time4Name + item.BackupName + "-" + item.DbName;
-                            item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
                             item.IsDiffBackup = false;
                             context.Update(item);
                             context.SaveChanges();
@@ -472,6 +299,7 @@ namespace ApmDbBackupManager
                             Backup(item);
                             Rar(item);
                             DeleteBak(pathCTemp);
+
                             if (item.IsDrive == true)
                             {
                                 DriveUser driveUser = new DriveUser();
@@ -503,18 +331,19 @@ namespace ApmDbBackupManager
                             {
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
-                                DeleteFullBackupsFromFolder(pathCTemp);
+
+                            DeleteFullBackupsFromFolder(pathCTemp);
 
                             #endregion
-                            SendMail("Alındı", item.JustName + 
+                            SendMail("Alındı", item.JustName +
                                      "Backup.bak Başarı ile alındı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
                         }
                         catch (Exception)
                         {
-                            MessageBox.Show("Dönemi dolmuş günlük yada haftalık Full Backup alınamadı");
-                            SendMail("Alınamadı", item.JustName + 
+                            MessageBox.Show("Yıllık dönemi dolmuş Backup alınamadı.");
+                            SendMail("Alınamadı", item.JustName +
                                      "Backup.bak alınamadı." + "Hata mesajı",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
@@ -523,364 +352,97 @@ namespace ApmDbBackupManager
 
                     #endregion
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-                    #region DiffBackup dönemi dolmuş tekrar DiffBackup alınıyor
+                    #region Günlük veya haftalık backup
 
-                    else if (item.IsDiffBackup == true && DateTime.Now > item.DiffTime)
+                    if (item.DaysAdd != 0 /* Sadece günlükte ve haftalıkta 0'dan farklı */ || item.DaysAddTerm == 365)
                     {
-                        try
+
+                        #region Dönemi dolmuş Full Backup'a dönülüyor 
+                        if (item.IsDiffBackup == true && DateTime.Now > item.Time.AddDays((int)item.DaysAddTerm))
                         {
-                            #region DeleteDiffs
-
-                            if (item.IsDrive == true)
+                            try
                             {
-                                DriveUser driveUser = new DriveUser();
-
-                                foreach (var Drives in context.DriveUsers.ToList())
+                                #region DeleteDiffs
+                                if (item.IsDrive == true)
                                 {
-                                    if (Drives.Id == item.DriveUserId)
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
                                     {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                DriveLogin(driveUser.User);
-
-                                var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip"));
-                                foreach (var itemDe in deleteDrive)
-                                {
-                                    DeleteFiles(itemDe.Id);
-                                }
-                            }
-
-                            if (item.IsLocal)
-                            {
-                                var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where(f => f.Contains(item.JustDiffName + "DiffBackup.bak") || f.Contains(item.JustDiffName + "DiffBackup.zip")).ToList();
-                                foreach (var dic in deleteDiff)
-                                {
-                                    File.Delete(dic);
-                                }
-                            }
-
-                            if (item.IsFtp)
-                            {
-                                FtpThing ftp = new FtpThing();
-
-                                foreach (var Ftps in context.FtpThings.ToList())
-                                {
-                                    if (Ftps.Id == item.FtpThingId)
-                                    {
-                                        ftp = Ftps;
-                                    }
-                                }
-                                string filename = item.JustDiffName + "DiffBackup.zip";
-                                FtpDeleteFile(filename, ftp);
-                            }
-
-                            #endregion
-
-                            #region time4NameDiffB
-                            string BS;
-                            if (item.BackupScheme == 1)
-                            {
-                                BS = "Günlük";
-                            }
-                            else if (item.BackupScheme == 2)
-                            {
-                                BS = "Haftalık";
-                            }
-                            else if (item.BackupScheme == 3)
-                            {
-                                BS = "Aylık";
-                            }
-                            else
-                            {
-                                BS = "Yıllık";
-                            }
-                            string time4NameDiff = BS + "-" + item.DiffTime.Value.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
-                            item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
-
-                            context.Update(item);
-                            context.SaveChanges();
-                            #endregion
-
-                            #region SaveDbTo
-                            DifferentialBackup(item);
-                            DiffRar(item);
-                            DeleteBak(pathCTemp);
-                            if (item.IsDrive == true)
-                            {
-                                DriveUser driveUser = new DriveUser();
-
-                                foreach (var Drives in context.DriveUsers.ToList())
-                                {
-                                    if (Drives.Id == item.DriveUserId)
-                                    {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                DriveLogin(driveUser.User);
-
-                                if (driveUser != null)
-                                {
-                                    UploadFiles(item, true);
-                                }
-                            }
-
-                            if (item.IsFtp == true)
-                            {
-                                var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
-                                if (ftpRecord != null)
-                                {
-                                    Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
-                                }
-                            }
-
-                            if (item.IsLocal == true)
-                            {
-                                sendFile(pathCTemp, item.LocalLocation);
-                            }
-                            DeleteFullBackupsFromFolder(pathCTemp);
-
-                            #endregion
-
-                            #region Edit Datas
-                            item.DiffTime = DateTime.Now.AddDays((int)item.DaysAdd);
-                            context.Update(item);
-                            context.SaveChanges();
-                            #endregion
-                            SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
-                                      MailFrom, MailTo, MailPass,
-                                     MailHost, MailPort);
-
-                        }
-                        catch (Exception)
-                        {
-                            MessageBox.Show("Dönemsel Günlük yada Haftalık Backup alınamadı. ");
-                            SendMail("Alınamadı", item.JustName + 
-                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
-                        }
-
-
-                    }
-                    #endregion
-
-
-                    #region İlk kez FullBackup'tan Diff alınıyor 
-
-                    else if (item.IsDiffBackup == false && DateTime.Now > item.DiffTime)
-                    {
-                        try
-                        {
-                            #region SaveFromDb
-                            DifferentialBackup(item);
-                            DiffRar(item);
-                            DeleteBak(pathCTemp);
-                            if (item.IsDrive == true)
-                            {
-                                DriveUser driveUser = new DriveUser();
-                                
-                                foreach (var Drives in context.DriveUsers.ToList())
-                                {
-                                    if (Drives.Id == item.DriveUserId)
-                                    {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                if (driveUser != null)
-                                {
-                                    DriveLogin(driveUser.User);
-                                    UploadFiles(item, true);
-                                }
-                            }
-                            #region oldFtp
-                            //if (item.IsFtp == true)
-                            //{
-                            //    FtpThing ObjectFtp = new FtpThing();
-                            //    foreach (var Ftps in context.FtpThings.ToList())
-                            //    {
-                            //        if (Ftps.Id == item.FtpThingId)
-                            //        {
-                            //            ObjectFtp = Ftps;
-                            //        }
-                            //    }
-                            //    if (ObjectFtp != null)
-                            //    {
-                            //        Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ObjectFtp);
-                            //    }
-                            //}
-                            #endregion
-
-                            if (item.IsFtp == true)
-                            {
-                                var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
-                                if (ftpRecord != null)
-                                {
-                                    Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
-                                }
-                            }
-                            if (item.IsLocal == true)
-                            {
-                                sendFile(pathCTemp, item.LocalLocation);
-                            }
-                         
-                            DeleteFullBackupsFromFolder(pathCTemp);
-                            #endregion
-
-                            #region Edit Datas Diff
-                            item.IsDiffBackup = true;
-                            item.DiffTime = DateTime.Now.AddDays((int)item.DaysAdd);
-                            context.Update(item);
-                            context.SaveChanges();
-                            #endregion
-                            SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
-                        }
-                        catch (Exception)
-                        {
-                            MessageBox.Show("Dönemsel Günlük yada Haftalık ilk Backup alınamadı. ");
-                            SendMail("Alınamadı", item.JustName + 
-                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
-
-                        }
-                    }
-                    #endregion
-                }
-
-                #endregion
-
-//---------------------------------------------------------------------------------------------------------------------------------------------------
-
-                #region Aylık Backup
-
-                else if (item.MonthAdd != 0)
-                {
-                    //Ayın 28-29-30-31. günleri sıkıntı çözzzzzz 
-                    #region Dönemi dolmuş FullBackup'a dönülüyor
-
-                    if (item.IsDiffBackup == true && DateTime.Now > item.Time.AddMonths((int)item.MonthAddTerm))
-                    {
-                        try
-                        {
-                            #region DeleteDiffs
-
-                            if (item.IsDrive == true)
-                            {
-                                DriveUser driveUser = new DriveUser();
-
-                                foreach (var Drives in context.DriveUsers.ToList())
-                                {
-                                    if (Drives.Id == item.DriveUserId)
-                                    {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                DriveLogin(driveUser.User);
-
-                                var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip") || f.Name.Contains(item.JustName + "Backup.zip"));
-                                foreach (var itemDe in deleteDrive)
-                                {
-                                    DeleteFiles(itemDe.Id);
-                                }
-                            }
-
-                            if (item.IsLocal == true)
-                            {
-                                var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where
-                                (f => f.Contains(item.JustDiffName + "DiffBackup.zip")
-                                || f.Contains(item.JustName + "Backup.zip")
-                                || f.Contains(item.JustDiffName + "DiffBackup.bak")
-                                || f.Contains(item.JustName + "Backup.bak"))
-                                .ToList();
-                                foreach (var dic in deleteDiff)
-                                {
-                                    File.Delete(dic);
-                                }
-                            }
-
-                            if (item.IsFtp)
-                            {
-                                FtpThing ftp = new FtpThing();
-
-                                foreach (var Ftps in context.FtpThings.ToList())
-                                {
-                                    if (Ftps.Id == item.FtpThingId)
-                                    {
-                                        ftp = Ftps;
-                                    }
-                                }
-                                string fileDName = item.JustDiffName + "DiffBackup.zip";
-                                FtpDeleteFile(fileDName, ftp);
-                                string fileFName = item.JustName + "Backup.zip";
-                                FtpDeleteFile(fileFName, ftp);
-                            }
-                            #endregion
-
-                            #region Edit Datas
-
-                            if (item.DayOfMonth > DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
-                            {
-                                item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-                            }
-                            else if (item.DayOfMonth == DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
-                            {
-                                if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day < item.DayOfMonth)
-                                {
-                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-
-                                    for (; ; )
-                                    {
-                                        item.DiffTime = item.DiffTime.Value.AddDays(1);
-                                        if (item.DiffTime.Value.Day == item.DayOfMonth)
+                                        if (Drives.Id == item.DriveUserId)
                                         {
-                                            break;
+                                            driveUser = Drives;
                                         }
                                     }
+                                    DriveLogin(driveUser.User);
+
+                                    var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip") || f.Name.Contains(item.JustName + "Backup.zip"));
+                                    foreach (var itemDe in deleteDrive)
+                                    {
+                                        DeleteFiles(itemDe.Id);
+                                    }
                                 }
-                                else if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day == item.DayOfMonth)
+
+                                if (item.IsLocal == true)
                                 {
-                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                    var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where
+                                        (f => f.Contains(item.JustDiffName + "DiffBackup.zip")
+                                        || f.Contains(item.JustName + "Backup.zip")
+                                        || f.Contains(item.JustDiffName + "DiffBackup.bak")
+                                        || f.Contains(item.JustName + "Backup.bak"))
+                                        .ToList();
+                                    foreach (var dic in deleteDiff)
+                                    {
+                                        File.Delete(dic);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-                                item.DiffTime = item.DiffTime.Value.AddDays(item.DayOfMonth - item.DiffTime.Value.Day);
-                            }
+                                if (item.IsFtp)
+                                {
+                                    FtpThing ftp = new FtpThing();
 
-                            item.Time = DateTime.Now;
+                                    foreach (var Ftps in context.FtpThings.ToList())
+                                    {
+                                        if (Ftps.Id == item.FtpThingId)
+                                        {
+                                            ftp = Ftps;
+                                        }
+                                    }
+                                    string fileDName = item.JustDiffName + "DiffBackup.zip";
+                                    FtpDeleteFile(fileDName, ftp);
+                                    string fileFName = item.JustName + "Backup.zip";
+                                    FtpDeleteFile(fileFName, ftp);
+                                }
+                                #endregion
 
-                            #region time4NameFullB
+                                #region Edit Datas
 
-                            string D;
-                            if (item.BackupScheme == 1)
-                            {
-                                D = "Günlük";
-                            }
-                            else if (item.BackupScheme == 2)
-                            {
-                                D = "Haftalık";
-                            }
-                            else if (item.BackupScheme == 3)
-                            {
-                                D = "Aylık";
-                            }
-                            else
-                            {
-                                D = "Yıllık";
-                            }
-                            string time4Name = D + "-" + item.Time.Date.ToShortDateString() + "-" + item.Time.Hour + "." + item.Time.Minute + "-";
+                                item.DiffTime = DateTime.Now.AddDays((int)item.DaysAdd);
+                                item.Time = DateTime.Now;
 
-                            #endregion
+                                #region time4NameFullB
 
-                            if (item.BackupScheme != 4)
-                            {
+                                string D;
+                                if (item.BackupScheme == 1)
+                                {
+                                    D = "Günlük";
+                                }
+                                else if (item.BackupScheme == 2)
+                                {
+                                    D = "Haftalık";
+                                }
+                                else if (item.BackupScheme == 3)
+                                {
+                                    D = "Aylık";
+                                }
+                                else
+                                {
+                                    D = "Yıllık";
+                                }
+                                string time4Name = D + "-" + item.Time.Date.ToShortDateString() + "-" + item.Time.Hour + "." + item.Time.Minute + "-";
+
+                                #endregion
                                 #region time4NameDiffB
 
                                 string BS;
@@ -903,347 +465,791 @@ namespace ApmDbBackupManager
                                 string time4NameDiff = BS + "-" + item.DiffTime.Value.Date.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
 
                                 #endregion
+
+                                item.JustName = time4Name + item.BackupName + "-" + item.DbName;
                                 item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
-                            }
+                                item.IsDiffBackup = false;
+                                context.Update(item);
+                                context.SaveChanges();
+                                #endregion
 
-                            item.JustName = time4Name + item.BackupName + "-" + item.DbName;
-                            item.IsDiffBackup = false;
-                            context.Update(item);
-                            context.SaveChanges();
-                            #endregion
-
-                            #region SaveDbTo
-                            Backup(item);
-                            Rar(item);
-                            DeleteBak(pathCTemp);
-                            if (item.IsDrive == true)
-                            {
-                                DriveUser driveUser = new DriveUser();
-
-                                foreach (var Drives in context.DriveUsers.ToList())
+                                #region SaveDbTo
+                                Backup(item);
+                                Rar(item);
+                                DeleteBak(pathCTemp);
+                                if (item.IsDrive == true)
                                 {
-                                    if (Drives.Id == item.DriveUserId)
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
                                     {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                DriveLogin(driveUser.User);
-
-                                if (driveUser != null)
-                                {
-                                    UploadFiles(item, false);
-                                }
-                            }
-
-                            if (item.IsFtp == true)
-                            {
-                                var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
-                                if (ftpRecord != null)
-                                {
-                                    Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
-                                }
-                            }
-
-                            if (item.IsLocal == true)
-                            {
-                                sendFile(pathCTemp, item.LocalLocation);
-                            }
-                            DeleteFullBackupsFromFolder(pathCTemp);
-                            #endregion
-                            SendMail("Alındı", item.JustName + 
-                                     "Backup.bak Başarı ile alındı. Hata yok",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
-                        }
-                        catch (Exception)
-                        {
-                            MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
-                            SendMail("Alınamadı", item.JustName + 
-                                     "Backup.bak alınamadı." + "Hata mesajı",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
-                        }
-                    }
-                    #endregion
-
-                    #region DiffBackup'tan DiffBackup'a 
-
-                    else if (item.IsDiffBackup == true && DateTime.Now > item.DiffTime)
-                    {
-                        try
-                        {
-                            #region DeleteDiffs
-
-                            if (item.IsDrive == true)
-                            {
-                                DriveUser driveUser = new DriveUser();
-
-                                foreach (var Drives in context.DriveUsers.ToList())
-                                {
-                                    if (Drives.Id == item.DriveUserId)
-                                    {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                DriveLogin(driveUser.User);
-                                var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip"));
-                                foreach (var itemDe in deleteDrive)
-                                {
-                                    DeleteFiles(itemDe.Id);
-                                }
-                            }
-
-                            if (item.IsLocal)
-                            {
-                                var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where(f => f.Contains(item.JustDiffName + "DiffBackup.bak") || f.Contains(item.JustDiffName + "DiffBackup.zip")).ToList();
-                                foreach (var dic in deleteDiff)
-                                {
-                                    File.Delete(dic);
-                                }
-
-                            }
-
-                            if (item.IsFtp)
-                            {
-                                FtpThing ftp = new FtpThing();
-
-                                foreach (var Ftps in context.FtpThings.ToList())
-                                {
-                                    if (Ftps.Id == item.FtpThingId)
-                                    {
-                                        ftp = Ftps;
-                                    }
-                                }
-                                string fileDName = item.JustDiffName + "DiffBackup.zip";
-                                FtpDeleteFile(fileDName, ftp);
-
-                            }
-                            #endregion
-
-                            #region time4NameDiffB
-
-                            string BS;
-                            if (item.BackupScheme == 1)
-                            {
-                                BS = "Günlük";
-                            }
-                            else if (item.BackupScheme == 2)
-                            {
-                                BS = "Haftalık";
-                            }
-                            else if (item.BackupScheme == 3)
-                            {
-                                BS = "Aylık";
-                            }
-                            else
-                            {
-                                BS = "Yıllık";
-                            }
-                            string time4NameDiff = BS + "-" + DateTime.Now.ToShortDateString() + "-" + DateTime.Now.Hour + "." + DateTime.Now.Minute + "-";
-                            item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
-
-                            context.Update(item);
-                            context.SaveChanges();
-
-                            #endregion
-
-                            #region SaveDbTo
-                            DifferentialBackup(item);
-                            DiffRar(item);
-                            DeleteBak(pathCTemp);
-                            if (item.IsDrive == true)
-                            {
-                                DriveUser driveUser = new DriveUser();
-
-                                foreach (var Drives in context.DriveUsers.ToList())
-                                {
-                                    if (Drives.Id == item.DriveUserId)
-                                    {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                DriveLogin(driveUser.User);
-
-                                if (driveUser != null)
-                                {       
-                                    UploadFiles(item, true);
-                                }
-                            }
-
-                            if (item.IsFtp == true)
-                            {
-                                var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
-                                if (ftpRecord != null)
-                                {
-                                    Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
-                                }
-                            }
-                            if (item.IsLocal == true)
-                            {
-                                sendFile(pathCTemp, item.LocalLocation);
-                            }
-                            DeleteFullBackupsFromFolder(pathCTemp);
-
-                            #endregion
-
-                            #region Edit Datas
-                            if (item.DayOfMonth > DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
-                            {
-                                item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-                            }
-                            else if (item.DayOfMonth == DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
-                            {
-                                if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day < item.DayOfMonth)
-                                {
-                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-
-                                    for (; ; )
-                                    {
-                                        item.DiffTime = item.DiffTime.Value.AddDays(1);
-                                        if (item.DiffTime.Value.Day == item.DayOfMonth)
+                                        if (Drives.Id == item.DriveUserId)
                                         {
-                                            break;
+                                            driveUser = Drives;
                                         }
                                     }
-                                }
-                                else if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day == item.DayOfMonth)
-                                {
-                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-                                }
-                            }
-                            else
-                            {
-                                item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-                                item.DiffTime = item.DiffTime.Value.AddDays(item.DayOfMonth - item.DiffTime.Value.Day);
-                            }
-
-                            context.Update(item);
-                            context.SaveChanges();
-                            #endregion
-                            SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
-                        }
-                        catch (Exception)
-                        {
-                            MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
-                            SendMail("Alınamadı", item.JustName + 
-                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
-                        }
-                    }
-
-                    #endregion
-
-                    #region İlk kez FullBackup'tan Diff alınıyor
-
-                    else if (item.IsDiffBackup == false && DateTime.Now > item.DiffTime)
-                    {
-                        try
-                        {
-                            #region SaveDbTo
-                            DifferentialBackup(item);
-                            DiffRar(item);
-                            DeleteBak(pathCTemp);
-                            if (item.IsDrive == true)
-                            {
-                                DriveUser driveUser = new DriveUser();
-                                
-
-                                foreach (var Drives in context.DriveUsers.ToList())
-                                {
-                                    if (Drives.Id == item.DriveUserId)
-                                    {
-                                        driveUser = Drives;
-                                    }
-                                }
-                                if (driveUser != null)
-                                {
                                     DriveLogin(driveUser.User);
-                                    UploadFiles(item, true);
-                                    
-                                }
 
-                            }
-
-                            if (item.IsFtp == true)
-                            {
-                                FtpThing ObjectFtp = new FtpThing();
-                               foreach (var Ftps in context.FtpThings.ToList())
-                                {
-                                    if (Ftps.Id == item.FtpThingId)
+                                    if (driveUser != null)
                                     {
-                                        ObjectFtp = Ftps;
+                                        UploadFiles(item, false);
                                     }
                                 }
-                                if (ObjectFtp != null)
+
+                                if (item.IsFtp == true)
                                 {
-                                    Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ObjectFtp);
-                                }   
-                            }
-
-                            if (item.IsLocal == true)
-                            {
-                                sendFile(pathCTemp, item.LocalLocation);
-                            }
-                            DeleteFullBackupsFromFolder(pathCTemp);
-                            #endregion
-
-                            #region Edit Datas Diff
-                            item.IsDiffBackup = true;
-
-                            if (item.DayOfMonth > DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
-                            {
-                                item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-                            }
-                            else if (item.DayOfMonth == DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
-                            {
-                                if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day < item.DayOfMonth)
-                                {
-                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-
-                                    for (; ; )
+                                    var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
+                                    if (ftpRecord != null)
                                     {
-                                        item.DiffTime = item.DiffTime.Value.AddDays(1);
-                                        if (item.DiffTime.Value.Day == item.DayOfMonth)
+                                        Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
+                                    }
+                                }
+                                if (item.IsLocal == true)
+                                {
+                                    sendFile(pathCTemp, item.LocalLocation);
+                                }
+                                DeleteFullBackupsFromFolder(pathCTemp);
+
+                                #endregion
+                                SendMail("Alındı", item.JustName +
+                                         "Backup.bak Başarı ile alındı. Hata yok",
+                                         MailFrom, MailTo, MailPass,
+                                         MailHost, MailPort);
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("Dönemi dolmuş günlük yada haftalık Full Backup alınamadı");
+                                SendMail("Alınamadı", item.JustName +
+                                         "Backup.bak alınamadı." + "Hata mesajı",
+                                         MailFrom, MailTo, MailPass,
+                                         MailHost, MailPort);
+                            }
+                        }
+
+                        #endregion
+
+
+                        #region DiffBackup dönemi dolmuş tekrar DiffBackup alınıyor
+
+                        else if (item.IsDiffBackup == true && DateTime.Now > item.DiffTime)
+                        {
+                            try
+                            {
+                                #region DeleteDiffs
+
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
                                         {
-                                            break;
+                                            driveUser = Drives;
                                         }
                                     }
+                                    DriveLogin(driveUser.User);
+
+                                    var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip"));
+                                    foreach (var itemDe in deleteDrive)
+                                    {
+                                        DeleteFiles(itemDe.Id);
+                                    }
                                 }
-                                else if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day == item.DayOfMonth)
+
+                                if (item.IsLocal)
+                                {
+                                    var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where(f => f.Contains(item.JustDiffName + "DiffBackup.bak") || f.Contains(item.JustDiffName + "DiffBackup.zip")).ToList();
+                                    foreach (var dic in deleteDiff)
+                                    {
+                                        File.Delete(dic);
+                                    }
+                                }
+
+                                if (item.IsFtp)
+                                {
+                                    FtpThing ftp = new FtpThing();
+
+                                    foreach (var Ftps in context.FtpThings.ToList())
+                                    {
+                                        if (Ftps.Id == item.FtpThingId)
+                                        {
+                                            ftp = Ftps;
+                                        }
+                                    }
+                                    string filename = item.JustDiffName + "DiffBackup.zip";
+                                    FtpDeleteFile(filename, ftp);
+                                }
+
+                                #endregion
+
+                                #region time4NameDiffB
+                                string BS;
+                                if (item.BackupScheme == 1)
+                                {
+                                    BS = "Günlük";
+                                }
+                                else if (item.BackupScheme == 2)
+                                {
+                                    BS = "Haftalık";
+                                }
+                                else if (item.BackupScheme == 3)
+                                {
+                                    BS = "Aylık";
+                                }
+                                else
+                                {
+                                    BS = "Yıllık";
+                                }
+                                string time4NameDiff = BS + "-" + item.DiffTime.Value.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
+                                item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
+
+                                context.Update(item);
+                                context.SaveChanges();
+                                #endregion
+
+                                #region SaveDbTo
+                                DifferentialBackup(item);
+                                DiffRar(item);
+                                DeleteBak(pathCTemp);
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
+                                        {
+                                            driveUser = Drives;
+                                        }
+                                    }
+                                    DriveLogin(driveUser.User);
+
+                                    if (driveUser != null)
+                                    {
+                                        UploadFiles(item, true);
+                                    }
+                                }
+
+                                if (item.IsFtp == true)
+                                {
+                                    var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
+                                    if (ftpRecord != null)
+                                    {
+                                        Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
+                                    }
+                                }
+
+                                if (item.IsLocal == true)
+                                {
+                                    sendFile(pathCTemp, item.LocalLocation);
+                                }
+                                DeleteFullBackupsFromFolder(pathCTemp);
+
+                                #endregion
+
+                                #region Edit Datas
+                                item.DiffTime = DateTime.Now.AddDays((int)item.DaysAdd);
+                                context.Update(item);
+                                context.SaveChanges();
+                                #endregion
+                                SendMail("Alındı", item.JustName +
+                                         "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                          MailFrom, MailTo, MailPass,
+                                         MailHost, MailPort);
+
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("Dönemsel Günlük yada Haftalık Backup alınamadı. ");
+                                SendMail("Alınamadı", item.JustName +
+                                         "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
+
+
+                        }
+                        #endregion
+
+
+                        #region İlk kez FullBackup'tan Diff alınıyor 
+
+                        else if (item.IsDiffBackup == false && DateTime.Now > item.DiffTime)
+                        {
+                            try
+                            {
+                                #region SaveFromDb
+                                DifferentialBackup(item);
+                                DiffRar(item);
+                                DeleteBak(pathCTemp);
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
+                                        {
+                                            driveUser = Drives;
+                                        }
+                                    }
+                                    if (driveUser != null)
+                                    {
+                                        DriveLogin(driveUser.User);
+                                        UploadFiles(item, true);
+                                    }
+                                }
+                                #region oldFtp
+                                //if (item.IsFtp == true)
+                                //{
+                                //    FtpThing ObjectFtp = new FtpThing();
+                                //    foreach (var Ftps in context.FtpThings.ToList())
+                                //    {
+                                //        if (Ftps.Id == item.FtpThingId)
+                                //        {
+                                //            ObjectFtp = Ftps;
+                                //        }
+                                //    }
+                                //    if (ObjectFtp != null)
+                                //    {
+                                //        Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ObjectFtp);
+                                //    }
+                                //}
+                                #endregion
+
+                                if (item.IsFtp == true)
+                                {
+                                    var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
+                                    if (ftpRecord != null)
+                                    {
+                                        Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
+                                    }
+                                }
+                                if (item.IsLocal == true)
+                                {
+                                    sendFile(pathCTemp, item.LocalLocation);
+                                }
+
+                                DeleteFullBackupsFromFolder(pathCTemp);
+                                #endregion
+
+                                #region Edit Datas Diff
+                                item.IsDiffBackup = true;
+                                item.DiffTime = DateTime.Now.AddDays((int)item.DaysAdd);
+                                context.Update(item);
+                                context.SaveChanges();
+                                #endregion
+                                SendMail("Alındı", item.JustName +
+                                         "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("Dönemsel Günlük yada Haftalık ilk Backup alınamadı. ");
+                                SendMail("Alınamadı", item.JustName +
+                                         "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+
+                            }
+                        }
+                        #endregion
+                    }
+
+                    #endregion
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+
+                    #region Aylık Backup
+
+                    else if (item.MonthAdd != 0)
+                    {
+                        //Ayın 28-29-30-31. günleri sıkıntı çözzzzzz 
+                        #region Dönemi dolmuş FullBackup'a dönülüyor
+
+                        if (item.IsDiffBackup == true && DateTime.Now > item.Time.AddMonths((int)item.MonthAddTerm))
+                        {
+                            try
+                            {
+                                #region DeleteDiffs
+
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
+                                        {
+                                            driveUser = Drives;
+                                        }
+                                    }
+                                    DriveLogin(driveUser.User);
+
+                                    var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip") || f.Name.Contains(item.JustName + "Backup.zip"));
+                                    foreach (var itemDe in deleteDrive)
+                                    {
+                                        DeleteFiles(itemDe.Id);
+                                    }
+                                }
+
+                                if (item.IsLocal == true)
+                                {
+                                    var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where
+                                    (f => f.Contains(item.JustDiffName + "DiffBackup.zip")
+                                    || f.Contains(item.JustName + "Backup.zip")
+                                    || f.Contains(item.JustDiffName + "DiffBackup.bak")
+                                    || f.Contains(item.JustName + "Backup.bak"))
+                                    .ToList();
+                                    foreach (var dic in deleteDiff)
+                                    {
+                                        File.Delete(dic);
+                                    }
+                                }
+
+                                if (item.IsFtp)
+                                {
+                                    FtpThing ftp = new FtpThing();
+
+                                    foreach (var Ftps in context.FtpThings.ToList())
+                                    {
+                                        if (Ftps.Id == item.FtpThingId)
+                                        {
+                                            ftp = Ftps;
+                                        }
+                                    }
+                                    string fileDName = item.JustDiffName + "DiffBackup.zip";
+                                    FtpDeleteFile(fileDName, ftp);
+                                    string fileFName = item.JustName + "Backup.zip";
+                                    FtpDeleteFile(fileFName, ftp);
+                                }
+                                #endregion
+
+                                #region Edit Datas
+
+                                if (item.DayOfMonth > DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
                                 {
                                     item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
                                 }
-                            }
-                            else
-                            {
-                                item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
-                                item.DiffTime = item.DiffTime.Value.AddDays(item.DayOfMonth - item.DiffTime.Value.Day);
-                            }
+                                else if (item.DayOfMonth == DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
+                                {
+                                    if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day < item.DayOfMonth)
+                                    {
+                                        item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
 
-                            context.Update(item);
-                            context.SaveChanges();
-                            #endregion
-                            SendMail("Alındı", item.JustName + 
-                                     "DiffBackup.bak Başarı ile alındı. Hata yok",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
+                                        for (; ; )
+                                        {
+                                            item.DiffTime = item.DiffTime.Value.AddDays(1);
+                                            if (item.DiffTime.Value.Day == item.DayOfMonth)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day == item.DayOfMonth)
+                                    {
+                                        item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                    }
+                                }
+                                else
+                                {
+                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                    item.DiffTime = item.DiffTime.Value.AddDays(item.DayOfMonth - item.DiffTime.Value.Day);
+                                }
+
+                                item.Time = DateTime.Now;
+
+                                #region time4NameFullB
+
+                                string D;
+                                if (item.BackupScheme == 1)
+                                {
+                                    D = "Günlük";
+                                }
+                                else if (item.BackupScheme == 2)
+                                {
+                                    D = "Haftalık";
+                                }
+                                else if (item.BackupScheme == 3)
+                                {
+                                    D = "Aylık";
+                                }
+                                else
+                                {
+                                    D = "Yıllık";
+                                }
+                                string time4Name = D + "-" + item.Time.Date.ToShortDateString() + "-" + item.Time.Hour + "." + item.Time.Minute + "-";
+
+                                #endregion
+
+                                if (item.BackupScheme != 4)
+                                {
+                                    #region time4NameDiffB
+
+                                    string BS;
+                                    if (item.BackupScheme == 1)
+                                    {
+                                        BS = "Günlük";
+                                    }
+                                    else if (item.BackupScheme == 2)
+                                    {
+                                        BS = "Haftalık";
+                                    }
+                                    else if (item.BackupScheme == 3)
+                                    {
+                                        BS = "Aylık";
+                                    }
+                                    else
+                                    {
+                                        BS = "Yıllık";
+                                    }
+                                    string time4NameDiff = BS + "-" + item.DiffTime.Value.Date.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
+
+                                    #endregion
+                                    item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
+                                }
+
+                                item.JustName = time4Name + item.BackupName + "-" + item.DbName;
+                                item.IsDiffBackup = false;
+                                context.Update(item);
+                                context.SaveChanges();
+                                #endregion
+
+                                #region SaveDbTo
+                                Backup(item);
+                                Rar(item);
+                                DeleteBak(pathCTemp);
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
+                                        {
+                                            driveUser = Drives;
+                                        }
+                                    }
+                                    DriveLogin(driveUser.User);
+
+                                    if (driveUser != null)
+                                    {
+                                        UploadFiles(item, false);
+                                    }
+                                }
+
+                                if (item.IsFtp == true)
+                                {
+                                    var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
+                                    if (ftpRecord != null)
+                                    {
+                                        Ftp(pathCTemp + item.JustName + "Backup.zip", ftpRecord);
+                                    }
+                                }
+
+                                if (item.IsLocal == true)
+                                {
+                                    sendFile(pathCTemp, item.LocalLocation);
+                                }
+                                DeleteFullBackupsFromFolder(pathCTemp);
+                                #endregion
+                                SendMail("Alındı", item.JustName +
+                                         "Backup.bak Başarı ile alındı. Hata yok",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
+                                SendMail("Alınamadı", item.JustName +
+                                         "Backup.bak alınamadı." + "Hata mesajı",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
                         }
-                        catch (Exception)
+                        #endregion
+
+                        #region DiffBackup'tan DiffBackup'a 
+
+                        else if (item.IsDiffBackup == true && DateTime.Now > item.DiffTime)
                         {
-                            MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
-                            SendMail("Alınamadı", item.JustName + 
-                                     "DiffBackup.bak alınamadı." + "Hata mesajı",
-                                      MailFrom, MailTo, MailPass,
-                                      MailHost, MailPort);
+                            try
+                            {
+                                #region DeleteDiffs
+
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
+                                        {
+                                            driveUser = Drives;
+                                        }
+                                    }
+                                    DriveLogin(driveUser.User);
+                                    var deleteDrive = GetFilesToDrive().ToList().Where(f => f.Name.Contains(item.JustDiffName + "DiffBackup.zip"));
+                                    foreach (var itemDe in deleteDrive)
+                                    {
+                                        DeleteFiles(itemDe.Id);
+                                    }
+                                }
+
+                                if (item.IsLocal)
+                                {
+                                    var deleteDiff = Directory.GetFiles(item.LocalLocation).ToList().Where(f => f.Contains(item.JustDiffName + "DiffBackup.bak") || f.Contains(item.JustDiffName + "DiffBackup.zip")).ToList();
+                                    foreach (var dic in deleteDiff)
+                                    {
+                                        File.Delete(dic);
+                                    }
+
+                                }
+
+                                if (item.IsFtp)
+                                {
+                                    FtpThing ftp = new FtpThing();
+
+                                    foreach (var Ftps in context.FtpThings.ToList())
+                                    {
+                                        if (Ftps.Id == item.FtpThingId)
+                                        {
+                                            ftp = Ftps;
+                                        }
+                                    }
+                                    string fileDName = item.JustDiffName + "DiffBackup.zip";
+                                    FtpDeleteFile(fileDName, ftp);
+
+                                }
+                                #endregion
+
+                                #region time4NameDiffB
+
+                                string BS;
+                                if (item.BackupScheme == 1)
+                                {
+                                    BS = "Günlük";
+                                }
+                                else if (item.BackupScheme == 2)
+                                {
+                                    BS = "Haftalık";
+                                }
+                                else if (item.BackupScheme == 3)
+                                {
+                                    BS = "Aylık";
+                                }
+                                else
+                                {
+                                    BS = "Yıllık";
+                                }
+                                string time4NameDiff = BS + "-" + DateTime.Now.ToShortDateString() + "-" + DateTime.Now.Hour + "." + DateTime.Now.Minute + "-";
+                                item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
+
+                                context.Update(item);
+                                context.SaveChanges();
+
+                                #endregion
+
+                                #region SaveDbTo
+                                DifferentialBackup(item);
+                                DiffRar(item);
+                                DeleteBak(pathCTemp);
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
+                                        {
+                                            driveUser = Drives;
+                                        }
+                                    }
+                                    DriveLogin(driveUser.User);
+
+                                    if (driveUser != null)
+                                    {
+                                        UploadFiles(item, true);
+                                    }
+                                }
+
+                                if (item.IsFtp == true)
+                                {
+                                    var ftpRecord = context.FtpThings.Where(f => f.Id == item.FtpThingId).FirstOrDefault();
+                                    if (ftpRecord != null)
+                                    {
+                                        Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ftpRecord);
+                                    }
+                                }
+                                if (item.IsLocal == true)
+                                {
+                                    sendFile(pathCTemp, item.LocalLocation);
+                                }
+                                DeleteFullBackupsFromFolder(pathCTemp);
+
+                                #endregion
+
+                                #region Edit Datas
+                                if (item.DayOfMonth > DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
+                                {
+                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                }
+                                else if (item.DayOfMonth == DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
+                                {
+                                    if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day < item.DayOfMonth)
+                                    {
+                                        item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+
+                                        for (; ; )
+                                        {
+                                            item.DiffTime = item.DiffTime.Value.AddDays(1);
+                                            if (item.DiffTime.Value.Day == item.DayOfMonth)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day == item.DayOfMonth)
+                                    {
+                                        item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                    }
+                                }
+                                else
+                                {
+                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                    item.DiffTime = item.DiffTime.Value.AddDays(item.DayOfMonth - item.DiffTime.Value.Day);
+                                }
+
+                                context.Update(item);
+                                context.SaveChanges();
+                                #endregion
+                                SendMail("Alındı", item.JustName +
+                                         "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
+                                SendMail("Alınamadı", item.JustName +
+                                         "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
                         }
+
+                        #endregion
+
+                        #region İlk kez FullBackup'tan Diff alınıyor
+
+                        else if (item.IsDiffBackup == false && DateTime.Now > item.DiffTime)
+                        {
+                            try
+                            {
+                                #region SaveDbTo
+                                DifferentialBackup(item);
+                                DiffRar(item);
+                                DeleteBak(pathCTemp);
+                                if (item.IsDrive == true)
+                                {
+                                    DriveUser driveUser = new DriveUser();
+
+
+                                    foreach (var Drives in context.DriveUsers.ToList())
+                                    {
+                                        if (Drives.Id == item.DriveUserId)
+                                        {
+                                            driveUser = Drives;
+                                        }
+                                    }
+                                    if (driveUser != null)
+                                    {
+                                        DriveLogin(driveUser.User);
+                                        UploadFiles(item, true);
+
+                                    }
+
+                                }
+
+                                if (item.IsFtp == true)
+                                {
+                                    FtpThing ObjectFtp = new FtpThing();
+                                    foreach (var Ftps in context.FtpThings.ToList())
+                                    {
+                                        if (Ftps.Id == item.FtpThingId)
+                                        {
+                                            ObjectFtp = Ftps;
+                                        }
+                                    }
+                                    if (ObjectFtp != null)
+                                    {
+                                        Ftp(pathCTemp + item.JustDiffName + "DiffBackup.zip", ObjectFtp);
+                                    }
+                                }
+
+                                if (item.IsLocal == true)
+                                {
+                                    sendFile(pathCTemp, item.LocalLocation);
+                                }
+                                DeleteFullBackupsFromFolder(pathCTemp);
+                                #endregion
+
+                                #region Edit Datas Diff
+                                item.IsDiffBackup = true;
+
+                                if (item.DayOfMonth > DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
+                                {
+                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                }
+                                else if (item.DayOfMonth == DateTime.DaysInMonth(item.DiffTime.Value.AddMonths((int)item.MonthAdd).Year, item.DiffTime.Value.AddMonths((int)item.MonthAdd).Month))
+                                {
+                                    if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day < item.DayOfMonth)
+                                    {
+                                        item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+
+                                        for (; ; )
+                                        {
+                                            item.DiffTime = item.DiffTime.Value.AddDays(1);
+                                            if (item.DiffTime.Value.Day == item.DayOfMonth)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else if (item.DiffTime.Value.AddMonths((int)item.MonthAdd).Day == item.DayOfMonth)
+                                    {
+                                        item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                    }
+                                }
+                                else
+                                {
+                                    item.DiffTime = item.DiffTime.Value.AddMonths((int)item.MonthAdd);
+                                    item.DiffTime = item.DiffTime.Value.AddDays(item.DayOfMonth - item.DiffTime.Value.Day);
+                                }
+
+                                context.Update(item);
+                                context.SaveChanges();
+                                #endregion
+                                SendMail("Alındı", item.JustName +
+                                         "DiffBackup.bak Başarı ile alındı. Hata yok",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
+                                SendMail("Alınamadı", item.JustName +
+                                         "DiffBackup.bak alınamadı." + "Hata mesajı",
+                                          MailFrom, MailTo, MailPass,
+                                          MailHost, MailPort);
+                            }
+                        }
+                        #endregion
                     }
                     #endregion
                 }
-                #endregion
             }
             aTimer.Start();
         }
@@ -1342,7 +1348,6 @@ namespace ApmDbBackupManager
                     request.Fields = "id";
                     request.SupportsTeamDrives = true;
                     request.Upload();
-                    MessageBox.Show("Send File GoogleDrive");
 
                 }
                 var fileId = request.ResponseBody;
@@ -1367,7 +1372,7 @@ namespace ApmDbBackupManager
         #endregion
 
         #region Mail
-        public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To,string Pass,string Host,int Port)
+        public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
         {
             MailMessage eMail = new MailMessage();
             eMail.Subject = SuccestOrNot;
@@ -1577,6 +1582,6 @@ namespace ApmDbBackupManager
 
         #endregion
 
-        
+
     }
 }

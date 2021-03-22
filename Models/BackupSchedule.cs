@@ -13,6 +13,7 @@ namespace ApmDbBackupManager.Models
         public string BackupName { get; set; }
         //BackupName kullanıcın isteği doğrultusunda verdiği isim
         public bool IsAuto { get; set; }//Alınacak Backup'ın manuel mi otomatik mi alınacağını belirtir.
+        public bool IsActive { get; set; }//Backup'ın silinip silinmediğini gösterir.
         public DateTime Time { get; set; }//Database'in FullBackup alındığı tarihler
         public int? BackupScheme { get; set; }
         //Backupscheme == 1 Daily
@@ -41,4 +42,5 @@ namespace ApmDbBackupManager.Models
         public DriveUser DriveUser { get; set; }
 
     }
+    
 }

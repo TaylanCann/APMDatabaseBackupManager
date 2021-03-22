@@ -17,9 +17,6 @@ namespace ApmDbBackupManager.Models
         {
             //Veribanımızın bağlantı bilgisi
             options.UseSqlite("Data Source=libraryDB.sqlite");
-            
-            
-
         }
         public DbSet<BackupSchedule> BackupSchedules { get; set; }
         public DbSet<DriveUser> DriveUsers { get; set; }

@@ -518,6 +518,8 @@ namespace ApmDbBackupManager.Forms
                 int count = context.BackupSchedules.ToList().Count, i = 0;
                 if (count == 0)
                 {
+                    context.BackupSchedules.Add(backupSchedule);
+                    context.SaveChanges();
                 }
                 else
                 {
@@ -532,6 +534,8 @@ namespace ApmDbBackupManager.Forms
                         }
                         else if (i == count)
                         {
+                            context.BackupSchedules.Add(backupSchedule);
+                            context.SaveChanges();
                             break;
                         }
 

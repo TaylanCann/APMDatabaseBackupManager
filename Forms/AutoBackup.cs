@@ -123,11 +123,16 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
-                lbBackupSchedule.Items.Clear();
-                foreach (var item in context.BackupSchedules.ToList())
+                var db = context.BackupSchedules.Where(f => f.IsActive == true).ToList();
+                dgBackupSchedule.DataSource = db.Select(e => new
                 {
-                    lbBackupSchedule.Items.Add(item.JustName);
-                }
+                    Name = e.JustName,
+                    Google = e.IsDrive,
+                    Sunucu = e.IsFtp,
+                    Local = e.IsLocal
+                }).ToList();
+                DataGridViewColumn column = dgBackupSchedule.Columns[0];
+                column.Width = 400;
             }
             catch (Exception)
             {
@@ -142,6 +147,7 @@ namespace ApmDbBackupManager.Forms
                 BackupSchedule backupSchedule = new BackupSchedule();
 
                 backupSchedule.IsAuto = true;
+                backupSchedule.IsActive = true;
                 #region Schame
                 if (rbDaily.Checked == true)
                 {
@@ -153,7 +159,6 @@ namespace ApmDbBackupManager.Forms
                     backupSchedule.MonthAdd = 0;
                     backupSchedule.MonthAddTerm = 0;
                     backupSchedule.DiffTime = backupSchedule.Time.AddDays((int)backupSchedule.DaysAdd);
-                    context.BackupSchedules.Add(backupSchedule);
                 }
                 else if (rbWeekly.Checked == true)
                 {
@@ -164,7 +169,6 @@ namespace ApmDbBackupManager.Forms
                     backupSchedule.MonthAdd = 0;
                     backupSchedule.MonthAddTerm = 0;
                     backupSchedule.DiffTime = backupSchedule.Time.AddDays((int)backupSchedule.DaysAdd);
-                    context.BackupSchedules.Add(backupSchedule);
                 }
                 else if (rbMonthly.Checked == true)
                 {
@@ -175,7 +179,6 @@ namespace ApmDbBackupManager.Forms
                     backupSchedule.MonthAdd = 1;
                     backupSchedule.MonthAddTerm = 12;
                     backupSchedule.DiffTime = backupSchedule.Time.AddMonths((int)backupSchedule.MonthAdd);
-                    context.BackupSchedules.Add(backupSchedule);
                 }
                 else if (rbYearly.Checked == true)
                 {
@@ -185,7 +188,6 @@ namespace ApmDbBackupManager.Forms
                     backupSchedule.DaysAddTerm = 365;
                     backupSchedule.MonthAdd = 0;
                     backupSchedule.MonthAddTerm = 0;
-                    context.BackupSchedules.Add(backupSchedule);
                 }
 
                 #endregion
@@ -298,6 +300,7 @@ namespace ApmDbBackupManager.Forms
                 int count = context.BackupSchedules.ToList().Count, i = 0;
                 if (count == 0)
                 {
+                    context.BackupSchedules.Add(backupSchedule);
                     context.SaveChanges();
                 }
                 else
@@ -305,7 +308,8 @@ namespace ApmDbBackupManager.Forms
                     foreach (var item in context.BackupSchedules.ToList())
                     {
                         i++;
-                        if (item.BackupScheme == lastBackup.BackupScheme && item.Time.Hour == lastBackup.Time.Hour && item.Time.Minute == lastBackup.Time.Minute && item.DbName == lastBackup.DbName)
+
+                        if (item.IsActive == true && item.IsAuto == true && item.BackupScheme == lastBackup.BackupScheme && item.Time.Hour == lastBackup.Time.Hour && item.Time.Minute == lastBackup.Time.Minute && item.DbName == lastBackup.DbName)
                         {
                             MessageBox.Show("Bu aralıkta bu backup zaten alınıyor. Lütfen kontrol ediniz. Kayıt sağlanamadı.");
                             lastBackup = null;
@@ -313,6 +317,7 @@ namespace ApmDbBackupManager.Forms
                         }
                         else if (i == count)
                         {
+                            context.BackupSchedules.Add(backupSchedule);
                             context.SaveChanges();
                             break;
                         }
@@ -361,7 +366,7 @@ namespace ApmDbBackupManager.Forms
                 #endregion
 
                 #region Save kontolü
-                
+
                 if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
                 {
                     MessageBox.Show("Lütfen kaydedileceği alanı seçin");
@@ -370,7 +375,7 @@ namespace ApmDbBackupManager.Forms
                 {
                     MessageBox.Show("Lütfen backup ismini verin.");
                 }
-                else if (cbDatabaseName.SelectedIndex <0)
+                else if (cbDatabaseName.SelectedIndex < 0)
                 {
                     MessageBox.Show("Lütfen backup alınacak veritabanını seçin");
                 }
@@ -385,7 +390,7 @@ namespace ApmDbBackupManager.Forms
                     #endregion
                 }
                 #endregion
-                
+
                 listing();
 
             }
@@ -435,6 +440,7 @@ namespace ApmDbBackupManager.Forms
                 cbDriveUsers.Visible = false;
             }
         }
+
         private void chbFtp_CheckedChanged(object sender, EventArgs e)
         {
             if (chbFtp.Checked == true)
@@ -474,6 +480,34 @@ namespace ApmDbBackupManager.Forms
             }
         }
         #endregion
+
+        private void dgBackupSchedule_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dgBackupSchedule.CurrentRow.Selected = true;
+            foreach (DataGridViewRow dr in dgBackupSchedule.SelectedRows)
+            {
+                DialogResult dialog = new DialogResult();
+                dialog = MessageBox.Show(dr.Cells[0].Value.ToString() + " Backup'ını silmek istediğinize emin misiniz?", "SİL", MessageBoxButtons.YesNo);
+                if (dialog == DialogResult.Yes)
+                {
+                    foreach (var item in context.BackupSchedules.ToList())
+                    {
+                        if (item.JustName == dr.Cells[0].Value.ToString())
+                        {
+                            item.IsActive = false;
+                            context.Update(item);
+                            context.SaveChanges();
+                        }
+                    }
+                    MessageBox.Show(dr.Cells[0].Value.ToString() + " Silindi");
+                }
+                else
+                {
+                    MessageBox.Show(dr.Cells[0].Value.ToString() + " Silinmedi");
+                }
+                listing();
+            }
+        }
 
     }
 }
