@@ -37,7 +37,9 @@ namespace ApmDbBackupManager
             driveUser.User = DriveUserName;
             context.DriveUsers.Add(driveUser);
             context.SaveChanges();
+            DriveLogin(DriveUserName);
             Listing();
+            
         }
 
         public bool DriveLogin(string username)
