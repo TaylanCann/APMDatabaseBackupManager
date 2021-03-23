@@ -40,6 +40,8 @@ namespace ApmDbBackupManager.Forms
         private void btnSQLSave_Click(object sender, EventArgs e)
         {   
             Properties.Settings.Default.SqlAddress = txtSql.Text;
+            Properties.Settings.Default.SqlPass = txtSqlPass.Text;
+            Properties.Settings.Default.Uid = txtSqlUid.Text;         
             Properties.Settings.Default.Save();
             listing();
         }
@@ -63,30 +65,75 @@ namespace ApmDbBackupManager.Forms
         }
         public void listing()
         {
+            #region Mail
             if (Properties.Settings.Default.From != null)
             {
                 lblAFromMail.Text = Properties.Settings.Default.From;
             }
+            
             else
             {
                 lblAFromMail.Text = "Yok lütfen giriş yapın.";
             }
+
+
             if (Properties.Settings.Default.To != null)
             {
                 lblAToMail.Text = Properties.Settings.Default.To;
             }
+           
             else
             {
                 lblAToMail.Text = "Yok lütfen giriş yapın.";
             }
+            
+            
+            if (Properties.Settings.Default.Port != 0)
+            {
+                lblAPort.Text = Properties.Settings.Default.Port.ToString();
+            }
+
+            else
+            {
+                lblAPort.Text = "Yok lütfen giriş yapın.";
+            }
+
+
+            if (Properties.Settings.Default.Host != null)
+            {
+                lblAHost.Text = Properties.Settings.Default.Host;
+            }
+
+            else
+            {
+                lblAHost.Text = "Yok lütfen giriş yapın.";
+            }
+            #endregion
+
+            #region Sql
             if (Properties.Settings.Default.SqlAddress != null)
             {
                 lblASqlServerName.Text = Properties.Settings.Default.SqlAddress;
             }
+            
             else
             {
                 lblASqlServerName.Text = "Yok lütfen giriş yapın.";
             }
+            
+            
+            if (Properties.Settings.Default.Uid != null)
+            {
+                lblASqlServerUid.Text = Properties.Settings.Default.Uid;
+            }
+
+            else
+            {
+                lblASqlServerUid.Text = "Yok lütfen giriş yapın.";
+            }
+            #endregion
+
+            #region pathCTemp
             if (Properties.Settings.Default.pathCTemp != null)
             {
                 lblATmpFolder.Text = Properties.Settings.Default.pathCTemp;
@@ -95,22 +142,8 @@ namespace ApmDbBackupManager.Forms
             {
                 lblATmpFolder.Text = "Yok lütfen giriş yapın.";
             }
-            if (Properties.Settings.Default.Port != 0)
-            {
-                lblAPort.Text = Properties.Settings.Default.Port.ToString();
-            }
-            else
-            {
-                lblAPort.Text = "Yok lütfen giriş yapın.";
-            }
-            if (Properties.Settings.Default.Host != null)
-            {
-                lblAHost.Text = Properties.Settings.Default.Host;
-            }
-            else
-            {
-                lblAHost.Text = "Yok lütfen giriş yapın.";
-            }
+
+            #endregion
         }
     }
 }

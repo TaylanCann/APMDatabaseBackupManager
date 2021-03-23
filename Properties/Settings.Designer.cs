@@ -106,5 +106,29 @@ namespace ApmDbBackupManager.Properties {
                 this["Host"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SqlPass {
+            get {
+                return ((string)(this["SqlPass"]));
+            }
+            set {
+                this["SqlPass"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Uid {
+            get {
+                return ((string)(this["Uid"]));
+            }
+            set {
+                this["Uid"] = value;
+            }
+        }
     }
 }

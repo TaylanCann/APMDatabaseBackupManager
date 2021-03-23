@@ -21,6 +21,8 @@ namespace ApmDbBackupManager.Forms
         string selectedPath, DriveUserName, FtpLoc;
         string pathCTemp = @"" + Properties.Settings.Default.pathCTemp;
         string SqlAddress = Properties.Settings.Default.SqlAddress;
+        string SqlPass = Properties.Settings.Default.SqlPass;
+        string SqlUid = Properties.Settings.Default.Uid;
 
         public AutoBackup()
         {
@@ -53,15 +55,16 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
+                //"Server=192.168.1.248; Database =Cisa; Uid=sa; password=136213Ata!!; MultipleActiveResultSets=True;"
                 string connetionString = null;
                 SqlConnection conn;
-                connetionString = @"Data Source=" + SqlAddress + ";Integrated Security=True";
+                connetionString = @"Server=" + SqlAddress + "; Uid" +"=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 conn = new SqlConnection(connetionString);
                 try
                 {
                     conn.Open();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     MessageBox.Show("Can not open connection ! ");
                 }

@@ -25,6 +25,8 @@ namespace ApmDbBackupManager.Forms
         string selectedPath, DriveUserName,FtpAddress;
         string pathCTemp = @"" + Properties.Settings.Default.pathCTemp;
         string SqlAddress = Properties.Settings.Default.SqlAddress;
+        string SqlPass = Properties.Settings.Default.SqlPass;
+        string SqlUid = Properties.Settings.Default.Uid;
         string MailFrom = Properties.Settings.Default.From;
         string MailTo = Properties.Settings.Default.To;
         string MailPass = Properties.Settings.Default.Pass;
@@ -96,7 +98,7 @@ namespace ApmDbBackupManager.Forms
             {
                 string connetionString = null;
                 SqlConnection conn;
-                connetionString = @"Data Source=" + SqlAddress + ";Integrated Security=True";
+                connetionString = @"Server=" + SqlAddress + "; Uid" + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 conn = new SqlConnection(connetionString);
                 try
                 {
@@ -154,7 +156,7 @@ namespace ApmDbBackupManager.Forms
             {
                 string connetionString = null;
                 SqlConnection cnn;
-                connetionString = @"Data Source=" + SqlAddress + ";Integrated Security=True;MultipleActiveResultSets=True;Connection Timeout=900;";
+                connetionString = @"Server=" + SqlAddress + "; Uid" + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 cnn = new SqlConnection(connetionString);
                 cnn.Open();
                 string cmdText = "backup database " + backup.DbName + " to disk = '" + pathCTemp + backup.JustName + "Backup.bak';";

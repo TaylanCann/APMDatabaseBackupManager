@@ -59,6 +59,12 @@ namespace ApmDbBackupManager.Forms
             this.label11 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.lblAPort = new System.Windows.Forms.Label();
+            this.txtSqlUid = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.txtSqlPass = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.lblASqlServerUid = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -150,7 +156,7 @@ namespace ApmDbBackupManager.Forms
             // 
             // txtSql
             // 
-            this.txtSql.Location = new System.Drawing.Point(623, 89);
+            this.txtSql.Location = new System.Drawing.Point(584, 94);
             this.txtSql.Name = "txtSql";
             this.txtSql.Size = new System.Drawing.Size(125, 27);
             this.txtSql.TabIndex = 11;
@@ -158,7 +164,7 @@ namespace ApmDbBackupManager.Forms
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(623, 50);
+            this.label6.Location = new System.Drawing.Point(584, 55);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(117, 20);
             this.label6.TabIndex = 10;
@@ -166,7 +172,7 @@ namespace ApmDbBackupManager.Forms
             // 
             // btnSQLSave
             // 
-            this.btnSQLSave.Location = new System.Drawing.Point(635, 132);
+            this.btnSQLSave.Location = new System.Drawing.Point(681, 230);
             this.btnSQLSave.Name = "btnSQLSave";
             this.btnSQLSave.Size = new System.Drawing.Size(94, 29);
             this.btnSQLSave.TabIndex = 12;
@@ -177,7 +183,7 @@ namespace ApmDbBackupManager.Forms
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(24, 324);
+            this.label7.Location = new System.Drawing.Point(24, 327);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(141, 20);
             this.label7.TabIndex = 13;
@@ -186,7 +192,7 @@ namespace ApmDbBackupManager.Forms
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(365, 282);
+            this.label8.Location = new System.Drawing.Point(379, 230);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(174, 20);
             this.label8.TabIndex = 14;
@@ -195,7 +201,7 @@ namespace ApmDbBackupManager.Forms
             // lblATmpFolder
             // 
             this.lblATmpFolder.AutoSize = true;
-            this.lblATmpFolder.Location = new System.Drawing.Point(365, 316);
+            this.lblATmpFolder.Location = new System.Drawing.Point(379, 264);
             this.lblATmpFolder.Name = "lblATmpFolder";
             this.lblATmpFolder.Size = new System.Drawing.Size(50, 20);
             this.lblATmpFolder.TabIndex = 15;
@@ -204,7 +210,7 @@ namespace ApmDbBackupManager.Forms
             // lblAToMail
             // 
             this.lblAToMail.AutoSize = true;
-            this.lblAToMail.Location = new System.Drawing.Point(202, 358);
+            this.lblAToMail.Location = new System.Drawing.Point(202, 361);
             this.lblAToMail.Name = "lblAToMail";
             this.lblAToMail.Size = new System.Drawing.Size(58, 20);
             this.lblAToMail.TabIndex = 16;
@@ -213,7 +219,7 @@ namespace ApmDbBackupManager.Forms
             // lblAFromMail
             // 
             this.lblAFromMail.AutoSize = true;
-            this.lblAFromMail.Location = new System.Drawing.Point(24, 358);
+            this.lblAFromMail.Location = new System.Drawing.Point(30, 361);
             this.lblAFromMail.Name = "lblAFromMail";
             this.lblAFromMail.Size = new System.Drawing.Size(58, 20);
             this.lblAFromMail.TabIndex = 17;
@@ -231,7 +237,7 @@ namespace ApmDbBackupManager.Forms
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(607, 282);
+            this.label13.Location = new System.Drawing.Point(586, 305);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(152, 20);
             this.label13.TabIndex = 19;
@@ -240,7 +246,7 @@ namespace ApmDbBackupManager.Forms
             // lblASqlServerName
             // 
             this.lblASqlServerName.AutoSize = true;
-            this.lblASqlServerName.Location = new System.Drawing.Point(607, 316);
+            this.lblASqlServerName.Location = new System.Drawing.Point(586, 339);
             this.lblASqlServerName.Name = "lblASqlServerName";
             this.lblASqlServerName.Size = new System.Drawing.Size(58, 20);
             this.lblASqlServerName.TabIndex = 20;
@@ -324,11 +330,67 @@ namespace ApmDbBackupManager.Forms
             this.lblAPort.TabIndex = 28;
             this.lblAPort.Text = "Host";
             // 
+            // txtSqlUid
+            // 
+            this.txtSqlUid.Location = new System.Drawing.Point(666, 179);
+            this.txtSqlUid.Name = "txtSqlUid";
+            this.txtSqlUid.Size = new System.Drawing.Size(125, 27);
+            this.txtSqlUid.TabIndex = 33;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(706, 144);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(32, 20);
+            this.label15.TabIndex = 32;
+            this.label15.Text = "Uid";
+            // 
+            // txtSqlPass
+            // 
+            this.txtSqlPass.Location = new System.Drawing.Point(739, 94);
+            this.txtSqlPass.Name = "txtSqlPass";
+            this.txtSqlPass.Size = new System.Drawing.Size(125, 27);
+            this.txtSqlPass.TabIndex = 35;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(739, 56);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(130, 20);
+            this.label16.TabIndex = 34;
+            this.label16.Text = "SQL Sunucu Şifresi";
+            // 
+            // lblASqlServerUid
+            // 
+            this.lblASqlServerUid.AutoSize = true;
+            this.lblASqlServerUid.Location = new System.Drawing.Point(586, 424);
+            this.lblASqlServerUid.Name = "lblASqlServerUid";
+            this.lblASqlServerUid.Size = new System.Drawing.Size(58, 20);
+            this.lblASqlServerUid.TabIndex = 41;
+            this.lblASqlServerUid.Text = "label14";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(586, 390);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(67, 20);
+            this.label21.TabIndex = 40;
+            this.label21.Text = "Aktif Uid";
+            // 
             // Infos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(915, 514);
+            this.Controls.Add(this.lblASqlServerUid);
+            this.Controls.Add(this.label21);
+            this.Controls.Add(this.txtSqlPass);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.txtSqlUid);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.lblAPort);
             this.Controls.Add(this.label11);
@@ -398,5 +460,11 @@ namespace ApmDbBackupManager.Forms
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label lblAPort;
+        private System.Windows.Forms.TextBox txtSqlUid;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox txtSqlPass;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label lblASqlServerUid;
+        private System.Windows.Forms.Label label21;
     }
 }
