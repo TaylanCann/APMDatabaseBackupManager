@@ -39,7 +39,6 @@ namespace ApmDbBackupManager
         int MailPort = Properties.Settings.Default.Port;
 
         private readonly Task _preLoginTask;
-        private AutoResetEvent _resetEvent = new AutoResetEvent(false);
 
         static string[] Scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile };
         static string ApplicationName = "SqlBackup"; //Drive ile alakalı
@@ -145,7 +144,7 @@ namespace ApmDbBackupManager
             aTimer.Stop();
             foreach (var item in context.BackupSchedules.ToList())
             {
-                if (item.IsActive == true || item.IsAuto == false)
+                if (item.IsActive == true && item.IsAuto == true)
                 {
                     #region İlk kez FullBackup alıyoru
 
@@ -211,9 +210,8 @@ namespace ApmDbBackupManager
                                       MailFrom, MailTo, MailPass,
                                       MailHost, MailPort);
                         }
-                        catch (Exception)
+                        catch (InvalidCastException )
                         {
-                            MessageBox.Show("İlk Backup alınamadı (Have it)");
                             SendMail("Alınamadı", item.JustName +
                                      "Backup.bak alınamadı." + "Hata mesajı",
                                       MailFrom, MailTo, MailPass,
@@ -1376,23 +1374,31 @@ namespace ApmDbBackupManager
         #region Mail
         public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
         {
-            MailMessage eMail = new MailMessage();
-            eMail.Subject = SuccestOrNot;
-            eMail.From = new MailAddress(From);
-            eMail.To.Add(new MailAddress(To));
-            eMail.Bcc.Add(new MailAddress("taylancanh@gmail.com", "Proje sorumlusu"));
-            eMail.Body = ErrorMessage;
-            eMail.IsBodyHtml = true;
-            eMail.Priority = MailPriority.High;
-            // Host ve Port Gereklidir!
-            SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
-            // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
-            NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = AccountInfo;
-            smtp.EnableSsl = true;
-            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtp.Send(eMail);
+            try
+            {
+                MailMessage eMail = new MailMessage();
+                eMail.Subject = SuccestOrNot;
+                eMail.From = new MailAddress(From);
+                eMail.To.Add(new MailAddress(To));
+                eMail.Bcc.Add(new MailAddress("taylancanh@gmail.com", "Proje sorumlusu"));
+                eMail.Body = ErrorMessage;
+                eMail.IsBodyHtml = true;
+                eMail.Priority = MailPriority.High;
+                // Host ve Port Gereklidir!
+                SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
+                // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
+                NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = AccountInfo;
+                smtp.EnableSsl = true;
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Send(eMail);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Send Mail Fonksiyonu hata verdi");
+            }
+            
         }
 
         #endregion
@@ -1493,24 +1499,53 @@ namespace ApmDbBackupManager
         {
             try
             {
-                string[] files = Directory.GetFiles(pathCTemp);
+                string sourceFile = null, destFile = null;
+                string sourceName = null;
+                string name1 = null, name2 = null;
+                bool Check = true;
+                List<string> sourceFiles = new List<string>
+                (Directory.GetFiles(pathCTemp).ToList().Where(e => e.EndsWith("Backup.zip")));
 
-                foreach (var item in files)
+                List<string> destFiles = new List<string>
+                (Directory.GetFiles(selectedPath).ToList().Where(e => e.EndsWith("Backup.zip")));
+
+                foreach (var item in sourceFiles)
                 {
-                    string[] name = item.Split('\\');
-                    string sourceFile = Path.Combine(pathCTemp + name[2]);
-                    string destFile = Path.Combine(selectedPath + "\\" + name[2]);
-                    if (!Directory.Exists(selectedPath + "\\"))
+                    if (item.EndsWith("Backup.zip") || item.EndsWith("DiffBackup.zip"))
                     {
-                        Directory.CreateDirectory(selectedPath + "\\");
+                        name1 = item.Split('\\').LastOrDefault();
+                        sourceName = name1;
                     }
-
-                    File.Move(sourceFile, destFile);
+                    foreach (var item2 in destFiles)
+                    {
+                        if (item2.EndsWith("Backup.zip") || item2.EndsWith("DiffBackup.zip"))
+                        {
+                            name2 = item2.Split('\\').LastOrDefault();
+                            if (name1 == name2)
+                            {
+                                Check = false;
+                            }
+                        }
+                    }
+                    if (Check)
+                    {
+                        sourceFile = Path.Combine(pathCTemp + sourceName);
+                        destFile = Path.Combine(selectedPath + "\\" + sourceName);
+                        if (!Directory.Exists(selectedPath + "\\"))
+                        {
+                            Directory.CreateDirectory(selectedPath + "\\");
+                        }
+                        File.Move(sourceFile, destFile);
+                    }
+                    else
+                    {
+                        MessageBox.Show(sourceName + " Zaten var");
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception error)
             {
-                MessageBox.Show("Send File Başarısız");
+                MessageBox.Show("Send File başarısız" + error);
             }
         }
         public void DifferentialBackup(BackupSchedule backup)

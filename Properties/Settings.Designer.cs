@@ -130,5 +130,17 @@ namespace ApmDbBackupManager.Properties {
                 this["Uid"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsMailTrue {
+            get {
+                return ((bool)(this["IsMailTrue"]));
+            }
+            set {
+                this["IsMailTrue"] = value;
+            }
+        }
     }
 }

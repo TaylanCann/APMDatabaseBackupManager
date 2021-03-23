@@ -64,7 +64,7 @@ namespace ApmDbBackupManager.Forms
                 {
                     conn.Open();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     MessageBox.Show("Can not open connection ! ");
                 }
@@ -126,7 +126,7 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
-                var db = context.BackupSchedules.Where(f => f.IsActive == true).ToList();
+                var db = context.BackupSchedules.Where(f => f.IsActive == true &&  f.IsAuto == true).ToList();
                 dgBackupSchedule.DataSource = db.Select(e => new
                 {
                     Name = e.JustName,
@@ -139,7 +139,7 @@ namespace ApmDbBackupManager.Forms
             }
             catch (Exception)
             {
-                MessageBox.Show("Listelerken hata oluştu");
+                MessageBox.Show("Auto Backup Listelerken hata oluştu");
             }
         }
 

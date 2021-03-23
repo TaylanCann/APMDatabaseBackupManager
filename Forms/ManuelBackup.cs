@@ -33,7 +33,6 @@ namespace ApmDbBackupManager.Forms
         string MailHost = Properties.Settings.Default.Host;
         int MailPort = Properties.Settings.Default.Port;
 
-        static string[] Scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile };
         static string ApplicationName = "SqlBackup"; //Drive ile alakalı
         static DriveService service;
 
@@ -74,7 +73,59 @@ namespace ApmDbBackupManager.Forms
                 }
             }
         }
+        public void sendFile(string pathCTemp, string selectedPath)
+        {
+            try
+            {
+                string sourceFile = null, destFile = null;
+                string sourceName = null;
+                string name1 = null, name2 = null;
+                bool Check = true;
+                List<string> sourceFiles = new List<string>
+                (Directory.GetFiles(pathCTemp).ToList().Where(e => e.EndsWith("Backup.zip")));
 
+                List<string> destFiles = new List<string>
+                (Directory.GetFiles(selectedPath).ToList().Where(e => e.EndsWith("Backup.zip")));
+
+                foreach (var item in sourceFiles)
+                {
+                    if (item.EndsWith("Backup.zip") || item.EndsWith("DiffBackup.zip"))
+                    {
+                        name1 = item.Split('\\').LastOrDefault();
+                        sourceName = name1;
+                    }
+                    foreach (var item2 in destFiles)
+                    {
+                        if (item2.EndsWith("Backup.zip") || item2.EndsWith("DiffBackup.zip"))
+                        {
+                            name2 = item2.Split('\\').LastOrDefault();
+                            if (name1 == name2)
+                            {
+                                Check = false;
+                            }
+                        }
+                    }
+                    if (Check)
+                    {
+                        sourceFile = Path.Combine(pathCTemp + sourceName);
+                        destFile = Path.Combine(selectedPath + "\\" + sourceName);
+                        if (!Directory.Exists(selectedPath + "\\"))
+                        {
+                            Directory.CreateDirectory(selectedPath + "\\");
+                        }
+                        File.Move(sourceFile, destFile);
+                    }
+                    else
+                    {
+                        MessageBox.Show(sourceName + " Zaten var");
+                    }
+                }
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Send File başarısız" + error);
+            }
+        }
         public void TmpExists(string pathCTemp)
         {
             try
@@ -149,7 +200,6 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
             }
         }
-
         public void Backup(BackupSchedule backup)
         {
             try
@@ -192,30 +242,6 @@ namespace ApmDbBackupManager.Forms
             catch (Exception)
             {
                 MessageBox.Show("Rar Başarısız");
-            }
-        }
-        public void sendFile(string pathCTemp, string selectedPath)
-        {
-            try
-            {
-                string[] files = Directory.GetFiles(pathCTemp);
-
-                foreach (var item in files)
-                {
-                    string[] name = item.Split('\\');
-                    string sourceFile = Path.Combine(pathCTemp + name[2]);
-                    string destFile = Path.Combine(selectedPath + "\\" + name[2]);
-                    if (!Directory.Exists(selectedPath + "\\"))
-                    {
-                        Directory.CreateDirectory(selectedPath + "\\");
-                    }
-
-                    File.Move(sourceFile, destFile);
-                }
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Send File Başarısız");
             }
         }
 
@@ -268,23 +294,7 @@ namespace ApmDbBackupManager.Forms
 
             return true;
         }
-        public bool CreateDirectory(string folderName)
-        {
-            var body = new Google.Apis.Drive.v3.Data.File();
-            body.Name = folderName;
-            body.MimeType = "application/vnd.google-apps.folder";
-            try
-            {
-                var request = service.Files.Create(body);
-                request.Fields = "id";
-                var _FF = request.Execute();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Hata Oluştu. : " + e.Message);
-            }
-            return true;
-        }
+        
         public bool UploadFiles(BackupSchedule backup, bool shoulDiff)
         {
             string FullFileName, FileName;
@@ -319,22 +329,9 @@ namespace ApmDbBackupManager.Forms
             }
             return true;
         }
-        public void DeleteFiles(string fileId)
-        {
-            FilesResource.DeleteRequest deleteRequest = service.Files.Delete(fileId);
-            deleteRequest.Execute();
-        }
-        public IList<Google.Apis.Drive.v3.Data.File> GetFilesToDrive()
-        {
-            FilesResource.ListRequest listRequest = service.Files.List();
-            listRequest.PageSize = 100;
-            listRequest.Fields = "nextPageToken, files(id, name)";
-
-            IList<Google.Apis.Drive.v3.Data.File> files = listRequest.Execute().Files;
-
-            return files;
-        }
+        
         #endregion
+        
         public void Ftp(string path, FtpThing ftpModel)
         {
             FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create(ftpModel.FtpLocation + Path.GetFileName(path));
@@ -357,6 +354,7 @@ namespace ApmDbBackupManager.Forms
 
         }
 
+        #region CheckBoxs
         private void chbLocal_CheckedChanged(object sender, EventArgs e)
         {
             if (chbLocal.Checked == true)
@@ -410,6 +408,8 @@ namespace ApmDbBackupManager.Forms
                 cbDriveUsers.Visible = false;
             }
         }
+        #endregion
+
 
         public void DeleteFullBackupsFromFolder(string pathCTemp)
         {
@@ -426,6 +426,7 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
             }
         }
+      
         #region Mail
         public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
         {
@@ -457,6 +458,7 @@ namespace ApmDbBackupManager.Forms
                 BackupSchedule backupSchedule = new BackupSchedule();
 
                 backupSchedule.IsAuto = false;
+                backupSchedule.IsActive = true;
                 backupSchedule.Time = DateTime.Now;
                 
                 #region AutoSaveArea
@@ -550,17 +552,16 @@ namespace ApmDbBackupManager.Forms
             }
             catch (Exception)
             {
-                MessageBox.Show("Otomatik Backup alınırken bir hata oluştu lütfen kontrol edin.");
+                MessageBox.Show("Manuel Backup alınırken bir hata oluştu lütfen kontrol edin.");
             }
 
         }
 
 
         private void btnSave_Click(object sender, EventArgs e)
-        {   
+        {
             try
             {
-                MessageBox.Show("Backup alınmaya başlandı");
                 #region Adres kontrolleri
                 if (chbLocal.Checked == true && selectedPath == null)
                 {
@@ -609,6 +610,7 @@ namespace ApmDbBackupManager.Forms
                 Backup(lastBackup);
                 Rar(lastBackup);
                 DeleteBak(pathCTemp);
+
                 if (chbGoogle.Checked == true)
                 {
                     DriveUser driveUser = new DriveUser();
@@ -645,13 +647,13 @@ namespace ApmDbBackupManager.Forms
                                      "Backup.bak Başarı ile alındı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
-                
+
             }
             catch (Exception)
             {
                 MessageBox.Show("Save alırken hata oluştu.");
                 SendMail("Alınamadı", lastBackup.JustName +
-                                     "Backup.bak Başarı ile alındı. Hata yok",
+                                     "Backup.bak alınamadı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
             }
