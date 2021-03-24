@@ -37,6 +37,7 @@ namespace ApmDbBackupManager
         string MailPass = Properties.Settings.Default.Pass;
         string MailHost = Properties.Settings.Default.Host;
         int MailPort = Properties.Settings.Default.Port;
+        bool IsMailTrue = Properties.Settings.Default.IsMailTrue;
 
         private readonly Task _preLoginTask;
 
@@ -205,17 +206,24 @@ namespace ApmDbBackupManager
                             DeleteFullBackupsFromFolder(pathCTemp);
 
                             #endregion
-                            SendMail("Alındı", item.JustName +
+                            if (IsMailTrue)
+                            {
+                                SendMail("Alındı", item.JustName +
                                      "Backup.bak Başarı ile alındı. Hata yok",
                                       MailFrom, MailTo, MailPass,
                                       MailHost, MailPort);
+                            }
+                            
                         }
                         catch (InvalidCastException )
                         {
-                            SendMail("Alınamadı", item.JustName +
+                            if (IsMailTrue)
+                            {
+                                SendMail("Alınamadı", item.JustName +
                                      "Backup.bak alınamadı." + "Hata mesajı",
                                       MailFrom, MailTo, MailPass,
                                       MailHost, MailPort);
+                            }
                         }
 
                     }
@@ -335,18 +343,24 @@ namespace ApmDbBackupManager
                             DeleteFullBackupsFromFolder(pathCTemp);
 
                             #endregion
-                            SendMail("Alındı", item.JustName +
+                            if (IsMailTrue)
+                            {
+                                SendMail("Alındı", item.JustName +
                                      "Backup.bak Başarı ile alındı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+                            }
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Yıllık dönemi dolmuş Backup alınamadı.");
-                            SendMail("Alınamadı", item.JustName +
+                            if (IsMailTrue)
+                            {
+                                SendMail("Alınamadı", item.JustName +
                                      "Backup.bak alınamadı." + "Hata mesajı",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+                            }
                         }
                     }
 
@@ -511,18 +525,24 @@ namespace ApmDbBackupManager
                                 DeleteFullBackupsFromFolder(pathCTemp);
 
                                 #endregion
-                                SendMail("Alındı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alındı", item.JustName +
                                          "Backup.bak Başarı ile alındı. Hata yok",
                                          MailFrom, MailTo, MailPass,
                                          MailHost, MailPort);
+                                }
                             }
                             catch (Exception)
                             {
                                 MessageBox.Show("Dönemi dolmuş günlük yada haftalık Full Backup alınamadı");
-                                SendMail("Alınamadı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alınamadı", item.JustName +
                                          "Backup.bak alınamadı." + "Hata mesajı",
                                          MailFrom, MailTo, MailPass,
                                          MailHost, MailPort);
+                                }
                             }
                         }
 
@@ -653,19 +673,29 @@ namespace ApmDbBackupManager
                                 context.Update(item);
                                 context.SaveChanges();
                                 #endregion
-                                SendMail("Alındı", item.JustName +
+                          
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alındı", item.JustName +
                                          "DiffBackup.bak Başarı ile alındı. Hata yok",
                                           MailFrom, MailTo, MailPass,
                                          MailHost, MailPort);
+                                }
+                                
 
                             }
                             catch (Exception)
                             {
                                 MessageBox.Show("Dönemsel Günlük yada Haftalık Backup alınamadı. ");
-                                SendMail("Alınamadı", item.JustName +
+                                
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alınamadı", item.JustName +
                                          "DiffBackup.bak alınamadı." + "Hata mesajı",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
+                                
                             }
 
 
@@ -740,19 +770,26 @@ namespace ApmDbBackupManager
                                 context.Update(item);
                                 context.SaveChanges();
                                 #endregion
-                                SendMail("Alındı", item.JustName +
+                               
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alındı", item.JustName +
                                          "DiffBackup.bak Başarı ile alındı. Hata yok",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
+                                
                             }
                             catch (Exception)
                             {
                                 MessageBox.Show("Dönemsel Günlük yada Haftalık ilk Backup alınamadı. ");
-                                SendMail("Alınamadı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alınamadı", item.JustName +
                                          "DiffBackup.bak alınamadı." + "Hata mesajı",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
-
+                                }
                             }
                         }
                         #endregion
@@ -765,8 +802,7 @@ namespace ApmDbBackupManager
                     #region Aylık Backup
 
                     else if (item.MonthAdd != 0)
-                    {
-                        //Ayın 28-29-30-31. günleri sıkıntı çözzzzzz 
+                    { 
                         #region Dönemi dolmuş FullBackup'a dönülüyor
 
                         if (item.IsDiffBackup == true && DateTime.Now > item.Time.AddMonths((int)item.MonthAddTerm))
@@ -955,18 +991,24 @@ namespace ApmDbBackupManager
                                 }
                                 DeleteFullBackupsFromFolder(pathCTemp);
                                 #endregion
-                                SendMail("Alındı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alındı", item.JustName +
                                          "Backup.bak Başarı ile alındı. Hata yok",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
                             }
                             catch (Exception)
                             {
                                 MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
-                                SendMail("Alınamadı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alınamadı", item.JustName +
                                          "Backup.bak alınamadı." + "Hata mesajı",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
                             }
                         }
                         #endregion
@@ -1125,18 +1167,26 @@ namespace ApmDbBackupManager
                                 context.Update(item);
                                 context.SaveChanges();
                                 #endregion
-                                SendMail("Alındı", item.JustName +
+
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alındı", item.JustName +
                                          "DiffBackup.bak Başarı ile alındı. Hata yok",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
+                                
                             }
                             catch (Exception)
                             {
                                 MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
-                                SendMail("Alınamadı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alınamadı", item.JustName +
                                          "DiffBackup.bak alınamadı." + "Hata mesajı",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
                             }
                         }
 
@@ -1232,18 +1282,24 @@ namespace ApmDbBackupManager
                                 context.Update(item);
                                 context.SaveChanges();
                                 #endregion
-                                SendMail("Alındı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alındı", item.JustName +
                                          "DiffBackup.bak Başarı ile alındı. Hata yok",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
                             }
                             catch (Exception)
                             {
                                 MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
-                                SendMail("Alınamadı", item.JustName +
+                                if (IsMailTrue)
+                                {
+                                    SendMail("Alınamadı", item.JustName +
                                          "DiffBackup.bak alınamadı." + "Hata mesajı",
                                           MailFrom, MailTo, MailPass,
                                           MailHost, MailPort);
+                                }
                             }
                         }
                         #endregion

@@ -65,6 +65,7 @@ namespace ApmDbBackupManager.Forms
             this.label16 = new System.Windows.Forms.Label();
             this.lblASqlServerUid = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
+            this.cbMailCheck = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -380,11 +381,23 @@ namespace ApmDbBackupManager.Forms
             this.label21.TabIndex = 40;
             this.label21.Text = "Aktif Uid";
             // 
+            // cbMailCheck
+            // 
+            this.cbMailCheck.AutoSize = true;
+            this.cbMailCheck.Enabled = false;
+            this.cbMailCheck.Location = new System.Drawing.Point(24, 478);
+            this.cbMailCheck.Name = "cbMailCheck";
+            this.cbMailCheck.Size = new System.Drawing.Size(131, 24);
+            this.cbMailCheck.TabIndex = 42;
+            this.cbMailCheck.Text = "Mail Onaylandı";
+            this.cbMailCheck.UseVisualStyleBackColor = true;
+            // 
             // Infos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(915, 514);
+            this.Controls.Add(this.cbMailCheck);
             this.Controls.Add(this.lblASqlServerUid);
             this.Controls.Add(this.label21);
             this.Controls.Add(this.txtSqlPass);
@@ -466,5 +479,6 @@ namespace ApmDbBackupManager.Forms
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label lblASqlServerUid;
         private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.CheckBox cbMailCheck;
     }
 }

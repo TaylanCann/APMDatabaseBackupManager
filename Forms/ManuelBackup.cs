@@ -32,6 +32,7 @@ namespace ApmDbBackupManager.Forms
         string MailPass = Properties.Settings.Default.Pass;
         string MailHost = Properties.Settings.Default.Host;
         int MailPort = Properties.Settings.Default.Port;
+        bool IsMailTrue = Properties.Settings.Default.IsMailTrue;
 
         static string ApplicationName = "SqlBackup"; //Drive ile alakalı
         static DriveService service;
@@ -643,19 +644,24 @@ namespace ApmDbBackupManager.Forms
                 }
                 DeleteFullBackupsFromFolder(pathCTemp);
                 #endregion
-                SendMail("Alındı", lastBackup.JustName +
+                if (IsMailTrue)
+                {
+                    SendMail("Alındı", lastBackup.JustName +
                                      "Backup.bak Başarı ile alındı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
-
+                }
             }
             catch (Exception)
             {
                 MessageBox.Show("Save alırken hata oluştu.");
-                SendMail("Alınamadı", lastBackup.JustName +
+                if (IsMailTrue)
+                {
+                    SendMail("Alınamadı", lastBackup.JustName +
                                      "Backup.bak alınamadı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+                }
             }
         }
     }
