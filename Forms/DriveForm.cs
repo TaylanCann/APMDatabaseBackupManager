@@ -83,7 +83,7 @@ namespace ApmDbBackupManager
                         CancellationToken.None,
                         new FileDataStore(credPath, true)).Result;
                     }
-                    catch (Exception eee)
+                    catch (Exception)
                     {
 
                         return false;
@@ -118,7 +118,7 @@ namespace ApmDbBackupManager
 
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 return false;

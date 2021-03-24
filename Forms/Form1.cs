@@ -203,7 +203,10 @@ namespace ApmDbBackupManager
                                 await _preLoginTask;
                             }
 
-                            DeleteFullBackupsFromFolder(pathCTemp);
+                            if (item.LocalLocation + "\\" != pathCTemp)
+                            {
+                                DeleteFullBackupsFromFolder(pathCTemp);
+                            }
 
                             #endregion
                             if (IsMailTrue)
@@ -340,7 +343,10 @@ namespace ApmDbBackupManager
                                 sendFile(pathCTemp, item.LocalLocation);
                             }
 
-                            DeleteFullBackupsFromFolder(pathCTemp);
+                            if (item.LocalLocation + "\\" != pathCTemp)
+                            {
+                                DeleteFullBackupsFromFolder(pathCTemp);
+                            }
 
                             #endregion
                             if (IsMailTrue)
@@ -522,7 +528,11 @@ namespace ApmDbBackupManager
                                 {
                                     sendFile(pathCTemp, item.LocalLocation);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
+
+                                if (item.LocalLocation + "\\" != pathCTemp)
+                                {
+                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                }
 
                                 #endregion
                                 if (IsMailTrue)
@@ -664,7 +674,11 @@ namespace ApmDbBackupManager
                                 {
                                     sendFile(pathCTemp, item.LocalLocation);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
+                                
+                                if (item.LocalLocation + "\\" != pathCTemp)
+                                {
+                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                }
 
                                 #endregion
 
@@ -761,7 +775,11 @@ namespace ApmDbBackupManager
                                     sendFile(pathCTemp, item.LocalLocation);
                                 }
 
-                                DeleteFullBackupsFromFolder(pathCTemp);
+                                if (item.LocalLocation + "\\" != pathCTemp)
+                                {
+                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                }
+
                                 #endregion
 
                                 #region Edit Datas Diff
@@ -989,7 +1007,12 @@ namespace ApmDbBackupManager
                                 {
                                     sendFile(pathCTemp, item.LocalLocation);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
+
+                                if (item.LocalLocation + "\\" != pathCTemp)
+                                {
+                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                }
+
                                 #endregion
                                 if (IsMailTrue)
                                 {
@@ -1129,8 +1152,11 @@ namespace ApmDbBackupManager
                                 {
                                     sendFile(pathCTemp, item.LocalLocation);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
-
+                                
+                                if (item.LocalLocation + "\\" != pathCTemp)
+                                {
+                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                }
                                 #endregion
 
                                 #region Edit Datas
@@ -1218,7 +1244,6 @@ namespace ApmDbBackupManager
                                     {
                                         DriveLogin(driveUser.User);
                                         UploadFiles(item, true);
-
                                     }
 
                                 }
@@ -1243,7 +1268,12 @@ namespace ApmDbBackupManager
                                 {
                                     sendFile(pathCTemp, item.LocalLocation);
                                 }
-                                DeleteFullBackupsFromFolder(pathCTemp);
+
+                                if (item.LocalLocation + "\\" != pathCTemp)
+                                {
+                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                }
+
                                 #endregion
 
                                 #region Edit Datas Diff

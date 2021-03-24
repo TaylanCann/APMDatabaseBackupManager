@@ -118,7 +118,8 @@ namespace ApmDbBackupManager.Forms
                     }
                     else
                     {
-                        MessageBox.Show(sourceName + " Zaten var");
+                        //MessageBox.Show(sourceName + " Zaten var");
+                        break;
                     }
                 }
             }
@@ -642,7 +643,10 @@ namespace ApmDbBackupManager.Forms
                 {
                     sendFile(pathCTemp, lastBackup.LocalLocation);
                 }
-                DeleteFullBackupsFromFolder(pathCTemp);
+                if (lastBackup.LocalLocation + "\\" != pathCTemp)
+                {
+                    DeleteFullBackupsFromFolder(pathCTemp);
+                }
                 #endregion
                 if (IsMailTrue)
                 {
