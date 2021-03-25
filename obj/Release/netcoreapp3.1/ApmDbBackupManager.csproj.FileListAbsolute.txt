@@ -148,3 +148,4 @@ C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Release\netcoreapp3.1\ApmDbBackup
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Release\netcoreapp3.1\ApmDbBackupManager.dll
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Release\netcoreapp3.1\ApmDbBackupManager.pdb
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Release\netcoreapp3.1\ApmDbBackupManager.genruntimeconfig.cache
+C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\client_secret.json

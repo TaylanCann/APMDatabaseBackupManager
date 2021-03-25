@@ -80,9 +80,9 @@ namespace ApmDbBackupManager
                         CancellationToken.None,
                         new FileDataStore(credPath, true)).Result;
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
+                        MessageBox.Show(e.Message);
                         return false;
                     }
 
@@ -115,8 +115,9 @@ namespace ApmDbBackupManager
 
 
             }
-            catch (Exception)
+            catch (Exception ess)
             {
+                MessageBox.Show(ess.Message);
 
                 return false;
             }

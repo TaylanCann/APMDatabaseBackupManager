@@ -1,0 +1,3 @@
+C:\Users\HP\Desktop\BackupPublish\ApmDbBackupManager.pdb
+C:\Users\HP\Desktop\BackupPublish\Microsoft.Data.SqlClient.SNI.pdb
+C:\Users\HP\Desktop\BackupPublish\ApmDbBackupManager.exe

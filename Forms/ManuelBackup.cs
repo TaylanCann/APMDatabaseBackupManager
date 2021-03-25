@@ -123,7 +123,6 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("Send File başarısız" + error);
             }
         }
-
         public void TmpExists(string pathCTemp)
         {
             try
@@ -140,7 +139,6 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("Tmp oluştururken hata yapıldı.");
             }
         }
-
         public void DatabaseNamesListing()
         {
             try
@@ -198,30 +196,34 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
             }
         }
-        public void Backup(BackupSchedule backup)
+       
+        public bool Backup(BackupSchedule backup)
         {
             try
             {
                 string connetionString = null;
                 SqlConnection cnn;
-                connetionString = @"Server=" + SqlAddress + "; Uid" + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
+                connetionString = @"Server=" + SqlAddress + "; Uid" 
+                                  + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 cnn = new SqlConnection(connetionString);
                 cnn.Open();
-                string cmdText = "backup database " + backup.DbName + " to disk = '" + pathCTemp + backup.JustName + "Backup.bak';";
-                //string cmd = @"BACKUP DATABASE [ Identity1 ] TO  DISK = N' YedekIdentity1.bak'" + " WITH NOFORMAT, NOINIT,  NAME = N'" + value.backup_day_value_database + value.time_backup_mono + ".bak' ,SKIP, NOREWIND, NOUNLOAD,  STATS = 10";
+                string cmdText = "backup database " + backup.DbName + 
+                                 " to disk = '" + pathCTemp + backup.JustName + "Backup.bak';";
                 using (SqlCommand RetrieveOrderCommand = new SqlCommand(cmdText, cnn))
                 {
                     RetrieveOrderCommand.CommandTimeout = 150;
                     RetrieveOrderCommand.ExecuteNonQuery();
                 }
                 cnn.Close();
+                return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Backup alma başarısız");
+                MessageBox.Show("Backup alma başarısız" + e.Message);
+                return false;
             }
         }
-        public void Rar(BackupSchedule backup)
+        public bool Rar(BackupSchedule backup)
         {
             try
             {
@@ -236,13 +238,16 @@ namespace ApmDbBackupManager.Forms
                         zipArchive.Dispose();
                     }
                 }
+                return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Rar Başarısız");
+                MessageBox.Show("Rar Başarısız" + e.Message);
+                return false; 
             }
         }
 
+       
         #region GoogleDrive
         public bool DriveLogin(string username)
         {
@@ -419,9 +424,9 @@ namespace ApmDbBackupManager.Forms
                     File.Delete(DFB);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
+                MessageBox.Show("DeleteFullBackupsFromFolder Başarısız" + e.Message);
             }
         }
 
@@ -605,8 +610,25 @@ namespace ApmDbBackupManager.Forms
 
                 #region SaveThings
 
-                Backup(lastBackup);
-                Rar(lastBackup);
+                
+                if (!Backup(lastBackup))
+                {
+                    SendMail("Alınamadı", lastBackup.JustName +
+                                     "Backup.bak alınamadı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
+                    return;
+                }
+             
+                if (!Rar(lastBackup))
+                {
+                    SendMail("Alınamadı", lastBackup.JustName +
+                                     "Backup.bak alınamadı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
+                    return;
+                }
+                
                 DeleteBak(pathCTemp);
 
                 if (chbGoogle.Checked == true)
@@ -627,6 +649,7 @@ namespace ApmDbBackupManager.Forms
                         UploadFiles(lastBackup, false);
                     }
                 }
+              
                 if (chbFtp.Checked == true)
                 {
                     var ftpRecord = context.FtpThings.Where(f => f.Id == lastBackup.FtpThingId).FirstOrDefault();
@@ -635,15 +658,18 @@ namespace ApmDbBackupManager.Forms
                         Ftp(pathCTemp + lastBackup.JustName + "Backup.zip", ftpRecord);
                     }
                 }
+               
                 if (chbLocal.Checked == true)
                 {
                     sendFile(pathCTemp, lastBackup.LocalLocation,lastBackup);
                 }
+              
                 if (lastBackup.LocalLocation + "\\" != pathCTemp)
                 {
                     DeleteFullBackupsFromFolder(pathCTemp,lastBackup);
                 }
                 #endregion
+              
                 if (IsMailTrue)
                 {
                     SendMail("Alındı", lastBackup.JustName +

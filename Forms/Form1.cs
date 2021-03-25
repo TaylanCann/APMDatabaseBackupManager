@@ -1528,11 +1528,13 @@ namespace ApmDbBackupManager
             {
                 string connetionString = null;
                 SqlConnection cnn;
-                connetionString = @"Server=" + SqlAddress + "; Uid" + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
+                connetionString = @"Server=" + SqlAddress + "; Uid"
+                                + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 cnn = new SqlConnection(connetionString);
                 cnn.Open();
-                string cmdText = "backup database " + backup.DbName + " to disk = '" + pathCTemp + backup.JustName + "Backup.bak';";
-                //string cmd = @"BACKUP DATABASE [ Identity1 ] TO  DISK = N' YedekIdentity1.bak'" + " WITH NOFORMAT, NOINIT,  NAME = N'" + value.backup_day_value_database + value.time_backup_mono + ".bak' ,SKIP, NOREWIND, NOUNLOAD,  STATS = 10";
+                string cmdText = "backup database " + backup.DbName + 
+                                 " to disk = '" + pathCTemp + backup.JustName + "Backup.bak';";
+                
                 using (SqlCommand RetrieveOrderCommand = new SqlCommand(cmdText, cnn))
                 {
                     RetrieveOrderCommand.CommandTimeout = 150;
@@ -1540,9 +1542,9 @@ namespace ApmDbBackupManager
                 }
                 cnn.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Backup alma başarısız");
+                MessageBox.Show("Backup alma başarısız " + e.Message);
             }
         }
         public void Rar(BackupSchedule backup)
@@ -1561,9 +1563,9 @@ namespace ApmDbBackupManager
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                MessageBox.Show("Rar Başarısız");
+                MessageBox.Show("Rar Başarısız" + e.Message);
             }
         }
         public void DeleteBak(string pathCTemp)

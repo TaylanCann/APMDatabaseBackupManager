@@ -1,3 +1,4 @@
+C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\publish\client_secret.json
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\publish\ApmDbBackupManager.exe
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\publish\ApmDbBackupManager.dll
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\publish\ApmDbBackupManager.runtimeconfig.json
