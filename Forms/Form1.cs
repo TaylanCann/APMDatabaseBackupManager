@@ -1630,6 +1630,7 @@ namespace ApmDbBackupManager
                 MessageBox.Show("Send File başarısız" + error);
             }
         }
+      
         public void DifferentialBackup(BackupSchedule backup)
         {
             try
