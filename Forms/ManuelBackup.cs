@@ -40,8 +40,14 @@ namespace ApmDbBackupManager.Forms
         public ManuelBackup()
         {
             InitializeComponent();
-            TmpExists(pathCTemp);
-            DatabaseNamesListing();
+            if (pathCTemp != "")
+            {
+                TmpExists(pathCTemp);
+            }
+            if (SqlAddress != "" || SqlPass != "" || SqlUid != "")
+            {
+                DatabaseNamesListing();
+            }
             DriveUsers();
             FtpAddresss();
         }

@@ -148,4 +148,3 @@ C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupMa
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.pdb
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.genruntimeconfig.cache
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\client_secret.json
-C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.csprojAssemblyReference.cache

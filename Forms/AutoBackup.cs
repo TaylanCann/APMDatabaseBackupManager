@@ -27,12 +27,12 @@ namespace ApmDbBackupManager.Forms
         public AutoBackup()
         {
             InitializeComponent();
-            if (SqlAddress != null || SqlPass != null || SqlUid != null)
+            if (SqlAddress != "" || SqlPass != "" || SqlUid != "")
             {
                 DatabaseNamesListing();
             }
             listing();
-            if (pathCTemp != null)
+            if (pathCTemp != "")
             {
                 TmpExists(pathCTemp);
             }
