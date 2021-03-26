@@ -40,6 +40,10 @@ namespace ApmDbBackupManager.Forms
         public ManuelBackup()
         {
             InitializeComponent();
+            if (SqlAddress == "" || SqlPass == "" || SqlUid == "" || pathCTemp == "")
+            {
+                lblInfos.Visible = true;
+            }
             if (pathCTemp != "")
             {
                 TmpExists(pathCTemp);

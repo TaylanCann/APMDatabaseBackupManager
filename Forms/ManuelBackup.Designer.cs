@@ -42,6 +42,7 @@ namespace ApmDbBackupManager.Forms
             this.cbFtp = new System.Windows.Forms.ComboBox();
             this.lblFtp = new System.Windows.Forms.Label();
             this.lblAddress = new System.Windows.Forms.Label();
+            this.lblInfos = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // cbDatabaseName
@@ -168,11 +169,22 @@ namespace ApmDbBackupManager.Forms
             this.lblAddress.Text = "Adres";
             this.lblAddress.Visible = false;
             // 
+            // lblInfos
+            // 
+            this.lblInfos.AutoSize = true;
+            this.lblInfos.Location = new System.Drawing.Point(12, 9);
+            this.lblInfos.Name = "lblInfos";
+            this.lblInfos.Size = new System.Drawing.Size(184, 20);
+            this.lblInfos.TabIndex = 71;
+            this.lblInfos.Text = "Lütfen bütün bilgileri girin.";
+            this.lblInfos.Visible = false;
+            // 
             // ManuelBackup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lblInfos);
             this.Controls.Add(this.lblAddress);
             this.Controls.Add(this.cbFtp);
             this.Controls.Add(this.lblFtp);
@@ -207,5 +219,6 @@ namespace ApmDbBackupManager.Forms
         private System.Windows.Forms.ComboBox cbFtp;
         private System.Windows.Forms.Label lblFtp;
         private System.Windows.Forms.Label lblAddress;
+        private System.Windows.Forms.Label lblInfos;
     }
 }

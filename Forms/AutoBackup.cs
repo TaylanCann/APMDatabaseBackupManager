@@ -27,6 +27,10 @@ namespace ApmDbBackupManager.Forms
         public AutoBackup()
         {
             InitializeComponent();
+            if (SqlAddress == "" || SqlPass == "" || SqlUid == "" || pathCTemp == "")
+            {
+                lblInfos.Visible = true;
+            }
             if (SqlAddress != "" || SqlPass != "" || SqlUid != "")
             {
                 DatabaseNamesListing();

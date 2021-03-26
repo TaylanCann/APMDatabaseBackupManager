@@ -49,6 +49,7 @@ namespace ApmDbBackupManager.Forms
             this.lblAddress = new System.Windows.Forms.Label();
             this.dgBackupSchedule = new System.Windows.Forms.DataGridView();
             this.label3 = new System.Windows.Forms.Label();
+            this.lblInfos = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgBackupSchedule)).BeginInit();
             this.SuspendLayout();
             // 
@@ -249,11 +250,22 @@ namespace ApmDbBackupManager.Forms
             this.label3.TabIndex = 69;
             this.label3.Text = "Silmek için çift tıklayın";
             // 
+            // lblInfos
+            // 
+            this.lblInfos.AutoSize = true;
+            this.lblInfos.Location = new System.Drawing.Point(42, 32);
+            this.lblInfos.Name = "lblInfos";
+            this.lblInfos.Size = new System.Drawing.Size(184, 20);
+            this.lblInfos.TabIndex = 70;
+            this.lblInfos.Text = "Lütfen bütün bilgileri girin.";
+            this.lblInfos.Visible = false;
+            // 
             // AutoBackup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1184, 644);
+            this.Controls.Add(this.lblInfos);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dgBackupSchedule);
             this.Controls.Add(this.lblAddress);
@@ -303,5 +315,6 @@ namespace ApmDbBackupManager.Forms
         private System.Windows.Forms.Label lblAddress;
         private System.Windows.Forms.DataGridView dgBackupSchedule;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblInfos;
     }
 }
