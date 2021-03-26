@@ -1,4 +1,5 @@
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\ApmDbBackupManager.exe
+C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\client_secret.json
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\ApmDbBackupManager.deps.json
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\ApmDbBackupManager.runtimeconfig.json
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\ApmDbBackupManager.runtimeconfig.dev.json
@@ -132,6 +133,7 @@ C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\runtimes\win\
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Management.dll
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Text.Encoding.CodePages.dll
+C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.csprojAssemblyReference.cache
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.Forms.AutoBackup.resources
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.DriveForm.resources
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.Form1.resources
@@ -147,4 +149,3 @@ C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupMa
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.dll
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.pdb
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Debug\netcoreapp3.1\ApmDbBackupManager.genruntimeconfig.cache
-C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Debug\netcoreapp3.1\client_secret.json

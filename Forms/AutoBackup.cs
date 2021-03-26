@@ -410,6 +410,9 @@ namespace ApmDbBackupManager.Forms
             catch (Exception)
             {
                 MessageBox.Show("Save alırken hata oluştu.");
+                lastBackup.IsActive = false;
+                context.Update(lastBackup);
+                context.SaveChanges();
             }
         }
 
