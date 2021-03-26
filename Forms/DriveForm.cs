@@ -37,8 +37,7 @@ namespace ApmDbBackupManager
                 DriveUserName = txtGoogleUser.Text;
                 DriveUser driveUser = new DriveUser();
                 driveUser.User = DriveUserName;
-                var a = DriveLogin(DriveUserName);
-                if (a)
+                if (DriveLogin(DriveUserName))
                 {
                     context.DriveUsers.Add(driveUser);
                     context.SaveChanges();
@@ -74,8 +73,6 @@ namespace ApmDbBackupManager
                     credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart");
                     try
                     {
-                        MessageBox.Show("sdfdsfdsfds");
-
                         credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                         GoogleClientSecrets.Load(stream).Secrets,
                         new[] { DriveService.Scope.Drive },

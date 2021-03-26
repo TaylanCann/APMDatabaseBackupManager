@@ -650,6 +650,7 @@ namespace ApmDbBackupManager.Forms
                                      "Backup.bak Başarı ile alındı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+
                 }
             }
             catch (Exception)
