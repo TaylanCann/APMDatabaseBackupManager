@@ -269,6 +269,7 @@ namespace ApmDbBackupManager.Forms
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(125, 27);
             this.txtPort.TabIndex = 25;
+            this.txtPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtPort_KeyPress);
             // 
             // label5
             // 

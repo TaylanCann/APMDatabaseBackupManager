@@ -199,13 +199,13 @@ namespace ApmDbBackupManager
 
                             if (item.IsLocal == true)
                             {
-                                sendFile(pathCTemp, item.LocalLocation);
+                                sendFile(pathCTemp, item.LocalLocation,item);
                                 await _preLoginTask;
                             }
 
                             if (item.LocalLocation + "\\" != pathCTemp)
                             {
-                                DeleteFullBackupsFromFolder(pathCTemp);
+                                DeleteFullBackupsFromFolder(pathCTemp,item);
                             }
 
                             #endregion
@@ -340,12 +340,12 @@ namespace ApmDbBackupManager
                             }
                             if (item.IsLocal == true)
                             {
-                                sendFile(pathCTemp, item.LocalLocation);
+                                sendFile(pathCTemp, item.LocalLocation,item);
                             }
 
                             if (item.LocalLocation + "\\" != pathCTemp)
                             {
-                                DeleteFullBackupsFromFolder(pathCTemp);
+                                DeleteFullBackupsFromFolder(pathCTemp,item);
                             }
 
                             #endregion
@@ -526,12 +526,12 @@ namespace ApmDbBackupManager
                                 }
                                 if (item.IsLocal == true)
                                 {
-                                    sendFile(pathCTemp, item.LocalLocation);
+                                    sendFile(pathCTemp, item.LocalLocation,item);
                                 }
 
                                 if (item.LocalLocation + "\\" != pathCTemp)
                                 {
-                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                    DeleteFullBackupsFromFolder(pathCTemp,item);
                                 }
 
                                 #endregion
@@ -672,12 +672,12 @@ namespace ApmDbBackupManager
 
                                 if (item.IsLocal == true)
                                 {
-                                    sendFile(pathCTemp, item.LocalLocation);
+                                    sendFile(pathCTemp, item.LocalLocation,item);
                                 }
                                 
                                 if (item.LocalLocation + "\\" != pathCTemp)
                                 {
-                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                    DeleteFullBackupsFromFolder(pathCTemp,item);
                                 }
 
                                 #endregion
@@ -772,12 +772,12 @@ namespace ApmDbBackupManager
                                 }
                                 if (item.IsLocal == true)
                                 {
-                                    sendFile(pathCTemp, item.LocalLocation);
+                                    sendFile(pathCTemp, item.LocalLocation,item);
                                 }
 
                                 if (item.LocalLocation + "\\" != pathCTemp)
                                 {
-                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                    DeleteFullBackupsFromFolder(pathCTemp,item);
                                 }
 
                                 #endregion
@@ -1005,12 +1005,12 @@ namespace ApmDbBackupManager
 
                                 if (item.IsLocal == true)
                                 {
-                                    sendFile(pathCTemp, item.LocalLocation);
+                                    sendFile(pathCTemp, item.LocalLocation,item);
                                 }
 
                                 if (item.LocalLocation + "\\" != pathCTemp)
                                 {
-                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                    DeleteFullBackupsFromFolder(pathCTemp,item);
                                 }
 
                                 #endregion
@@ -1150,12 +1150,12 @@ namespace ApmDbBackupManager
                                 }
                                 if (item.IsLocal == true)
                                 {
-                                    sendFile(pathCTemp, item.LocalLocation);
+                                    sendFile(pathCTemp, item.LocalLocation,item);
                                 }
                                 
                                 if (item.LocalLocation + "\\" != pathCTemp)
                                 {
-                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                    DeleteFullBackupsFromFolder(pathCTemp,item);
                                 }
                                 #endregion
 
@@ -1266,12 +1266,12 @@ namespace ApmDbBackupManager
 
                                 if (item.IsLocal == true)
                                 {
-                                    sendFile(pathCTemp, item.LocalLocation);
+                                    sendFile(pathCTemp, item.LocalLocation,item);
                                 }
 
                                 if (item.LocalLocation + "\\" != pathCTemp)
                                 {
-                                    DeleteFullBackupsFromFolder(pathCTemp);
+                                    DeleteFullBackupsFromFolder(pathCTemp,item);
                                 }
 
                                 #endregion
@@ -1581,7 +1581,7 @@ namespace ApmDbBackupManager
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
             }
         }
-        public void sendFile(string pathCTemp, string selectedPath)
+        public void sendFile(string pathCTemp, string selectedPath,BackupSchedule backup)
         {
             try
             {
@@ -1590,28 +1590,23 @@ namespace ApmDbBackupManager
                 string name1 = null, name2 = null;
                 bool Check = true;
                 List<string> sourceFiles = new List<string>
-                (Directory.GetFiles(pathCTemp).ToList().Where(e => e.EndsWith("Backup.zip")));
+                (Directory.GetFiles(pathCTemp).ToList().Where(e => e.Contains(backup.JustName + "Backup.zip") || e.Contains(backup.JustDiffName + "DiffBackup.zip")));
 
                 List<string> destFiles = new List<string>
-                (Directory.GetFiles(selectedPath).ToList().Where(e => e.EndsWith("Backup.zip")));
+                (Directory.GetFiles(selectedPath).ToList().Where(e => e.Contains(backup.JustName + "Backup.zip") || e.Contains(backup.JustDiffName + "DiffBackup.zip")));
 
                 foreach (var item in sourceFiles)
                 {
-                    if (item.EndsWith("Backup.zip") || item.EndsWith("DiffBackup.zip"))
-                    {
-                        name1 = item.Split('\\').LastOrDefault();
-                        sourceName = name1;
-                    }
+                    name1 = item.Split('\\').LastOrDefault();
+                    sourceName = name1;
+                    
                     foreach (var item2 in destFiles)
                     {
-                        if (item2.EndsWith("Backup.zip") || item2.EndsWith("DiffBackup.zip"))
+                        name2 = item2.Split('\\').LastOrDefault();
+                        if (name1 == name2)
                         {
-                            name2 = item2.Split('\\').LastOrDefault();
-                            if (name1 == name2)
-                            {
-                                Check = false;
-                            }
-                        }
+                            Check = false;
+                        }   
                     }
                     if (Check)
                     {
@@ -1625,7 +1620,8 @@ namespace ApmDbBackupManager
                     }
                     else
                     {
-                        MessageBox.Show(sourceName + " Zaten var");
+                        //MessageBox.Show(sourceName + " Zaten var");
+                        break;
                     }
                 }
             }
@@ -1678,11 +1674,11 @@ namespace ApmDbBackupManager
                 MessageBox.Show("DiffRar Başarısız");
             }
         }
-        public void DeleteFullBackupsFromFolder(string pathCTemp)
+        public void DeleteFullBackupsFromFolder(string pathCTemp,BackupSchedule backup)
         {
             try
             {
-                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains("Backup.bak") || f.Contains("Backup.zip")).ToList();
+                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains(backup.JustName + "Backup.zip") || f.Contains(backup.JustDiffName + "DiffBackup.zip")).ToList();
                 foreach (var DFB in deleteFull)
                 {
                     File.Delete(DFB);
