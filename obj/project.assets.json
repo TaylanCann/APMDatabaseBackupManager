@@ -8550,19 +8550,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\HP\\.nuget\\packages\\": {}
+    "C:\\Users\\MehmetAli\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\ApmDbBackupManager.csproj",
+      "projectUniqueName": "C:\\Users\\MehmetAli\\Source\\Repos\\TaylanCann\\APMDatabaseBackupManager\\ApmDbBackupManager.csproj",
       "projectName": "ApmDbBackupManager",
-      "projectPath": "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\ApmDbBackupManager.csproj",
-      "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\obj\\",
+      "projectPath": "C:\\Users\\MehmetAli\\Source\\Repos\\TaylanCann\\APMDatabaseBackupManager\\ApmDbBackupManager.csproj",
+      "packagesPath": "C:\\Users\\MehmetAli\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\MehmetAli\\Source\\Repos\\TaylanCann\\APMDatabaseBackupManager\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\MehmetAli\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -8649,7 +8653,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

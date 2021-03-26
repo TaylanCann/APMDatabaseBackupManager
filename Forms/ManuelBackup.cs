@@ -443,23 +443,31 @@ namespace ApmDbBackupManager.Forms
         #region Mail
         public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
         {
-            MailMessage eMail = new MailMessage();
-            eMail.Subject = SuccestOrNot;
-            eMail.From = new MailAddress(From);
-            eMail.To.Add(new MailAddress(To));
-            eMail.Bcc.Add(new MailAddress("taylancanh@gmail.com", "Proje sorumlusu"));
-            eMail.Body = ErrorMessage;
-            eMail.IsBodyHtml = true;
-            eMail.Priority = MailPriority.High;
-            // Host ve Port Gereklidir!
-            SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
-            // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
-            NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = AccountInfo;
-            smtp.EnableSsl = true;
-            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtp.Send(eMail);
+            try
+            {
+                MailMessage eMail = new MailMessage();
+                eMail.Subject = SuccestOrNot;
+                eMail.From = new MailAddress(From);
+                eMail.To.Add(new MailAddress(To));
+                eMail.Bcc.Add(new MailAddress("taylancanh@gmail.com", "Proje sorumlusu"));
+                eMail.Body = ErrorMessage;
+                eMail.IsBodyHtml = true;
+                eMail.Priority = MailPriority.High;
+                // Host ve Port Gereklidir!
+                SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
+                // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
+                NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = AccountInfo;
+                smtp.EnableSsl = true;
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Send(eMail);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Mail Hatası"+e.Message);
+            }
+            
         }
 
         #endregion
@@ -623,19 +631,26 @@ namespace ApmDbBackupManager.Forms
                 
                 if (!Backup(lastBackup))
                 {
-                    SendMail("Alınamadı", lastBackup.JustName +
+                    if (IsMailTrue)
+                    {
+                        SendMail("Alınamadı", lastBackup.JustName +
                                      "Backup.bak alınamadı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+                    }
+                    
                     return;
                 }
              
                 if (!Rar(lastBackup))
                 {
-                    SendMail("Alınamadı", lastBackup.JustName +
+                    if (IsMailTrue)
+                    {
+                        SendMail("Alınamadı", lastBackup.JustName +
                                      "Backup.bak alınamadı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+                    }
                     return;
                 }
                 
@@ -691,7 +706,7 @@ namespace ApmDbBackupManager.Forms
             }
             catch (Exception er)
             {
-                MessageBox.Show("Save alırken hata oluştu."+er.Message);
+                MessageBox.Show("Save alırken hata oluştu." + er.Message);
                 if (IsMailTrue)
                 {
                     SendMail("Alınamadı", lastBackup.JustName +
