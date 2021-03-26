@@ -679,9 +679,9 @@ namespace ApmDbBackupManager.Forms
 
                 }
             }
-            catch (Exception)
+            catch (Exception er)
             {
-                MessageBox.Show("Save alırken hata oluştu.");
+                MessageBox.Show("Save alırken hata oluştu."+er.Message);
                 if (IsMailTrue)
                 {
                     SendMail("Alınamadı", lastBackup.JustName +

@@ -27,9 +27,15 @@ namespace ApmDbBackupManager.Forms
         public AutoBackup()
         {
             InitializeComponent();
-            DatabaseNamesListing();
+            if (SqlAddress != null || SqlPass != null || SqlUid != null)
+            {
+                DatabaseNamesListing();
+            }
             listing();
-            TmpExists(pathCTemp);
+            if (pathCTemp != null)
+            {
+                TmpExists(pathCTemp);
+            }
             DriveUsers();
             FtpAddress();
         }
