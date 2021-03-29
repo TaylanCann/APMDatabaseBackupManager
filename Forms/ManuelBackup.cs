@@ -14,6 +14,8 @@ using Google.Apis.Util.Store;
 using System.Threading;
 using System.Net;
 using System.Net.Mail;
+using System.ComponentModel;
+using System.Drawing;
 
 namespace ApmDbBackupManager.Forms
 {
@@ -40,6 +42,8 @@ namespace ApmDbBackupManager.Forms
         public ManuelBackup()
         {
             InitializeComponent();
+
+            #region Controls
             if (SqlAddress == "" || SqlPass == "" || SqlUid == "" || pathCTemp == "")
             {
                 lblInfos.Visible = true;
@@ -52,6 +56,7 @@ namespace ApmDbBackupManager.Forms
             {
                 DatabaseNamesListing();
             }
+            #endregion
             DriveUsers();
             FtpAddresss();
         }
@@ -464,6 +469,37 @@ namespace ApmDbBackupManager.Forms
 
         #endregion
 
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            for (int i = 1; i <= 100; i++)
+            {
+                Thread.Sleep(100);
+                backgroundWorker1.ReportProgress(0);
+            }
+            
+        }
+
+        
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            pbManuel.Value += 1;
+
+            Random rnd = new Random();
+            int s1, s2, s3;
+            s1 = rnd.Next(0,255);
+            s2 = rnd.Next(0,255);
+            s3 = rnd.Next(0,255);
+            pbManuel.ForeColor = Color.FromArgb(s1, s2, s3);
+            lblBackup.Text = pbManuel.Value.ToString() + " %";
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            pbManuel.Visible = false;
+            lblBackup.Visible = false;
+        }
+
         public void Save()
         {
             try
@@ -569,12 +605,18 @@ namespace ApmDbBackupManager.Forms
             }
 
         }
-
-
+        
         private void btnSave_Click(object sender, EventArgs e)
         {
+            pbManuel.Visible = true;
+            lblBackup.Visible = true;
+            pbManuel.Value = 0;
+            pbManuel.Maximum = 100;
+            backgroundWorker1.RunWorkerAsync();
+
             try
             {
+
                 #region Adres kontrolleri
                 if (chbLocal.Checked == true && selectedPath == null)
                 {
@@ -620,8 +662,8 @@ namespace ApmDbBackupManager.Forms
 
                 #region SaveThings
 
-                
-                if (!Backup(lastBackup))
+
+                if (!Backup(lastBackup) && IsMailTrue)
                 {
                     SendMail("Alınamadı", lastBackup.JustName +
                                      "Backup.bak alınamadı. Hata yok",
@@ -629,8 +671,8 @@ namespace ApmDbBackupManager.Forms
                                      MailHost, MailPort);
                     return;
                 }
-             
-                if (!Rar(lastBackup))
+
+                if (!Rar(lastBackup) && IsMailTrue)
                 {
                     SendMail("Alınamadı", lastBackup.JustName +
                                      "Backup.bak alınamadı. Hata yok",
@@ -638,7 +680,7 @@ namespace ApmDbBackupManager.Forms
                                      MailHost, MailPort);
                     return;
                 }
-                
+
                 DeleteBak(pathCTemp);
 
                 if (chbGoogle.Checked == true)
@@ -655,11 +697,11 @@ namespace ApmDbBackupManager.Forms
                     DriveLogin(driveUser.User);
 
                     if (driveUser != null)
-                    {   
+                    {
                         UploadFiles(lastBackup, false);
                     }
                 }
-              
+
                 if (chbFtp.Checked == true)
                 {
                     var ftpRecord = context.FtpThings.Where(f => f.Id == lastBackup.FtpThingId).FirstOrDefault();
@@ -668,18 +710,19 @@ namespace ApmDbBackupManager.Forms
                         Ftp(pathCTemp + lastBackup.JustName + "Backup.zip", ftpRecord);
                     }
                 }
-               
+
                 if (chbLocal.Checked == true)
                 {
-                    sendFile(pathCTemp, lastBackup.LocalLocation,lastBackup);
+                    sendFile(pathCTemp, lastBackup.LocalLocation, lastBackup);
                 }
-              
+
                 if (lastBackup.LocalLocation + "\\" != pathCTemp)
                 {
-                    DeleteFullBackupsFromFolder(pathCTemp,lastBackup);
+                    DeleteFullBackupsFromFolder(pathCTemp, lastBackup);
                 }
                 #endregion
-              
+//Save Things backgroundWorker ile çalışmalı çöz
+
                 if (IsMailTrue)
                 {
                     SendMail("Alındı", lastBackup.JustName +
@@ -689,9 +732,8 @@ namespace ApmDbBackupManager.Forms
 
                 }
             }
-            catch (Exception er)
+            catch (Exception)
             {
-                MessageBox.Show("Save alırken hata oluştu."+er.Message);
                 if (IsMailTrue)
                 {
                     SendMail("Alınamadı", lastBackup.JustName +
@@ -700,6 +742,7 @@ namespace ApmDbBackupManager.Forms
                                      MailHost, MailPort);
                 }
             }
+
         }
     }
 }

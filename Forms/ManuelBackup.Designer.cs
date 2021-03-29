@@ -43,6 +43,9 @@ namespace ApmDbBackupManager.Forms
             this.lblFtp = new System.Windows.Forms.Label();
             this.lblAddress = new System.Windows.Forms.Label();
             this.lblInfos = new System.Windows.Forms.Label();
+            this.pbManuel = new System.Windows.Forms.ProgressBar();
+            this.lblBackup = new System.Windows.Forms.Label();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // cbDatabaseName
@@ -179,11 +182,38 @@ namespace ApmDbBackupManager.Forms
             this.lblInfos.Text = "Lütfen bütün bilgileri girin.";
             this.lblInfos.Visible = false;
             // 
+            // pbManuel
+            // 
+            this.pbManuel.Location = new System.Drawing.Point(176, 284);
+            this.pbManuel.Name = "pbManuel";
+            this.pbManuel.Size = new System.Drawing.Size(436, 29);
+            this.pbManuel.TabIndex = 73;
+            this.pbManuel.Visible = false;
+            // 
+            // lblBackup
+            // 
+            this.lblBackup.AutoSize = true;
+            this.lblBackup.Location = new System.Drawing.Point(357, 261);
+            this.lblBackup.Name = "lblBackup";
+            this.lblBackup.Size = new System.Drawing.Size(121, 20);
+            this.lblBackup.TabIndex = 74;
+            this.lblBackup.Text = "Backup Alınıyor...";
+            this.lblBackup.Visible = false;
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // ManuelBackup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lblBackup);
+            this.Controls.Add(this.pbManuel);
             this.Controls.Add(this.lblInfos);
             this.Controls.Add(this.lblAddress);
             this.Controls.Add(this.cbFtp);
@@ -199,7 +229,6 @@ namespace ApmDbBackupManager.Forms
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtName);
             this.Name = "ManuelBackup";
-            this.Text = "ManuelBackup";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -220,5 +249,8 @@ namespace ApmDbBackupManager.Forms
         private System.Windows.Forms.Label lblFtp;
         private System.Windows.Forms.Label lblAddress;
         private System.Windows.Forms.Label lblInfos;
+        private System.Windows.Forms.ProgressBar pbManuel;
+        private System.Windows.Forms.Label lblBackup;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 
@@ -42,6 +43,30 @@ namespace ApmDbBackupManager.Forms
             }
             DriveUsers();
             FtpAddress();
+            TxtLog();
+        }
+
+        public void TxtLog()
+        {
+            try
+            {
+                if (File.Exists(@"txtLog.txt"))
+                {
+                    return;
+                }
+                using (FileStream fs = File.Create(@"txtLog.txt"))
+                {
+                    // Add some text to file    
+                    Byte[] title = new UTF8Encoding(true).GetBytes("Messages");
+                    fs.Write(title, 0, title.Length);
+                    byte[] author = new UTF8Encoding(true).GetBytes("Taylan");
+                    fs.Write(author, 0, author.Length);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Txt oluştururken hata yapıldı.");
+            }
         }
 
         public void TmpExists(string pathCTemp)
@@ -55,9 +80,17 @@ namespace ApmDbBackupManager.Forms
                 DirectoryInfo di = Directory.CreateDirectory(pathCTemp);
                 Console.WriteLine("The directory was created successfully at {0}.", Directory.GetCreationTime(pathCTemp));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Tmp oluştururken hata yapıldı.");
+                using (StreamReader sr = File.OpenText(@"txtLog.txt"))
+                {
+                    string s = e.Message+ "Tmp oluştururken hata yapıldı.";
+                    while ((s = sr.ReadLine()) != null)
+                    {
+                        Console.WriteLine(s);
+                    }
+                }
             }
         }
 
@@ -68,7 +101,7 @@ namespace ApmDbBackupManager.Forms
                 //"Server=192.168.1.248; Database =Cisa; Uid=sa; password=136213Ata!!; MultipleActiveResultSets=True;"
                 string connetionString = null;
                 SqlConnection conn;
-                connetionString = @"Server=" + SqlAddress + "; Uid" +"=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
+                connetionString = @"Server=" + SqlAddress + "; Uid" + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 conn = new SqlConnection(connetionString);
                 try
                 {
@@ -136,7 +169,7 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
-                var db = context.BackupSchedules.Where(f => f.IsActive == true &&  f.IsAuto == true).ToList();
+                var db = context.BackupSchedules.Where(f => f.IsActive == true && f.IsAuto == true).ToList();
                 dgBackupSchedule.DataSource = db.Select(e => new
                 {
                     Name = e.JustName,
