@@ -24,7 +24,7 @@ namespace ApmDbBackupManager.Forms
         DatabaseContext context = new DatabaseContext();
         List<string> names = new List<string>();
         BackupSchedule lastBackup = new BackupSchedule();
-        string selectedPath, DriveUserName,FtpAddress;
+        string selectedPath, DriveUserName, FtpAddress;
         string pathCTemp = @"" + Properties.Settings.Default.pathCTemp;
         string SqlAddress = Properties.Settings.Default.SqlAddress;
         string SqlPass = Properties.Settings.Default.SqlPass;
@@ -232,18 +232,18 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
                 TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
             }
-        }       
+        }
         public bool Backup(BackupSchedule backup)
         {
             try
             {
                 string connetionString = null;
                 SqlConnection cnn;
-                connetionString = @"Server=" + SqlAddress + "; Uid" 
+                connetionString = @"Server=" + SqlAddress + "; Uid"
                                   + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 cnn = new SqlConnection(connetionString);
                 cnn.Open();
-                string cmdText = "backup database " + backup.DbName + 
+                string cmdText = "backup database " + backup.DbName +
                                  " to disk = '" + pathCTemp + backup.JustName + "Backup.bak';";
                 using (SqlCommand RetrieveOrderCommand = new SqlCommand(cmdText, cnn))
                 {
@@ -281,11 +281,11 @@ namespace ApmDbBackupManager.Forms
             {
                 MessageBox.Show("Rar Başarısız" + e.Message);
                 TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Rar Başarısız." + " ManuelBackup");
-                return false; 
+                return false;
             }
         }
 
-       
+
         #region GoogleDrive
         public bool DriveLogin(string username)
         {
@@ -335,7 +335,7 @@ namespace ApmDbBackupManager.Forms
 
             return true;
         }
-        
+
         public bool UploadFiles(BackupSchedule backup, bool shoulDiff)
         {
             string FullFileName, FileName;
@@ -370,9 +370,9 @@ namespace ApmDbBackupManager.Forms
             }
             return true;
         }
-        
+
         #endregion
-        
+
         public void Ftp(string path, FtpThing ftpModel)
         {
             FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create(ftpModel.FtpLocation + Path.GetFileName(path));
@@ -472,23 +472,31 @@ namespace ApmDbBackupManager.Forms
         #region Mail
         public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
         {
-            MailMessage eMail = new MailMessage();
-            eMail.Subject = SuccestOrNot;
-            eMail.From = new MailAddress(From);
-            eMail.To.Add(new MailAddress(To));
-            eMail.Bcc.Add(new MailAddress("taylancanh@gmail.com", "Proje sorumlusu"));
-            eMail.Body = ErrorMessage;
-            eMail.IsBodyHtml = true;
-            eMail.Priority = MailPriority.High;
-            // Host ve Port Gereklidir!
-            SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
-            // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
-            NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = AccountInfo;
-            smtp.EnableSsl = true;
-            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtp.Send(eMail);
+            try
+            {
+                MailMessage eMail = new MailMessage();
+                eMail.Subject = SuccestOrNot;
+                eMail.From = new MailAddress(From);
+                eMail.To.Add(new MailAddress(To));
+                eMail.Bcc.Add(new MailAddress("taylancanh@gmail.com", "Proje sorumlusu"));
+                eMail.Body = ErrorMessage;
+                eMail.IsBodyHtml = true;
+                eMail.Priority = MailPriority.High;
+                // Host ve Port Gereklidir!
+                SmtpClient smtp = new SmtpClient(Host/*"smtp.gmail.com"*/, /*587*/ Port);
+                // Güvenli bağlantı gerektiğinden kullanıcı adı ve şifrenizi giriniz.
+                NetworkCredential AccountInfo = new NetworkCredential(From, Pass);
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = AccountInfo;
+                smtp.EnableSsl = true;
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.Send(eMail);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Mail Hatası" + e.Message);
+            }
+
         }
 
         #endregion
@@ -561,11 +569,11 @@ namespace ApmDbBackupManager.Forms
             }
             catch (Exception e)
             {
-                MessageBox.Show("Save kontrolü hatalı yapıldı."+e.Message);
+                MessageBox.Show("Save kontrolü hatalı yapıldı." + e.Message);
                 TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Save kontrolü hatalı yapıldı." + " ManuelBackup");
                 return false;
             }
-            
+
 
             return true;
             #endregion
@@ -578,7 +586,7 @@ namespace ApmDbBackupManager.Forms
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-                
+
             try
             {
                 for (int i = 0; i < 100; i++)
@@ -595,15 +603,19 @@ namespace ApmDbBackupManager.Forms
                                      "Backup.bak alınamadı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+
                     return;
                 }
 
                 if (!Rar(lastBackup) && IsMailTrue)
                 {
-                    SendMail("Alınamadı", lastBackup.JustName +
+                    if (IsMailTrue)
+                    {
+                        SendMail("Alınamadı", lastBackup.JustName +
                                      "Backup.bak alınamadı. Hata yok",
                                      MailFrom, MailTo, MailPass,
                                      MailHost, MailPort);
+                    }
                     return;
                 }
 
@@ -671,12 +683,12 @@ namespace ApmDbBackupManager.Forms
             }
         }
 
-        
+
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             pbManuel.Value = e.ProgressPercentage;
-            
+
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -694,7 +706,7 @@ namespace ApmDbBackupManager.Forms
                 backupSchedule.IsAuto = false;
                 backupSchedule.IsActive = true;
                 backupSchedule.Time = DateTime.Now;
-                
+
                 #region AutoSaveArea
                 if (chbFtp.Checked == true)
                 {
@@ -791,7 +803,7 @@ namespace ApmDbBackupManager.Forms
             }
 
         }
-        
+
         private void btnSave_Click(object sender, EventArgs e)
         {
 
@@ -812,8 +824,9 @@ namespace ApmDbBackupManager.Forms
             pbManuel.Maximum = 100;
             backgroundWorker1.RunWorkerAsync();
 
-            
+
 
         }
     }
+
 }
