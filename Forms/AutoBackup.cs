@@ -43,25 +43,17 @@ namespace ApmDbBackupManager.Forms
             }
             DriveUsers();
             FtpAddress();
-            TxtLog();
         }
 
-        public void TxtLog()
+        public void TxtLog(string writeText)
         {
             try
             {
-                if (File.Exists(@"txtLog.txt"))
-                {
-                    return;
-                }
-                using (FileStream fs = File.Create(@"txtLog.txt"))
-                {
-                    // Add some text to file    
-                    Byte[] title = new UTF8Encoding(true).GetBytes("Messages");
-                    fs.Write(title, 0, title.Length);
-                    byte[] author = new UTF8Encoding(true).GetBytes("Taylan");
-                    fs.Write(author, 0, author.Length);
-                }
+                string fileName = @"txtLog.txt";
+
+                FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
+                fs.Close();
+                File.AppendAllText(fileName, Environment.NewLine + writeText);
             }
             catch (Exception)
             {
@@ -83,6 +75,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception e)
             {
                 MessageBox.Show("Tmp oluştururken hata yapıldı.");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message);
                 using (StreamReader sr = File.OpenText(@"txtLog.txt"))
                 {
                     string s = e.Message+ "Tmp oluştururken hata yapıldı.";
@@ -107,9 +100,10 @@ namespace ApmDbBackupManager.Forms
                 {
                     conn.Open();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     MessageBox.Show("Can not open connection ! ");
+                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message);
                 }
 
                 SqlCommand com1 = new SqlCommand("SELECT name, database_id, create_date  FROM sys.databases ; ", conn);
@@ -130,9 +124,10 @@ namespace ApmDbBackupManager.Forms
                 }
                 conn.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Database isimleri listelenirken hata yaşandı.");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Database isimleri listelenirken hata yaşandı." + " AutoBackup");
             }
 
         }
@@ -180,9 +175,10 @@ namespace ApmDbBackupManager.Forms
                 DataGridViewColumn column = dgBackupSchedule.Columns[0];
                 column.Width = 400;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Auto Backup Listelerken hata oluştu");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Auto Backup Listelerken hata oluştu." + " AutoBackup");
             }
         }
 
@@ -358,6 +354,7 @@ namespace ApmDbBackupManager.Forms
                         if (item.IsActive == true && item.IsAuto == true && item.BackupScheme == lastBackup.BackupScheme && item.Time.Hour == lastBackup.Time.Hour && item.Time.Minute == lastBackup.Time.Minute && item.DbName == lastBackup.DbName)
                         {
                             MessageBox.Show("Bu aralıkta bu backup zaten alınıyor. Lütfen kontrol ediniz. Kayıt sağlanamadı.");
+                            TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata :  Bu aralıkta bu backup zaten alınıyor.Lütfen kontrol ediniz.Kayıt sağlanamadı. AutoBackup");
                             lastBackup = null;
                             break;
                         }
@@ -375,9 +372,10 @@ namespace ApmDbBackupManager.Forms
                 //tekrar kaydedilmesi engelleniyor.
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Otomatik Backup alınırken bir hata oluştu lütfen kontrol edin.");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Otomatik Backup alınırken bir hata oluştu lütfen kontrol edin." + " AutoBackup");
             }
         }
 
@@ -440,9 +438,10 @@ namespace ApmDbBackupManager.Forms
                 listing();
 
             }
-            catch (Exception)
+            catch (Exception es)
             {
                 MessageBox.Show("Save alırken hata oluştu.");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Save alırken hata oluştu." + " AutoBackup");
                 lastBackup.IsActive = false;
                 context.Update(lastBackup);
                 context.SaveChanges();

@@ -61,6 +61,22 @@ namespace ApmDbBackupManager.Forms
             FtpAddresss();
         }
 
+        public void TxtLog(string writeText)
+        {
+            try
+            {
+                string fileName = @"txtLog.txt";
+
+                FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
+                fs.Close();
+                File.AppendAllText(fileName, Environment.NewLine + writeText);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Txt oluştururken hata yapıldı.");
+            }
+        }
+
         #region DriveUsers
         public void DriveUsers()
         {
@@ -136,6 +152,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception error)
             {
                 MessageBox.Show("Send File başarısız" + error);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + error.Message + " Send File başarısız." + " ManuelBackup");
             }
         }
         public void TmpExists(string pathCTemp)
@@ -149,9 +166,10 @@ namespace ApmDbBackupManager.Forms
                 DirectoryInfo di = Directory.CreateDirectory(pathCTemp);
                 Console.WriteLine("The directory was created successfully at {0}.", Directory.GetCreationTime(pathCTemp));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Tmp oluştururken hata yapıldı.");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Tmp oluştururken hata yapıldı." + " ManuelBackup");
             }
         }
         public void DatabaseNamesListing()
@@ -166,9 +184,11 @@ namespace ApmDbBackupManager.Forms
                 {
                     conn.Open();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     MessageBox.Show("Can not open connection ! ");
+                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Can not open connection !" + " ManuelBackup");
+
                 }
 
                 SqlCommand com1 = new SqlCommand("SELECT name, database_id, create_date  FROM sys.databases ; ", conn);
@@ -189,13 +209,14 @@ namespace ApmDbBackupManager.Forms
                 }
                 conn.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Database isimleri listelenirken hata yaşandı.");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Database isimleri listelenirken hata yaşandı." + " ManuelBackup");
+
             }
 
         }
-
         public void DeleteBak(string pathCTemp)
         {
             try
@@ -206,12 +227,12 @@ namespace ApmDbBackupManager.Forms
                     File.Delete(DFB);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
             }
-        }
-       
+        }       
         public bool Backup(BackupSchedule backup)
         {
             try
@@ -235,6 +256,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception e)
             {
                 MessageBox.Show("Backup alma başarısız" + e.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Backup alma başarısız." + " ManuelBackup");
                 return false;
             }
         }
@@ -258,6 +280,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception e)
             {
                 MessageBox.Show("Rar Başarısız" + e.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Rar Başarısız." + " ManuelBackup");
                 return false; 
             }
         }
@@ -442,6 +465,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception e)
             {
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız" + e.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
             }
         }
 
@@ -469,35 +493,196 @@ namespace ApmDbBackupManager.Forms
 
         #endregion
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+
+
+        public bool addressCheck()
         {
-            for (int i = 1; i <= 100; i++)
+            #region Adres kontrolleri
+
+            try
             {
-                Thread.Sleep(100);
-                backgroundWorker1.ReportProgress(0);
+                if (chbLocal.Checked == true && selectedPath == null)
+                {
+                    MessageBox.Show("Lütfen Lokalde Backup alınacak yeri belirtin.");
+                    return false;
+                }
+                if (cbDriveUsers.SelectedItem != null)
+                {
+                    DriveUserName = cbDriveUsers.SelectedItem.ToString();
+                }
+                if (chbGoogle.Checked == true && DriveUserName == null)
+                {
+                    MessageBox.Show("Lütfen Google Drive'a giriş yapın.");
+                    return false;
+                }
+                if (cbFtp.SelectedItem != null)
+                {
+                    FtpAddress = cbFtp.SelectedItem.ToString();
+                }
+                if (chbFtp.Checked == true && FtpAddress == null)
+                {
+                    MessageBox.Show("Lütfen Ftp adresini girin.");
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Adres kontrolleri hatalı yapıldı." + e.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Adres kontrolleri hatalı yapıldı." + " ManuelBackup");
+                return false;
+            }
+
+            return true;
+
+            #endregion
+        }
+
+        public bool SaveCheck()
+        {
+            #region Save kontolü
+
+            try
+            {
+                if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
+                {
+                    MessageBox.Show("Lütfen kaydedileceği alanı seçin");
+                    return false;
+                }
+                else
+                {
+                    Save();
+                    #region Last Backup Control
+                    if (lastBackup == null)
+                    {
+                        return false;
+                    }
+                    #endregion
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Save kontrolü hatalı yapıldı."+e.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Save kontrolü hatalı yapıldı." + " ManuelBackup");
+                return false;
             }
             
+
+            return true;
+            #endregion
+        }
+
+
+
+
+
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+                
+            try
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    backgroundWorker1.ReportProgress(i);
+                    System.Threading.Thread.Sleep(100);
+                }
+
+                #region SaveThings
+
+                if (!Backup(lastBackup) && IsMailTrue)
+                {
+                    SendMail("Alınamadı", lastBackup.JustName +
+                                     "Backup.bak alınamadı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
+                    return;
+                }
+
+                if (!Rar(lastBackup) && IsMailTrue)
+                {
+                    SendMail("Alınamadı", lastBackup.JustName +
+                                     "Backup.bak alınamadı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
+                    return;
+                }
+
+                DeleteBak(pathCTemp);
+
+                if (chbGoogle.Checked == true)
+                {
+                    DriveUser driveUser = new DriveUser();
+
+                    foreach (var Drives in context.DriveUsers.ToList())
+                    {
+                        if (Drives.Id == lastBackup.DriveUserId)
+                        {
+                            driveUser = Drives;
+                        }
+                    }
+                    DriveLogin(driveUser.User);
+
+                    if (driveUser != null)
+                    {
+                        UploadFiles(lastBackup, false);
+                    }
+                }
+
+                if (chbFtp.Checked == true)
+                {
+                    var ftpRecord = context.FtpThings.Where(f => f.Id == lastBackup.FtpThingId).FirstOrDefault();
+                    if (ftpRecord != null)
+                    {
+                        Ftp(pathCTemp + lastBackup.JustName + "Backup.zip", ftpRecord);
+                    }
+                }
+
+                if (chbLocal.Checked == true)
+                {
+                    sendFile(pathCTemp, lastBackup.LocalLocation, lastBackup);
+                }
+
+                if (lastBackup.LocalLocation + "\\" != pathCTemp)
+                {
+                    DeleteFullBackupsFromFolder(pathCTemp, lastBackup);
+                }
+                #endregion
+                //Save Things backgroundWorker ile çalışmalı çöz
+
+                if (IsMailTrue)
+                {
+                    SendMail("Alındı", lastBackup.JustName +
+                                     "Backup.bak Başarı ile alındı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
+
+                }
+            }
+            catch (Exception es)
+            {
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Background Worker Hatası." + " ManuelBackup");
+                if (IsMailTrue)
+                {
+                    SendMail("Alınamadı", lastBackup.JustName +
+                                     "Backup.bak alınamadı. Hata yok",
+                                     MailFrom, MailTo, MailPass,
+                                     MailHost, MailPort);
+                }
+            }
         }
 
         
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            pbManuel.Value += 1;
-
-            Random rnd = new Random();
-            int s1, s2, s3;
-            s1 = rnd.Next(0,255);
-            s2 = rnd.Next(0,255);
-            s3 = rnd.Next(0,255);
-            pbManuel.ForeColor = Color.FromArgb(s1, s2, s3);
-            lblBackup.Text = pbManuel.Value.ToString() + " %";
+            pbManuel.Value = e.ProgressPercentage;
+            
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             pbManuel.Visible = false;
-            lblBackup.Visible = false;
+            lblBackup.Text = "Backup Alma Bitti";
         }
 
         public void Save()
@@ -599,149 +784,35 @@ namespace ApmDbBackupManager.Forms
                 //tekrar kaydedilmesi engelleniyor.
 
             }
-            catch (Exception)
+            catch (Exception es)
             {
                 MessageBox.Show("Manuel Backup alınırken bir hata oluştu lütfen kontrol edin.");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Manuel Backup alınırken bir hata oluştu." + " ManuelBackup");
             }
 
         }
         
         private void btnSave_Click(object sender, EventArgs e)
         {
+
+            if (!addressCheck())
+            {
+                MessageBox.Show("Adres Hatası");
+                return;
+            }
+            if (!SaveCheck())
+            {
+                MessageBox.Show("Save Hatası");
+                return;
+            }
+
             pbManuel.Visible = true;
             lblBackup.Visible = true;
             pbManuel.Value = 0;
             pbManuel.Maximum = 100;
             backgroundWorker1.RunWorkerAsync();
 
-            try
-            {
-
-                #region Adres kontrolleri
-                if (chbLocal.Checked == true && selectedPath == null)
-                {
-                    MessageBox.Show("Lütfen Lokalde Backup alınacak yeri belirtin.");
-                    return;
-                }
-                if (cbDriveUsers.SelectedItem != null)
-                {
-                    DriveUserName = cbDriveUsers.SelectedItem.ToString();
-                }
-                if (chbGoogle.Checked == true && DriveUserName == null)
-                {
-                    MessageBox.Show("Lütfen Google Drive'a giriş yapın.");
-                    return;
-                }
-                if (cbFtp.SelectedItem != null)
-                {
-                    FtpAddress = cbFtp.SelectedItem.ToString();
-                }
-                if (chbFtp.Checked == true && FtpAddress == null)
-                {
-                    MessageBox.Show("Lütfen Ftp adresini girin.");
-                    return;
-                }
-                #endregion
-
-                #region Save kontolü
-                if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
-                {
-                    MessageBox.Show("Lütfen kaydedileceği alanı seçin");
-                }
-                else
-                {
-                    Save();
-                    #region Last Backup Control
-                    if (lastBackup == null)
-                    {
-                        return;
-                    }
-                    #endregion
-                }
-                #endregion
-
-                #region SaveThings
-
-
-                if (!Backup(lastBackup) && IsMailTrue)
-                {
-                    SendMail("Alınamadı", lastBackup.JustName +
-                                     "Backup.bak alınamadı. Hata yok",
-                                     MailFrom, MailTo, MailPass,
-                                     MailHost, MailPort);
-                    return;
-                }
-
-                if (!Rar(lastBackup) && IsMailTrue)
-                {
-                    SendMail("Alınamadı", lastBackup.JustName +
-                                     "Backup.bak alınamadı. Hata yok",
-                                     MailFrom, MailTo, MailPass,
-                                     MailHost, MailPort);
-                    return;
-                }
-
-                DeleteBak(pathCTemp);
-
-                if (chbGoogle.Checked == true)
-                {
-                    DriveUser driveUser = new DriveUser();
-
-                    foreach (var Drives in context.DriveUsers.ToList())
-                    {
-                        if (Drives.Id == lastBackup.DriveUserId)
-                        {
-                            driveUser = Drives;
-                        }
-                    }
-                    DriveLogin(driveUser.User);
-
-                    if (driveUser != null)
-                    {
-                        UploadFiles(lastBackup, false);
-                    }
-                }
-
-                if (chbFtp.Checked == true)
-                {
-                    var ftpRecord = context.FtpThings.Where(f => f.Id == lastBackup.FtpThingId).FirstOrDefault();
-                    if (ftpRecord != null)
-                    {
-                        Ftp(pathCTemp + lastBackup.JustName + "Backup.zip", ftpRecord);
-                    }
-                }
-
-                if (chbLocal.Checked == true)
-                {
-                    sendFile(pathCTemp, lastBackup.LocalLocation, lastBackup);
-                }
-
-                if (lastBackup.LocalLocation + "\\" != pathCTemp)
-                {
-                    DeleteFullBackupsFromFolder(pathCTemp, lastBackup);
-                }
-                #endregion
-//Save Things backgroundWorker ile çalışmalı çöz
-
-                if (IsMailTrue)
-                {
-                    SendMail("Alındı", lastBackup.JustName +
-                                     "Backup.bak Başarı ile alındı. Hata yok",
-                                     MailFrom, MailTo, MailPass,
-                                     MailHost, MailPort);
-
-                }
-            }
-            catch (Exception)
-            {
-                if (IsMailTrue)
-                {
-                    SendMail("Alınamadı", lastBackup.JustName +
-                                     "Backup.bak alınamadı. Hata yok",
-                                     MailFrom, MailTo, MailPass,
-                                     MailHost, MailPort);
-                }
-            }
+            
 
         }
     }

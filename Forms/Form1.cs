@@ -53,6 +53,22 @@ namespace ApmDbBackupManager
             btnAutoBackup_Click(currentButton, EventArgs.Empty);
         }
 
+        public void TxtLog(string writeText)
+        {
+            try
+            {
+                string fileName = @"txtLog.txt";
+
+                FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
+                fs.Close();
+                File.AppendAllText(fileName, Environment.NewLine + writeText);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Txt oluştururken hata yapıldı.");
+            }
+        }
+
         private async Task PerformPreLoginWorkAsync()
         {
             await Task.Run(() =>
@@ -220,8 +236,9 @@ namespace ApmDbBackupManager
                                 }
 
                             }
-                            catch (InvalidCastException)
+                            catch (Exception es)
                             {
+                                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " İlk backup alırken hata oluştu." + " Form1.cs");
                                 if (IsMailTrue)
                                 {
                                     SendMail("Alınamadı", item.JustName +
@@ -359,9 +376,11 @@ namespace ApmDbBackupManager
                                          MailHost, MailPort);
                                 }
                             }
-                            catch (Exception)
+                            catch (Exception es)
                             {
                                 MessageBox.Show("Yıllık dönemi dolmuş Backup alınamadı.");
+                                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Yıllık dönemi dolmuş Backup alınamadı." + " Form1.cs");
+
                                 if (IsMailTrue)
                                 {
                                     SendMail("Alınamadı", item.JustName +
@@ -545,9 +564,10 @@ namespace ApmDbBackupManager
                                              MailHost, MailPort);
                                     }
                                 }
-                                catch (Exception)
+                                catch (Exception es)
                                 {
                                     MessageBox.Show("Dönemi dolmuş günlük yada haftalık Full Backup alınamadı");
+                                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Dönemi dolmuş günlük yada haftalık Full Backup alınamadı." + " Form1.cs");
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alınamadı", item.JustName +
@@ -700,9 +720,10 @@ namespace ApmDbBackupManager
 
 
                                 }
-                                catch (Exception)
+                                catch (Exception es)
                                 {
                                     MessageBox.Show("Dönemsel Günlük yada Haftalık Backup alınamadı. ");
+                                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Dönemsel Günlük yada Haftalık Backup alınamadı." + " Form1.cs");
 
                                     if (IsMailTrue)
                                     {
@@ -800,9 +821,10 @@ namespace ApmDbBackupManager
                                     }
 
                                 }
-                                catch (Exception)
+                                catch (Exception es)
                                 {
                                     MessageBox.Show("Dönemsel Günlük yada Haftalık ilk Backup alınamadı. ");
+                                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Dönemsel Günlük yada Haftalık ilk Backup alınamadı." + " Form1.cs");
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alınamadı", item.JustName +
@@ -1024,9 +1046,10 @@ namespace ApmDbBackupManager
                                               MailHost, MailPort);
                                     }
                                 }
-                                catch (Exception)
+                                catch (Exception es)
                                 {
                                     MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
+                                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Dönemi dolmuş haftalık Full Backup alınamadı" + " Form1.cs");
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alınamadı", item.JustName +
@@ -1205,9 +1228,10 @@ namespace ApmDbBackupManager
                                     }
 
                                 }
-                                catch (Exception)
+                                catch (Exception es)
                                 {
                                     MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
+                                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Dönemi dolmuş haftalık Full Backup alınamadı" + " Form1.cs");
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alınamadı", item.JustName +
@@ -1322,9 +1346,11 @@ namespace ApmDbBackupManager
                                               MailHost, MailPort);
                                     }
                                 }
-                                catch (Exception)
+                                catch (Exception es)
                                 {
                                     MessageBox.Show("Dönemi dolmuş haftalık Full Backup alınamadı");
+                                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Dönemi dolmuş haftalık Full Backup alınamadı" + " Form1.cs");
+
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alınamadı", item.JustName +
@@ -1340,9 +1366,10 @@ namespace ApmDbBackupManager
                     }
                 }
             }
-            catch (Exception error)
+            catch (Exception es)
             {
-                MessageBox.Show("Timer Hatası" + error.Message);
+                MessageBox.Show("Timer Hatası" + es.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Timer Hatası" + " Form1.cs");
             }
             finally
             {
@@ -1398,23 +1425,6 @@ namespace ApmDbBackupManager
             });
             service.HttpClient.Timeout = TimeSpan.FromMinutes(100);
 
-            return true;
-        }
-        public bool CreateDirectory(string folderName)
-        {
-            var body = new Google.Apis.Drive.v3.Data.File();
-            body.Name = folderName;
-            body.MimeType = "application/vnd.google-apps.folder";
-            try
-            {
-                var request = service.Files.Create(body);
-                request.Fields = "id";
-                var _FF = request.Execute();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Hata Oluştu. : " + e.Message);
-            }
             return true;
         }
         public bool UploadFiles(BackupSchedule backup, bool shoulDiff)
@@ -1490,11 +1500,13 @@ namespace ApmDbBackupManager
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(eMail);
             }
-            catch (Exception)
+            catch (Exception es)
             {
                 Console.WriteLine("Send Mail Fonksiyonu hata verdi");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Send Mail Fonksiyonu hata verdi" + " Form1.cs");
+
             }
-            
+
         }
 
         #endregion
@@ -1555,6 +1567,7 @@ namespace ApmDbBackupManager
             catch (Exception e)
             {
                 MessageBox.Show("Backup alma başarısız " + e.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Backup alma başarısız" + " Form1.cs");
             }
         }
         public void Rar(BackupSchedule backup)
@@ -1576,6 +1589,7 @@ namespace ApmDbBackupManager
             catch (Exception e)
             {
                 MessageBox.Show("Rar Başarısız" + e.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Rar Başarısız" + " Form1.cs");
             }
         }
         public void DeleteBak(string pathCTemp)
@@ -1588,9 +1602,10 @@ namespace ApmDbBackupManager
                     File.Delete(DFB);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız" + " Form1.cs");
             }
         }
         public void sendFile(string pathCTemp, string selectedPath,BackupSchedule backup)
@@ -1637,9 +1652,10 @@ namespace ApmDbBackupManager
                     }
                 }
             }
-            catch (Exception error)
+            catch (Exception e)
             {
-                MessageBox.Show("Send File başarısız" + error);
+                MessageBox.Show("Send File başarısız" + e);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Send File başarısız" + " Form1.cs");
             }
         }
       
@@ -1660,9 +1676,10 @@ namespace ApmDbBackupManager
                 }
                 cnn.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Diff Backup alma başarısız");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Diff Backup alma başarısız" + " Form1.cs");
             }
 
         }
@@ -1682,9 +1699,10 @@ namespace ApmDbBackupManager
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("DiffRar Başarısız");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DiffRar Başarısız" + " Form1.cs");
             }
         }
         public void DeleteFullBackupsFromFolder(string pathCTemp,BackupSchedule backup)
@@ -1697,9 +1715,10 @@ namespace ApmDbBackupManager
                     File.Delete(DFB);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız" + " Form1.cs");
             }
         }
 

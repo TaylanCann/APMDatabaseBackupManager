@@ -193,11 +193,11 @@ namespace ApmDbBackupManager.Forms
             // lblBackup
             // 
             this.lblBackup.AutoSize = true;
-            this.lblBackup.Location = new System.Drawing.Point(357, 261);
+            this.lblBackup.Location = new System.Drawing.Point(229, 261);
             this.lblBackup.Name = "lblBackup";
-            this.lblBackup.Size = new System.Drawing.Size(121, 20);
+            this.lblBackup.Size = new System.Drawing.Size(313, 20);
             this.lblBackup.TabIndex = 74;
-            this.lblBackup.Text = "Backup Alınıyor...";
+            this.lblBackup.Text = "Backup Alınıyor Lütfen Sayfayı Değiştirmeyin...";
             this.lblBackup.Visible = false;
             // 
             // backgroundWorker1

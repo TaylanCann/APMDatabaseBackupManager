@@ -24,6 +24,22 @@ namespace ApmDbBackupManager
         static string ApplicationName = "SqlBackup"; //Drive ile alakalı
         static DriveService service;
 
+        public void TxtLog(string writeText)
+        {
+            try
+            {
+                string fileName = @"txtLog.txt";
+
+                FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
+                fs.Close();
+                File.AppendAllText(fileName, Environment.NewLine + writeText);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Txt oluştururken hata yapıldı.");
+            }
+        }
+
         public void Listing()
         {
             var list = context.DriveUsers.ToList();
@@ -47,9 +63,10 @@ namespace ApmDbBackupManager
                     MessageBox.Show("Drive'a bağlantı sağlanamadı.");
                 }
             }
-            catch (Exception)
+            catch (Exception es)
             {
                 MessageBox.Show("Olmadı be böyle olmadı");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Google Drive click." + " Google Drive");
             }
             Listing();
 
@@ -83,6 +100,7 @@ namespace ApmDbBackupManager
                     catch (Exception e)
                     {
                         MessageBox.Show(e.Message);
+                        TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Google Drive." + " Google Drive");
                         return false;
                     }
 
@@ -115,9 +133,10 @@ namespace ApmDbBackupManager
 
 
             }
-            catch (Exception ess)
+            catch (Exception es)
             {
-                MessageBox.Show(ess.Message);
+                MessageBox.Show(es.Message);
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Google Drive" + " Google Drive");
 
                 return false;
             }

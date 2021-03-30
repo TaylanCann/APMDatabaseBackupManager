@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Windows.Forms;
@@ -16,6 +17,22 @@ namespace ApmDbBackupManager.Forms
 
         string pathCTemp,From,Pass,To,Host;
         int Port;
+
+        public void TxtLog(string writeText)
+        {
+            try
+            {
+                string fileName = @"txtLog.txt";
+
+                FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
+                fs.Close();
+                File.AppendAllText(fileName, Environment.NewLine + writeText);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Txt oluştururken hata yapıldı.");
+            }
+        }
 
         private void btnFolder_Click(object sender, EventArgs e)
         {
@@ -52,7 +69,7 @@ namespace ApmDbBackupManager.Forms
                 MailAddress m = new MailAddress(email);
                 return true;
             }
-            catch
+            catch(Exception)
             {
                 return false;
             }
@@ -92,9 +109,11 @@ namespace ApmDbBackupManager.Forms
                 smtp.Send(eMail);
                 return true;
             }
-            catch (Exception)
+            catch (Exception es)
             {
                 Console.WriteLine("Send Mail Fonksiyonu hata verdi");
+                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Send Mail Fonksiyonu hata verdi." + " Infos");
+
                 return false;
             }
 

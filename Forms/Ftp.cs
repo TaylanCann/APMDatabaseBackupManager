@@ -15,6 +15,7 @@ namespace ApmDbBackupManager
         DatabaseContext context = new DatabaseContext();
         string FtpLoc,FtpUser,FtpPass;
 
+
         public void Listing()
         {
             var list = context.FtpThings.ToList();
