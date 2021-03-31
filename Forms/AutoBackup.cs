@@ -134,7 +134,7 @@ namespace ApmDbBackupManager.Forms
 
         public void DriveUsers()
         {
-            var records = context.DriveUsers
+            var records = context.DriveUsers.Where(e=>e.IsActive)
                .ToList();
 
             foreach (var item in records)
@@ -148,7 +148,7 @@ namespace ApmDbBackupManager.Forms
 
         public void FtpAddress()
         {
-            var records = context.FtpThings
+            var records = context.FtpThings.Where(e => e.IsActive)
               .ToList();
 
             foreach (var item in records)

@@ -56,17 +56,19 @@ namespace ApmDbBackupManager.Forms
             // cbDatabaseName
             // 
             this.cbDatabaseName.FormattingEnabled = true;
-            this.cbDatabaseName.Location = new System.Drawing.Point(601, 123);
+            this.cbDatabaseName.Location = new System.Drawing.Point(526, 92);
+            this.cbDatabaseName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbDatabaseName.Name = "cbDatabaseName";
-            this.cbDatabaseName.Size = new System.Drawing.Size(107, 28);
+            this.cbDatabaseName.Size = new System.Drawing.Size(94, 23);
             this.cbDatabaseName.TabIndex = 54;
             // 
             // chbLocal
             // 
             this.chbLocal.AutoSize = true;
-            this.chbLocal.Location = new System.Drawing.Point(441, 173);
+            this.chbLocal.Location = new System.Drawing.Point(386, 130);
+            this.chbLocal.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chbLocal.Name = "chbLocal";
-            this.chbLocal.Size = new System.Drawing.Size(134, 24);
+            this.chbLocal.Size = new System.Drawing.Size(107, 19);
             this.chbLocal.TabIndex = 58;
             this.chbLocal.Text = "Local Bilgisayar";
             this.chbLocal.UseVisualStyleBackColor = true;
@@ -75,9 +77,10 @@ namespace ApmDbBackupManager.Forms
             // chbFtp
             // 
             this.chbFtp.AutoSize = true;
-            this.chbFtp.Location = new System.Drawing.Point(362, 173);
+            this.chbFtp.Location = new System.Drawing.Point(317, 130);
+            this.chbFtp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chbFtp.Name = "chbFtp";
-            this.chbFtp.Size = new System.Drawing.Size(52, 24);
+            this.chbFtp.Size = new System.Drawing.Size(43, 19);
             this.chbFtp.TabIndex = 57;
             this.chbFtp.Text = "Ftp";
             this.chbFtp.UseVisualStyleBackColor = true;
@@ -86,9 +89,10 @@ namespace ApmDbBackupManager.Forms
             // chbGoogle
             // 
             this.chbGoogle.AutoSize = true;
-            this.chbGoogle.Location = new System.Drawing.Point(255, 173);
+            this.chbGoogle.Location = new System.Drawing.Point(223, 130);
+            this.chbGoogle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chbGoogle.Name = "chbGoogle";
-            this.chbGoogle.Size = new System.Drawing.Size(80, 24);
+            this.chbGoogle.Size = new System.Drawing.Size(64, 19);
             this.chbGoogle.TabIndex = 56;
             this.chbGoogle.Text = "Google";
             this.chbGoogle.UseVisualStyleBackColor = true;
@@ -97,26 +101,27 @@ namespace ApmDbBackupManager.Forms
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(523, 125);
+            this.label2.Location = new System.Drawing.Point(458, 94);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(72, 20);
+            this.label2.Size = new System.Drawing.Size(55, 15);
             this.label2.TabIndex = 55;
             this.label2.Text = "Database";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(265, 123);
+            this.label1.Location = new System.Drawing.Point(232, 92);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(90, 20);
+            this.label1.Size = new System.Drawing.Size(72, 15);
             this.label1.TabIndex = 53;
             this.label1.Text = "Yedek İsmi : ";
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(255, 244);
+            this.btnSave.Location = new System.Drawing.Point(223, 183);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(94, 29);
+            this.btnSave.Size = new System.Drawing.Size(82, 22);
             this.btnSave.TabIndex = 49;
             this.btnSave.Text = "Kaydet";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -124,17 +129,19 @@ namespace ApmDbBackupManager.Forms
             // 
             // txtName
             // 
-            this.txtName.Location = new System.Drawing.Point(374, 123);
+            this.txtName.Location = new System.Drawing.Point(327, 92);
+            this.txtName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(125, 27);
+            this.txtName.Size = new System.Drawing.Size(110, 23);
             this.txtName.TabIndex = 52;
             // 
             // rbDaily
             // 
             this.rbDaily.AutoSize = true;
-            this.rbDaily.Location = new System.Drawing.Point(267, 32);
+            this.rbDaily.Location = new System.Drawing.Point(234, 24);
+            this.rbDaily.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rbDaily.Name = "rbDaily";
-            this.rbDaily.Size = new System.Drawing.Size(75, 24);
+            this.rbDaily.Size = new System.Drawing.Size(63, 19);
             this.rbDaily.TabIndex = 45;
             this.rbDaily.Text = "Günlük";
             this.rbDaily.UseVisualStyleBackColor = true;
@@ -143,9 +150,10 @@ namespace ApmDbBackupManager.Forms
             // rbWeekly
             // 
             this.rbWeekly.AutoSize = true;
-            this.rbWeekly.Location = new System.Drawing.Point(349, 32);
+            this.rbWeekly.Location = new System.Drawing.Point(305, 24);
+            this.rbWeekly.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rbWeekly.Name = "rbWeekly";
-            this.rbWeekly.Size = new System.Drawing.Size(82, 24);
+            this.rbWeekly.Size = new System.Drawing.Size(66, 19);
             this.rbWeekly.TabIndex = 50;
             this.rbWeekly.Text = "Haftalık";
             this.rbWeekly.UseVisualStyleBackColor = true;
@@ -154,9 +162,10 @@ namespace ApmDbBackupManager.Forms
             // rbMonthly
             // 
             this.rbMonthly.AutoSize = true;
-            this.rbMonthly.Location = new System.Drawing.Point(437, 32);
+            this.rbMonthly.Location = new System.Drawing.Point(382, 24);
+            this.rbMonthly.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rbMonthly.Name = "rbMonthly";
-            this.rbMonthly.Size = new System.Drawing.Size(62, 24);
+            this.rbMonthly.Size = new System.Drawing.Size(51, 19);
             this.rbMonthly.TabIndex = 46;
             this.rbMonthly.Text = "Aylık";
             this.rbMonthly.UseVisualStyleBackColor = true;
@@ -164,17 +173,19 @@ namespace ApmDbBackupManager.Forms
             // 
             // dtpSetUp
             // 
-            this.dtpSetUp.Location = new System.Drawing.Point(265, 77);
+            this.dtpSetUp.Location = new System.Drawing.Point(232, 58);
+            this.dtpSetUp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dtpSetUp.Name = "dtpSetUp";
-            this.dtpSetUp.Size = new System.Drawing.Size(310, 27);
+            this.dtpSetUp.Size = new System.Drawing.Size(272, 23);
             this.dtpSetUp.TabIndex = 48;
             // 
             // rbYearly
             // 
             this.rbYearly.AutoSize = true;
-            this.rbYearly.Location = new System.Drawing.Point(505, 32);
+            this.rbYearly.Location = new System.Drawing.Point(442, 24);
+            this.rbYearly.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rbYearly.Name = "rbYearly";
-            this.rbYearly.Size = new System.Drawing.Size(61, 24);
+            this.rbYearly.Size = new System.Drawing.Size(50, 19);
             this.rbYearly.TabIndex = 47;
             this.rbYearly.Text = "Yıllık";
             this.rbYearly.UseVisualStyleBackColor = true;
@@ -183,18 +194,19 @@ namespace ApmDbBackupManager.Forms
             // cbDriveUsers
             // 
             this.cbDriveUsers.FormattingEnabled = true;
-            this.cbDriveUsers.Location = new System.Drawing.Point(42, 116);
+            this.cbDriveUsers.Location = new System.Drawing.Point(37, 87);
+            this.cbDriveUsers.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbDriveUsers.Name = "cbDriveUsers";
-            this.cbDriveUsers.Size = new System.Drawing.Size(166, 28);
+            this.cbDriveUsers.Size = new System.Drawing.Size(146, 23);
             this.cbDriveUsers.TabIndex = 61;
             this.cbDriveUsers.Visible = false;
             // 
             // lblGoogle
             // 
             this.lblGoogle.AutoSize = true;
-            this.lblGoogle.Location = new System.Drawing.Point(53, 93);
+            this.lblGoogle.Location = new System.Drawing.Point(46, 70);
             this.lblGoogle.Name = "lblGoogle";
-            this.lblGoogle.Size = new System.Drawing.Size(135, 20);
+            this.lblGoogle.Size = new System.Drawing.Size(106, 15);
             this.lblGoogle.TabIndex = 60;
             this.lblGoogle.Text = "Google User Name";
             this.lblGoogle.Visible = false;
@@ -202,9 +214,9 @@ namespace ApmDbBackupManager.Forms
             // lblFtp
             // 
             this.lblFtp.AutoSize = true;
-            this.lblFtp.Location = new System.Drawing.Point(85, 180);
+            this.lblFtp.Location = new System.Drawing.Point(74, 135);
             this.lblFtp.Name = "lblFtp";
-            this.lblFtp.Size = new System.Drawing.Size(72, 20);
+            this.lblFtp.Size = new System.Drawing.Size(57, 15);
             this.lblFtp.TabIndex = 65;
             this.lblFtp.Text = "Ftp Adres";
             this.lblFtp.Visible = false;
@@ -212,18 +224,19 @@ namespace ApmDbBackupManager.Forms
             // cbFtp
             // 
             this.cbFtp.FormattingEnabled = true;
-            this.cbFtp.Location = new System.Drawing.Point(42, 215);
+            this.cbFtp.Location = new System.Drawing.Point(37, 161);
+            this.cbFtp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbFtp.Name = "cbFtp";
-            this.cbFtp.Size = new System.Drawing.Size(166, 28);
+            this.cbFtp.Size = new System.Drawing.Size(146, 23);
             this.cbFtp.TabIndex = 66;
             this.cbFtp.Visible = false;
             // 
             // lblAddress
             // 
             this.lblAddress.AutoSize = true;
-            this.lblAddress.Location = new System.Drawing.Point(441, 205);
+            this.lblAddress.Location = new System.Drawing.Point(386, 154);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(47, 20);
+            this.lblAddress.Size = new System.Drawing.Size(37, 15);
             this.lblAddress.TabIndex = 67;
             this.lblAddress.Text = "Adres";
             this.lblAddress.Visible = false;
@@ -232,11 +245,12 @@ namespace ApmDbBackupManager.Forms
             // 
             this.dgBackupSchedule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgBackupSchedule.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.dgBackupSchedule.Location = new System.Drawing.Point(0, 337);
+            this.dgBackupSchedule.Location = new System.Drawing.Point(0, 253);
+            this.dgBackupSchedule.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dgBackupSchedule.Name = "dgBackupSchedule";
             this.dgBackupSchedule.RowHeadersWidth = 51;
             this.dgBackupSchedule.RowTemplate.Height = 29;
-            this.dgBackupSchedule.Size = new System.Drawing.Size(1184, 307);
+            this.dgBackupSchedule.Size = new System.Drawing.Size(1036, 230);
             this.dgBackupSchedule.TabIndex = 68;
             this.dgBackupSchedule.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgBackupSchedule_CellDoubleClick);
             // 
@@ -244,27 +258,27 @@ namespace ApmDbBackupManager.Forms
             // 
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label3.Location = new System.Drawing.Point(0, 317);
+            this.label3.Location = new System.Drawing.Point(0, 238);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(156, 20);
+            this.label3.Size = new System.Drawing.Size(125, 15);
             this.label3.TabIndex = 69;
             this.label3.Text = "Silmek için çift tıklayın";
             // 
             // lblInfos
             // 
             this.lblInfos.AutoSize = true;
-            this.lblInfos.Location = new System.Drawing.Point(42, 32);
+            this.lblInfos.Location = new System.Drawing.Point(37, 24);
             this.lblInfos.Name = "lblInfos";
-            this.lblInfos.Size = new System.Drawing.Size(184, 20);
+            this.lblInfos.Size = new System.Drawing.Size(148, 15);
             this.lblInfos.TabIndex = 70;
             this.lblInfos.Text = "Lütfen bütün bilgileri girin.";
             this.lblInfos.Visible = false;
             // 
             // AutoBackup
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 644);
+            this.ClientSize = new System.Drawing.Size(1036, 483);
             this.Controls.Add(this.lblInfos);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.dgBackupSchedule);
@@ -286,6 +300,7 @@ namespace ApmDbBackupManager.Forms
             this.Controls.Add(this.rbMonthly);
             this.Controls.Add(this.dtpSetUp);
             this.Controls.Add(this.rbYearly);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "AutoBackup";
             this.Text = "AutoBackup";
             ((System.ComponentModel.ISupportInitialize)(this.dgBackupSchedule)).EndInit();

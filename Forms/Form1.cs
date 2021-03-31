@@ -47,6 +47,9 @@ namespace ApmDbBackupManager
 
         public Form1()
         {
+            //Properties.Settings.Default.Reset();
+            //Properties.Settings.Default.Save();
+            //Application.Exit();
             InitializeComponent();
             _preLoginTask = PerformPreLoginWorkAsync();
             setTimer();
@@ -153,7 +156,7 @@ namespace ApmDbBackupManager
         #region Timer
         public void setTimer()
         {
-            aTimer = new System.Timers.Timer(1000);
+            aTimer = new System.Timers.Timer(3600000);//1saat
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;

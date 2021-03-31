@@ -80,7 +80,7 @@ namespace ApmDbBackupManager.Forms
         #region DriveUsers
         public void DriveUsers()
         {
-            var records = context.DriveUsers
+            var records = context.DriveUsers.Where(e => e.IsActive)
                .ToList();
 
             foreach (var item in records)
@@ -94,7 +94,7 @@ namespace ApmDbBackupManager.Forms
         #endregion
         public void FtpAddresss()
         {
-            var records = context.FtpThings
+            var records = context.FtpThings.Where(e => e.IsActive)
               .ToList();
 
             foreach (var item in records)
@@ -674,7 +674,8 @@ namespace ApmDbBackupManager.Forms
             catch (Exception es)
             {
 
-                TxtLog("Hata : " + es.Message + " Background Worker Hatası." + " ManuelBackup");
+                TxtLog("Hata : " + es.Message + " ManuelBackup alınamadı");
+                MessageBox.Show("Hata : " + es.Message + " ManuelBackup alınamadı");
                 if (IsMailTrue)
                 {
                     SendMail("Alınamadı", lastBackup.JustName +

@@ -71,56 +71,60 @@ namespace ApmDbBackupManager.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(30, 53);
+            this.label1.Location = new System.Drawing.Point(26, 40);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(106, 20);
+            this.label1.Size = new System.Drawing.Size(84, 15);
             this.label1.TabIndex = 0;
             this.label1.Text = "Gönderici Mail";
             // 
             // txtMailFrom
             // 
-            this.txtMailFrom.Location = new System.Drawing.Point(142, 50);
+            this.txtMailFrom.Location = new System.Drawing.Point(124, 38);
+            this.txtMailFrom.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtMailFrom.Name = "txtMailFrom";
-            this.txtMailFrom.Size = new System.Drawing.Size(125, 27);
+            this.txtMailFrom.Size = new System.Drawing.Size(110, 23);
             this.txtMailFrom.TabIndex = 1;
             // 
             // txtMailFromPass
             // 
-            this.txtMailFromPass.Location = new System.Drawing.Point(142, 97);
+            this.txtMailFromPass.Location = new System.Drawing.Point(124, 73);
+            this.txtMailFromPass.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtMailFromPass.Name = "txtMailFromPass";
-            this.txtMailFromPass.Size = new System.Drawing.Size(125, 27);
+            this.txtMailFromPass.Size = new System.Drawing.Size(110, 23);
             this.txtMailFromPass.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(30, 97);
+            this.label2.Location = new System.Drawing.Point(26, 73);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(50, 20);
+            this.label2.Size = new System.Drawing.Size(40, 15);
             this.label2.TabIndex = 2;
             this.label2.Text = "Parola";
             // 
             // txtMailTo
             // 
-            this.txtMailTo.Location = new System.Drawing.Point(142, 141);
+            this.txtMailTo.Location = new System.Drawing.Point(124, 106);
+            this.txtMailTo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtMailTo.Name = "txtMailTo";
-            this.txtMailTo.Size = new System.Drawing.Size(125, 27);
+            this.txtMailTo.Size = new System.Drawing.Size(110, 23);
             this.txtMailTo.TabIndex = 5;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(30, 141);
+            this.label3.Location = new System.Drawing.Point(26, 106);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 20);
+            this.label3.Size = new System.Drawing.Size(56, 15);
             this.label3.TabIndex = 4;
             this.label3.Text = "Alıcı Mail";
             // 
             // btnSaveMail
             // 
-            this.btnSaveMail.Location = new System.Drawing.Point(142, 273);
+            this.btnSaveMail.Location = new System.Drawing.Point(124, 205);
+            this.btnSaveMail.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSaveMail.Name = "btnSaveMail";
-            this.btnSaveMail.Size = new System.Drawing.Size(94, 29);
+            this.btnSaveMail.Size = new System.Drawing.Size(82, 22);
             this.btnSaveMail.TabIndex = 6;
             this.btnSaveMail.Text = "Kaydet";
             this.btnSaveMail.UseVisualStyleBackColor = true;
@@ -129,17 +133,18 @@ namespace ApmDbBackupManager.Forms
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(379, 50);
+            this.label4.Location = new System.Drawing.Point(285, 41);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(139, 20);
+            this.label4.Size = new System.Drawing.Size(110, 15);
             this.label4.TabIndex = 7;
             this.label4.Text = "Geçici Kayıt Klasörü";
             // 
             // btnFolder
             // 
-            this.btnFolder.Location = new System.Drawing.Point(399, 73);
+            this.btnFolder.Location = new System.Drawing.Point(401, 40);
+            this.btnFolder.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnFolder.Name = "btnFolder";
-            this.btnFolder.Size = new System.Drawing.Size(94, 29);
+            this.btnFolder.Size = new System.Drawing.Size(82, 22);
             this.btnFolder.TabIndex = 8;
             this.btnFolder.Text = "Seç";
             this.btnFolder.UseVisualStyleBackColor = true;
@@ -148,34 +153,36 @@ namespace ApmDbBackupManager.Forms
             // lblAddress
             // 
             this.lblAddress.AutoSize = true;
-            this.lblAddress.Location = new System.Drawing.Point(379, 105);
+            this.lblAddress.Location = new System.Drawing.Point(285, 66);
             this.lblAddress.Name = "lblAddress";
-            this.lblAddress.Size = new System.Drawing.Size(62, 20);
+            this.lblAddress.Size = new System.Drawing.Size(49, 15);
             this.lblAddress.TabIndex = 9;
             this.lblAddress.Text = "Address";
             this.lblAddress.Visible = false;
             // 
             // txtSql
             // 
-            this.txtSql.Location = new System.Drawing.Point(584, 94);
+            this.txtSql.Location = new System.Drawing.Point(618, 38);
+            this.txtSql.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSql.Name = "txtSql";
-            this.txtSql.Size = new System.Drawing.Size(125, 27);
+            this.txtSql.Size = new System.Drawing.Size(110, 23);
             this.txtSql.TabIndex = 11;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(584, 55);
+            this.label6.Location = new System.Drawing.Point(516, 46);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(117, 20);
+            this.label6.Size = new System.Drawing.Size(96, 15);
             this.label6.TabIndex = 10;
             this.label6.Text = "SQL Sunucu İsmi";
             // 
             // btnSQLSave
             // 
-            this.btnSQLSave.Location = new System.Drawing.Point(681, 230);
+            this.btnSQLSave.Location = new System.Drawing.Point(646, 122);
+            this.btnSQLSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSQLSave.Name = "btnSQLSave";
-            this.btnSQLSave.Size = new System.Drawing.Size(94, 29);
+            this.btnSQLSave.Size = new System.Drawing.Size(82, 22);
             this.btnSQLSave.TabIndex = 12;
             this.btnSQLSave.Text = "Kaydet";
             this.btnSQLSave.UseVisualStyleBackColor = true;
@@ -184,80 +191,81 @@ namespace ApmDbBackupManager.Forms
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(24, 327);
+            this.label7.Location = new System.Drawing.Point(21, 245);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(141, 20);
+            this.label7.Size = new System.Drawing.Size(112, 15);
             this.label7.TabIndex = 13;
             this.label7.Text = "Aktif Gönderici Mail";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(379, 230);
+            this.label8.Location = new System.Drawing.Point(285, 115);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(174, 20);
+            this.label8.Size = new System.Drawing.Size(138, 15);
             this.label8.TabIndex = 14;
             this.label8.Text = "Aktif Geçici Kayıt Klasörü";
             // 
             // lblATmpFolder
             // 
             this.lblATmpFolder.AutoSize = true;
-            this.lblATmpFolder.Location = new System.Drawing.Point(379, 264);
+            this.lblATmpFolder.Location = new System.Drawing.Point(285, 143);
             this.lblATmpFolder.Name = "lblATmpFolder";
-            this.lblATmpFolder.Size = new System.Drawing.Size(50, 20);
+            this.lblATmpFolder.Size = new System.Drawing.Size(38, 15);
             this.lblATmpFolder.TabIndex = 15;
             this.lblATmpFolder.Text = "label9";
             // 
             // lblAToMail
             // 
             this.lblAToMail.AutoSize = true;
-            this.lblAToMail.Location = new System.Drawing.Point(202, 361);
+            this.lblAToMail.Location = new System.Drawing.Point(177, 271);
             this.lblAToMail.Name = "lblAToMail";
-            this.lblAToMail.Size = new System.Drawing.Size(58, 20);
+            this.lblAToMail.Size = new System.Drawing.Size(44, 15);
             this.lblAToMail.TabIndex = 16;
             this.lblAToMail.Text = "label10";
             // 
             // lblAFromMail
             // 
             this.lblAFromMail.AutoSize = true;
-            this.lblAFromMail.Location = new System.Drawing.Point(30, 361);
+            this.lblAFromMail.Location = new System.Drawing.Point(26, 271);
             this.lblAFromMail.Name = "lblAFromMail";
-            this.lblAFromMail.Size = new System.Drawing.Size(58, 20);
+            this.lblAFromMail.Size = new System.Drawing.Size(44, 15);
             this.lblAFromMail.TabIndex = 17;
             this.lblAFromMail.Text = "label11";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(202, 327);
+            this.label12.Location = new System.Drawing.Point(177, 245);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(106, 20);
+            this.label12.Size = new System.Drawing.Size(84, 15);
             this.label12.TabIndex = 18;
             this.label12.Text = "Aktif Alıcı Mail";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(586, 305);
+            this.label13.Location = new System.Drawing.Point(549, 233);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(152, 20);
+            this.label13.Size = new System.Drawing.Size(124, 15);
             this.label13.TabIndex = 19;
             this.label13.Text = "Aktif SQL Sunucu İsmi";
             // 
             // lblASqlServerName
             // 
             this.lblASqlServerName.AutoSize = true;
-            this.lblASqlServerName.Location = new System.Drawing.Point(586, 339);
+            this.lblASqlServerName.Location = new System.Drawing.Point(549, 258);
             this.lblASqlServerName.Name = "lblASqlServerName";
-            this.lblASqlServerName.Size = new System.Drawing.Size(58, 20);
+            this.lblASqlServerName.Size = new System.Drawing.Size(44, 15);
             this.lblASqlServerName.TabIndex = 20;
             this.lblASqlServerName.Text = "label14";
             // 
             // btnSaveTmp
             // 
-            this.btnSaveTmp.Location = new System.Drawing.Point(399, 143);
+            this.btnSaveTmp.Location = new System.Drawing.Point(401, 91);
+            this.btnSaveTmp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSaveTmp.Name = "btnSaveTmp";
-            this.btnSaveTmp.Size = new System.Drawing.Size(94, 29);
+            this.btnSaveTmp.Size = new System.Drawing.Size(82, 22);
             this.btnSaveTmp.TabIndex = 21;
             this.btnSaveTmp.Text = "Kaydet";
             this.btnSaveTmp.UseVisualStyleBackColor = true;
@@ -265,139 +273,144 @@ namespace ApmDbBackupManager.Forms
             // 
             // txtPort
             // 
-            this.txtPort.Location = new System.Drawing.Point(142, 230);
+            this.txtPort.Location = new System.Drawing.Point(124, 172);
+            this.txtPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtPort.Name = "txtPort";
-            this.txtPort.Size = new System.Drawing.Size(125, 27);
+            this.txtPort.Size = new System.Drawing.Size(110, 23);
             this.txtPort.TabIndex = 25;
             this.txtPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtPort_KeyPress);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(30, 230);
+            this.label5.Location = new System.Drawing.Point(26, 172);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 20);
+            this.label5.Size = new System.Drawing.Size(29, 15);
             this.label5.TabIndex = 24;
             this.label5.Text = "Port";
             // 
             // txtHost
             // 
-            this.txtHost.Location = new System.Drawing.Point(142, 186);
+            this.txtHost.Location = new System.Drawing.Point(124, 140);
+            this.txtHost.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtHost.Name = "txtHost";
-            this.txtHost.Size = new System.Drawing.Size(125, 27);
+            this.txtHost.Size = new System.Drawing.Size(110, 23);
             this.txtHost.TabIndex = 23;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(30, 186);
+            this.label9.Location = new System.Drawing.Point(26, 140);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(40, 20);
+            this.label9.Size = new System.Drawing.Size(32, 15);
             this.label9.TabIndex = 22;
             this.label9.Text = "Host";
             // 
             // lblAHost
             // 
             this.lblAHost.AutoSize = true;
-            this.lblAHost.Location = new System.Drawing.Point(24, 443);
+            this.lblAHost.Location = new System.Drawing.Point(21, 332);
             this.lblAHost.Name = "lblAHost";
-            this.lblAHost.Size = new System.Drawing.Size(40, 20);
+            this.lblAHost.Size = new System.Drawing.Size(32, 15);
             this.lblAHost.TabIndex = 26;
             this.lblAHost.Text = "Host";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(24, 404);
+            this.label11.Location = new System.Drawing.Point(21, 303);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(75, 20);
+            this.label11.Size = new System.Drawing.Size(60, 15);
             this.label11.TabIndex = 27;
             this.label11.Text = "Aktif Host";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(202, 404);
+            this.label14.Location = new System.Drawing.Point(177, 303);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(70, 20);
+            this.label14.Size = new System.Drawing.Size(57, 15);
             this.label14.TabIndex = 29;
             this.label14.Text = "Aktif Port";
             // 
             // lblAPort
             // 
             this.lblAPort.AutoSize = true;
-            this.lblAPort.Location = new System.Drawing.Point(202, 443);
+            this.lblAPort.Location = new System.Drawing.Point(177, 332);
             this.lblAPort.Name = "lblAPort";
-            this.lblAPort.Size = new System.Drawing.Size(40, 20);
+            this.lblAPort.Size = new System.Drawing.Size(32, 15);
             this.lblAPort.TabIndex = 28;
             this.lblAPort.Text = "Host";
             // 
             // txtSqlUid
             // 
-            this.txtSqlUid.Location = new System.Drawing.Point(666, 179);
+            this.txtSqlUid.Location = new System.Drawing.Point(618, 66);
+            this.txtSqlUid.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSqlUid.Name = "txtSqlUid";
-            this.txtSqlUid.Size = new System.Drawing.Size(125, 27);
+            this.txtSqlUid.Size = new System.Drawing.Size(110, 23);
             this.txtSqlUid.TabIndex = 33;
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(706, 144);
+            this.label15.Location = new System.Drawing.Point(515, 73);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(32, 20);
+            this.label15.Size = new System.Drawing.Size(97, 15);
             this.label15.TabIndex = 32;
-            this.label15.Text = "Uid";
+            this.label15.Text = "SQL Kullanıcı Adı";
             // 
             // txtSqlPass
             // 
-            this.txtSqlPass.Location = new System.Drawing.Point(739, 94);
+            this.txtSqlPass.Location = new System.Drawing.Point(618, 95);
+            this.txtSqlPass.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSqlPass.Name = "txtSqlPass";
-            this.txtSqlPass.Size = new System.Drawing.Size(125, 27);
+            this.txtSqlPass.Size = new System.Drawing.Size(110, 23);
             this.txtSqlPass.TabIndex = 35;
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(739, 56);
+            this.label16.Location = new System.Drawing.Point(507, 98);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(130, 20);
+            this.label16.Size = new System.Drawing.Size(105, 15);
             this.label16.TabIndex = 34;
             this.label16.Text = "SQL Sunucu Şifresi";
             // 
             // lblASqlServerUid
             // 
             this.lblASqlServerUid.AutoSize = true;
-            this.lblASqlServerUid.Location = new System.Drawing.Point(586, 424);
+            this.lblASqlServerUid.Location = new System.Drawing.Point(549, 322);
             this.lblASqlServerUid.Name = "lblASqlServerUid";
-            this.lblASqlServerUid.Size = new System.Drawing.Size(58, 20);
+            this.lblASqlServerUid.Size = new System.Drawing.Size(44, 15);
             this.lblASqlServerUid.TabIndex = 41;
             this.lblASqlServerUid.Text = "label14";
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(586, 390);
+            this.label21.Location = new System.Drawing.Point(549, 296);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(67, 20);
+            this.label21.Size = new System.Drawing.Size(101, 15);
             this.label21.TabIndex = 40;
-            this.label21.Text = "Aktif Uid";
+            this.label21.Text = "Aktif Kullanıcı Adı";
             // 
             // cbMailCheck
             // 
             this.cbMailCheck.AutoSize = true;
             this.cbMailCheck.Enabled = false;
-            this.cbMailCheck.Location = new System.Drawing.Point(24, 478);
+            this.cbMailCheck.Location = new System.Drawing.Point(21, 358);
+            this.cbMailCheck.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbMailCheck.Name = "cbMailCheck";
-            this.cbMailCheck.Size = new System.Drawing.Size(131, 24);
+            this.cbMailCheck.Size = new System.Drawing.Size(106, 19);
             this.cbMailCheck.TabIndex = 42;
             this.cbMailCheck.Text = "Mail Onaylandı";
             this.cbMailCheck.UseVisualStyleBackColor = true;
             // 
             // Infos
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(915, 514);
+            this.ClientSize = new System.Drawing.Size(758, 386);
             this.Controls.Add(this.cbMailCheck);
             this.Controls.Add(this.lblASqlServerUid);
             this.Controls.Add(this.label21);
@@ -435,6 +448,7 @@ namespace ApmDbBackupManager.Forms
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtMailFrom);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Infos";
             this.Text = "Infos";
             this.ResumeLayout(false);
