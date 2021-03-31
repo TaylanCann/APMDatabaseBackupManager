@@ -53,6 +53,8 @@ namespace ApmDbBackupManager
             btnAutoBackup_Click(currentButton, EventArgs.Empty);
         }
 
+       
+
         public void TxtLog(string writeText)
         {
             try
@@ -1731,8 +1733,25 @@ namespace ApmDbBackupManager
         }
 
 
+
+
         #endregion
 
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+                notifyIcon1.Visible = true;
+                notifyIcon1.ShowBalloonTip(1000);
+            }
+        }
 
+        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+        {
+            Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
+        }
     }
 }

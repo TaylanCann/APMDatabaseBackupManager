@@ -29,6 +29,8 @@ namespace ApmDbBackupManager
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.pnLeft = new System.Windows.Forms.Panel();
             this.btnInfos = new System.Windows.Forms.Button();
             this.btnFtp = new System.Windows.Forms.Button();
@@ -40,6 +42,7 @@ namespace ApmDbBackupManager
             this.pnTitle = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
             this.pnForms = new System.Windows.Forms.Panel();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.pnLeft.SuspendLayout();
             this.pnLogo.SuspendLayout();
             this.pnTitle.SuspendLayout();
@@ -202,6 +205,14 @@ namespace ApmDbBackupManager
             this.pnForms.Size = new System.Drawing.Size(1002, 601);
             this.pnForms.TabIndex = 29;
             // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.BalloonTipText = "Program Arka Planda Çalışmayı Sürdürüyor";
+            this.notifyIcon1.BalloonTipTitle = "APM DB Manager";
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -212,8 +223,9 @@ namespace ApmDbBackupManager
             this.Controls.Add(this.pnLeft);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "APM DataBase Manager";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.pnLeft.ResumeLayout(false);
             this.pnLogo.ResumeLayout(false);
             this.pnLogo.PerformLayout();
@@ -235,6 +247,7 @@ namespace ApmDbBackupManager
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel pnForms;
         private System.Windows.Forms.Button btnInfos;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
     }
 }
 

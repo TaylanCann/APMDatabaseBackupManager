@@ -502,6 +502,8 @@ namespace ApmDbBackupManager.Forms
                 cbFtp.Visible = false;
             }
         }
+
+
         private void chbLocal_CheckedChanged(object sender, EventArgs e)
         {
             if (chbLocal.Checked == true)
@@ -555,6 +557,7 @@ namespace ApmDbBackupManager.Forms
                 }
                 listing();
             }
+
         }
 
     }
