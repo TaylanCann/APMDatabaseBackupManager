@@ -50,6 +50,7 @@ namespace ApmDbBackupManager.Forms
             // 
             // cbDatabaseName
             // 
+            this.cbDatabaseName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDatabaseName.FormattingEnabled = true;
             this.cbDatabaseName.Location = new System.Drawing.Point(501, 52);
             this.cbDatabaseName.Name = "cbDatabaseName";
@@ -59,7 +60,7 @@ namespace ApmDbBackupManager.Forms
             // chbLocal
             // 
             this.chbLocal.AutoSize = true;
-            this.chbLocal.Location = new System.Drawing.Point(415, 86);
+            this.chbLocal.Location = new System.Drawing.Point(313, 86);
             this.chbLocal.Name = "chbLocal";
             this.chbLocal.Size = new System.Drawing.Size(134, 24);
             this.chbLocal.TabIndex = 53;
@@ -70,7 +71,7 @@ namespace ApmDbBackupManager.Forms
             // chbFtp
             // 
             this.chbFtp.AutoSize = true;
-            this.chbFtp.Location = new System.Drawing.Point(336, 86);
+            this.chbFtp.Location = new System.Drawing.Point(234, 86);
             this.chbFtp.Name = "chbFtp";
             this.chbFtp.Size = new System.Drawing.Size(52, 24);
             this.chbFtp.TabIndex = 52;
@@ -81,7 +82,7 @@ namespace ApmDbBackupManager.Forms
             // chbGoogle
             // 
             this.chbGoogle.AutoSize = true;
-            this.chbGoogle.Location = new System.Drawing.Point(229, 86);
+            this.chbGoogle.Location = new System.Drawing.Point(127, 86);
             this.chbGoogle.Name = "chbGoogle";
             this.chbGoogle.Size = new System.Drawing.Size(80, 24);
             this.chbGoogle.TabIndex = 51;

@@ -156,7 +156,7 @@ namespace ApmDbBackupManager
         #region Timer
         public void setTimer()
         {
-            aTimer = new System.Timers.Timer(3600000);//1saat
+            aTimer = new System.Timers.Timer(1000);//1saat
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
@@ -1663,7 +1663,6 @@ namespace ApmDbBackupManager
                 TxtLog("Hata : " + e.Message + " Send File başarısız" + " Form1.cs");
             }
         }
-      
         public void DifferentialBackup(BackupSchedule backup)
         {
             try

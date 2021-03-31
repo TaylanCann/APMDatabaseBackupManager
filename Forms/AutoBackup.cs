@@ -118,6 +118,11 @@ namespace ApmDbBackupManager.Forms
                 }
                 dr.Close();
 
+                names.Remove("master");
+                names.Remove("tempdb");
+                names.Remove("model");
+                names.Remove("msdb");
+
                 foreach (var item in names)
                 {
                     cbDatabaseName.Items.Add(item);
@@ -381,71 +386,147 @@ namespace ApmDbBackupManager.Forms
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            try
+            if (cbAllDatabases.Checked)
             {
-                #region Adres kontrolleri
-                if (chbLocal.Checked == true && selectedPath == null)
+                for (int i = 0; i < cbDatabaseName.Items.Count; i++)
                 {
-                    MessageBox.Show("Lütfen Lokalde Backup alınacak yeri belirtin.");
-                    return;
-                }
-                if (cbDriveUsers.SelectedItem != null)
-                {
-                    DriveUserName = cbDriveUsers.SelectedItem.ToString();
-                }
-                if (chbGoogle.Checked == true && DriveUserName == null)
-                {
-                    MessageBox.Show("Lütfen Google Drive'a giriş yapın.");
-                    return;
-                }
-                if (cbFtp.SelectedItem != null)
-                {
-                    FtpLoc = cbFtp.SelectedItem.ToString();
-                }
-                if (chbFtp.Checked == true && FtpLoc == null)
-                {
-                    MessageBox.Show("Lütfen Ftp adresini girin.");
-                    return;
-                }
-                #endregion
-
-                #region Save kontolü
-
-                if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
-                {
-                    MessageBox.Show("Lütfen kaydedileceği alanı seçin");
-                }
-                else if (txtName.Text == "")
-                {
-                    MessageBox.Show("Lütfen backup ismini verin.");
-                }
-                else if (cbDatabaseName.SelectedIndex < 0)
-                {
-                    MessageBox.Show("Lütfen backup alınacak veritabanını seçin");
-                }
-                else
-                {
-                    Save();
-                    #region Last Backup Control
-                    if (lastBackup == null)
+                    cbDatabaseName.SelectedItem = cbDatabaseName.Items[i];
+                    try
                     {
+                        #region Adres kontrolleri
+                        if (chbLocal.Checked == true && selectedPath == null)
+                        {
+                            MessageBox.Show("Lütfen Lokalde Backup alınacak yeri belirtin.");
+                            return;
+                        }
+                        if (cbDriveUsers.SelectedItem != null)
+                        {
+                            DriveUserName = cbDriveUsers.SelectedItem.ToString();
+                        }
+                        if (chbGoogle.Checked == true && DriveUserName == null)
+                        {
+                            MessageBox.Show("Lütfen Google Drive'a giriş yapın.");
+                            return;
+                        }
+                        if (cbFtp.SelectedItem != null)
+                        {
+                            FtpLoc = cbFtp.SelectedItem.ToString();
+                        }
+                        if (chbFtp.Checked == true && FtpLoc == null)
+                        {
+                            MessageBox.Show("Lütfen Ftp adresini girin.");
+                            return;
+                        }
+                        #endregion
+
+                        #region Save kontolü
+
+                        if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
+                        {
+                            MessageBox.Show("Lütfen kaydedileceği alanı seçin");
+                        }
+                        else if (txtName.Text == "")
+                        {
+                            MessageBox.Show("Lütfen backup ismini verin.");
+                        }
+                        else if (cbDatabaseName.SelectedIndex < 0)
+                        {
+                            MessageBox.Show("Lütfen backup alınacak veritabanını seçin");
+                        }
+                        else
+                        {
+                            Save();
+                            #region Last Backup Control
+                            if (lastBackup == null)
+                            {
+                                return;
+                            }
+                            #endregion
+                        }
+                        #endregion
+
+                        listing();
+
+                    }
+                    catch (Exception es)
+                    {
+                        MessageBox.Show("Save alırken hata oluştu.");
+                        TxtLog("Hata : " + es.Message + " Save alırken hata oluştu." + " AutoBackup");
+                        lastBackup.IsActive = false;
+                        context.Update(lastBackup);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            else
+            {
+                try
+                {
+                    #region Adres kontrolleri
+                    if (chbLocal.Checked == true && selectedPath == null)
+                    {
+                        MessageBox.Show("Lütfen Lokalde Backup alınacak yeri belirtin.");
+                        return;
+                    }
+                    if (cbDriveUsers.SelectedItem != null)
+                    {
+                        DriveUserName = cbDriveUsers.SelectedItem.ToString();
+                    }
+                    if (chbGoogle.Checked == true && DriveUserName == null)
+                    {
+                        MessageBox.Show("Lütfen Google Drive'a giriş yapın.");
+                        return;
+                    }
+                    if (cbFtp.SelectedItem != null)
+                    {
+                        FtpLoc = cbFtp.SelectedItem.ToString();
+                    }
+                    if (chbFtp.Checked == true && FtpLoc == null)
+                    {
+                        MessageBox.Show("Lütfen Ftp adresini girin.");
                         return;
                     }
                     #endregion
+
+                    #region Save kontolü
+
+                    if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
+                    {
+                        MessageBox.Show("Lütfen kaydedileceği alanı seçin");
+                    }
+                    else if (txtName.Text == "")
+                    {
+                        MessageBox.Show("Lütfen backup ismini verin.");
+                    }
+                    else if (cbDatabaseName.SelectedIndex < 0)
+                    {
+                        MessageBox.Show("Lütfen backup alınacak veritabanını seçin");
+                    }
+                    else
+                    {
+                        Save();
+                        #region Last Backup Control
+                        if (lastBackup == null)
+                        {
+                            return;
+                        }
+                        #endregion
+                    }
+                    #endregion
+
+                    listing();
+
                 }
-                #endregion
-
-                listing();
-
+                catch (Exception es)
+                {
+                    MessageBox.Show("Save alırken hata oluştu.");
+                    TxtLog("Hata : " + es.Message + " Save alırken hata oluştu." + " AutoBackup");
+                    lastBackup.IsActive = false;
+                    context.Update(lastBackup);
+                    context.SaveChanges();
+                }
             }
-            catch (Exception es)
-            {
-                MessageBox.Show("Save alırken hata oluştu.");
-                TxtLog("Hata : " + es.Message + " Save alırken hata oluştu." + " AutoBackup");
-                lastBackup.IsActive = false;
-                context.Update(lastBackup);
-                context.SaveChanges();
-            }
+            
         }
 
         #region RadioButtons
@@ -503,6 +584,19 @@ namespace ApmDbBackupManager.Forms
             }
         }
 
+        private void cbAllDatabases_CheckedChanged(object sender, EventArgs e)
+        {
+            if(cbAllDatabases.Checked)
+            {
+                cbDatabaseName.SelectedItem = null;
+                cbDatabaseName.Enabled = false;
+            }
+            else
+            {
+                cbDatabaseName.Enabled = true;
+            }
+
+        }   
 
         private void chbLocal_CheckedChanged(object sender, EventArgs e)
         {

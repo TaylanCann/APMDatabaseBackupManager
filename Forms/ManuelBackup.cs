@@ -15,7 +15,6 @@ using System.Threading;
 using System.Net;
 using System.Net.Mail;
 using System.ComponentModel;
-using System.Drawing;
 
 namespace ApmDbBackupManager.Forms
 {
@@ -202,6 +201,11 @@ namespace ApmDbBackupManager.Forms
                     names.Add(dr["name"].ToString());
                 }
                 dr.Close();
+
+                names.Remove("master");
+                names.Remove("tempdb");
+                names.Remove("model");
+                names.Remove("msdb");
 
                 foreach (var item in names)
                 {
@@ -593,7 +597,7 @@ namespace ApmDbBackupManager.Forms
                 for (int i = 0; i < 100; i++)
                 {
                     backgroundWorker1.ReportProgress(i);
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(10);
                 }
 
                 #region SaveThings
@@ -700,6 +704,7 @@ namespace ApmDbBackupManager.Forms
             lblBackup.Text = "Backup Alma Bitti";
         }
 
+       
         public void Save()
         {
             try
@@ -809,7 +814,7 @@ namespace ApmDbBackupManager.Forms
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-
+            
             if (!addressCheck())
             {
                 MessageBox.Show("Adres Hatası");
@@ -826,9 +831,7 @@ namespace ApmDbBackupManager.Forms
             pbManuel.Value = 0;
             pbManuel.Maximum = 100;
             backgroundWorker1.RunWorkerAsync();
-
-
-
+            
         }
     }
 
