@@ -49,7 +49,7 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
-                string fileName = @"txtLog.txt";
+                string fileName = @"Log.txt";
 
                 FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Close();
@@ -76,7 +76,7 @@ namespace ApmDbBackupManager.Forms
             {
                 MessageBox.Show("Tmp oluştururken hata yapıldı.");
                 TxtLog("Hata : " + e.Message);
-                using (StreamReader sr = File.OpenText(@"txtLog.txt"))
+                using (StreamReader sr = File.OpenText(@"Log.txt"))
                 {
                     string s = e.Message+ "Tmp oluştururken hata yapıldı.";
                     while ((s = sr.ReadLine()) != null)
