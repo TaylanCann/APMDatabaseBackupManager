@@ -26,7 +26,7 @@ namespace ApmDbBackupManager.Forms
 
                 FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Close();
-                File.AppendAllText(fileName, Environment.NewLine + writeText);
+                File.AppendAllText(fileName, Environment.NewLine + DateTime.Now.ToString() + "=>" + writeText);
             }
             catch (Exception)
             {
@@ -112,7 +112,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception es)
             {
                 Console.WriteLine("Send Mail Fonksiyonu hata verdi");
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Send Mail Fonksiyonu hata verdi." + " Infos");
+                TxtLog("Hata : " + es.Message + " Send Mail Fonksiyonu hata verdi." + " Infos");
 
                 return false;
             }

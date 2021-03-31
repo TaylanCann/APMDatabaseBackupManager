@@ -7,6 +7,7 @@ namespace ApmDbBackupManager.Models
    public class FtpThing
     {  
         public int Id { get; set; }
+        public bool IsActive { get; set; }
         public string FtpLocation { get; set; }//Sunucu adresi
         public string FtpPassword { get; set; }//Sunucu şifresi
         public string FtpUserName { get; set; }//Sunucu kullanıcı adı

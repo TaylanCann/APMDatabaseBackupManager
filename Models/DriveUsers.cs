@@ -6,7 +6,8 @@ namespace ApmDbBackupManager.Models
 {
     public class DriveUser
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
+        public bool IsActive { get; set; }
         public string User { get; set; }
         public List<BackupSchedule> BackupSchedules { get; set; }
         

@@ -69,7 +69,7 @@ namespace ApmDbBackupManager.Forms
 
                 FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Close();
-                File.AppendAllText(fileName, Environment.NewLine + writeText);
+                File.AppendAllText(fileName, Environment.NewLine + DateTime.Now.ToString() + "=>" + writeText);
             }
             catch (Exception)
             {
@@ -152,7 +152,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception error)
             {
                 MessageBox.Show("Send File başarısız" + error);
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + error.Message + " Send File başarısız." + " ManuelBackup");
+                TxtLog("Hata : " + error.Message + " Rar Başarısız." + " ManuelBackup");
             }
         }
         public void TmpExists(string pathCTemp)
@@ -166,10 +166,10 @@ namespace ApmDbBackupManager.Forms
                 DirectoryInfo di = Directory.CreateDirectory(pathCTemp);
                 Console.WriteLine("The directory was created successfully at {0}.", Directory.GetCreationTime(pathCTemp));
             }
-            catch (Exception e)
+            catch (Exception error)
             {
                 MessageBox.Show("Tmp oluştururken hata yapıldı.");
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Tmp oluştururken hata yapıldı." + " ManuelBackup");
+                TxtLog("Hata : " + error.Message + " Tmp oluştururken hata yapıldı." + " ManuelBackup");
             }
         }
         public void DatabaseNamesListing()
@@ -184,10 +184,10 @@ namespace ApmDbBackupManager.Forms
                 {
                     conn.Open();
                 }
-                catch (Exception e)
+                catch (Exception error)
                 {
                     MessageBox.Show("Can not open connection ! ");
-                    TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Can not open connection !" + " ManuelBackup");
+                    TxtLog("Hata : " + error.Message + " Can not open connection !" + " ManuelBackup");
 
                 }
 
@@ -209,10 +209,10 @@ namespace ApmDbBackupManager.Forms
                 }
                 conn.Close();
             }
-            catch (Exception e)
+            catch (Exception error)
             {
                 MessageBox.Show("Database isimleri listelenirken hata yaşandı.");
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Database isimleri listelenirken hata yaşandı." + " ManuelBackup");
+                TxtLog("Hata : " + error.Message + " Database isimleri listelenirken hata yaşandı." + " ManuelBackup");
 
             }
 
@@ -227,10 +227,10 @@ namespace ApmDbBackupManager.Forms
                     File.Delete(DFB);
                 }
             }
-            catch (Exception e)
+            catch (Exception error)
             {
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
+                TxtLog("Hata : " + error.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
             }
         }
         public bool Backup(BackupSchedule backup)
@@ -253,10 +253,10 @@ namespace ApmDbBackupManager.Forms
                 cnn.Close();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                MessageBox.Show("Backup alma başarısız" + e.Message);
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Backup alma başarısız." + " ManuelBackup");
+                MessageBox.Show("Backup alma başarısız" + error.Message);
+                TxtLog("Hata : " + error.Message + " Backup alma başarısız." + " ManuelBackup");
                 return false;
             }
         }
@@ -277,10 +277,10 @@ namespace ApmDbBackupManager.Forms
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                MessageBox.Show("Rar Başarısız" + e.Message);
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Rar Başarısız." + " ManuelBackup");
+                MessageBox.Show("Rar Başarısız" + error.Message);
+                TxtLog("Hata : " + error.Message + " Rar Başarısız." + " ManuelBackup");
                 return false;
             }
         }
@@ -462,10 +462,10 @@ namespace ApmDbBackupManager.Forms
                     File.Delete(DFB);
                 }
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                MessageBox.Show("DeleteFullBackupsFromFolder Başarısız" + e.Message);
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
+                MessageBox.Show("DeleteFullBackupsFromFolder Başarısız" + error.Message);
+                TxtLog("Hata : " + error.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
             }
         }
 
@@ -492,9 +492,9 @@ namespace ApmDbBackupManager.Forms
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(eMail);
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                MessageBox.Show("Mail Hatası" + e.Message);
+                MessageBox.Show("Mail Hatası" + error.Message);
             }
 
         }
@@ -533,10 +533,10 @@ namespace ApmDbBackupManager.Forms
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                MessageBox.Show("Adres kontrolleri hatalı yapıldı." + e.Message);
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Adres kontrolleri hatalı yapıldı." + " ManuelBackup");
+                MessageBox.Show("Adres kontrolleri hatalı yapıldı." + error.Message);
+                TxtLog("Hata : " + error.Message + " Adres kontrolleri hatalı yapıldı." + " ManuelBackup");
                 return false;
             }
 
@@ -567,10 +567,10 @@ namespace ApmDbBackupManager.Forms
                     #endregion
                 }
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                MessageBox.Show("Save kontrolü hatalı yapıldı." + e.Message);
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Save kontrolü hatalı yapıldı." + " ManuelBackup");
+                MessageBox.Show("Save kontrolü hatalı yapıldı." + error.Message);
+                TxtLog("Hata : " + error.Message + " Save kontrolü hatalı yapıldı." + " ManuelBackup");
                 return false;
             }
 
@@ -586,9 +586,10 @@ namespace ApmDbBackupManager.Forms
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-
+            
             try
             {
+                lblBackup.Text = "Backup Alınıyor Lütfen Sayfayı Değiştirmeyin...";
                 for (int i = 0; i < 100; i++)
                 {
                     backgroundWorker1.ReportProgress(i);
@@ -672,7 +673,8 @@ namespace ApmDbBackupManager.Forms
             }
             catch (Exception es)
             {
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Background Worker Hatası." + " ManuelBackup");
+
+                TxtLog("Hata : " + es.Message + " Background Worker Hatası." + " ManuelBackup");
                 if (IsMailTrue)
                 {
                     SendMail("Alınamadı", lastBackup.JustName +
@@ -799,7 +801,7 @@ namespace ApmDbBackupManager.Forms
             catch (Exception es)
             {
                 MessageBox.Show("Manuel Backup alınırken bir hata oluştu lütfen kontrol edin.");
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Manuel Backup alınırken bir hata oluştu." + " ManuelBackup");
+                TxtLog("Hata : " + es.Message + " Manuel Backup alınırken bir hata oluştu." + " ManuelBackup");
             }
 
         }

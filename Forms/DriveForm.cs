@@ -32,7 +32,7 @@ namespace ApmDbBackupManager
 
                 FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Close();
-                File.AppendAllText(fileName, Environment.NewLine + writeText);
+                File.AppendAllText(fileName, Environment.NewLine + DateTime.Now.ToString() + "=>" + writeText);
             }
             catch (Exception)
             {
@@ -42,8 +42,11 @@ namespace ApmDbBackupManager
 
         public void Listing()
         {
-            var list = context.DriveUsers.ToList();
-            dataGridView1.DataSource = list;
+            var db = context.DriveUsers.Where(f => f.IsActive == true).ToList();
+            dataGridView1.DataSource = db.Select(e => new
+            {
+                UserName = e.User  
+            }).ToList();
         }
 
         private void btnGoogleUser_Click(object sender, EventArgs e)
@@ -53,6 +56,7 @@ namespace ApmDbBackupManager
                 DriveUserName = txtGoogleUser.Text;
                 DriveUser driveUser = new DriveUser();
                 driveUser.User = DriveUserName;
+                driveUser.IsActive = true;
                 if (DriveLogin(DriveUserName))
                 {
                     context.DriveUsers.Add(driveUser);
@@ -66,10 +70,9 @@ namespace ApmDbBackupManager
             catch (Exception es)
             {
                 MessageBox.Show("Olmadı be böyle olmadı");
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Google Drive click." + " Google Drive");
+                TxtLog("Hata : " + es.Message + " Google Drive click." + " Google Drive");
             }
             Listing();
-
         }
 
         public bool DriveLogin(string username)
@@ -100,7 +103,7 @@ namespace ApmDbBackupManager
                     catch (Exception e)
                     {
                         MessageBox.Show(e.Message);
-                        TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + e.Message + " Google Drive." + " Google Drive");
+                        TxtLog("Hata : " + e.Message + " Google Drive." + " Google Drive");
                         return false;
                     }
 
@@ -136,11 +139,39 @@ namespace ApmDbBackupManager
             catch (Exception es)
             {
                 MessageBox.Show(es.Message);
-                TxtLog("Tarih : " + DateTime.Now.ToString() + "Hata : " + es.Message + " Google Drive" + " Google Drive");
+                TxtLog("Hata : " + es.Message + " Google Drive" + " Google Drive");
 
                 return false;
             }
         }
 
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dataGridView1.CurrentRow.Selected = true;
+            foreach (DataGridViewRow dr in dataGridView1.SelectedRows)
+            {
+                DialogResult dialog = new DialogResult();
+                dialog = MessageBox.Show(dr.Cells[0].Value.ToString() + " kaydını silmek istediğinize emin misiniz?", "SİL", MessageBoxButtons.YesNo);
+                if (dialog == DialogResult.Yes)
+                {
+                    foreach (var item in context.DriveUsers.ToList())
+                    {
+                        if (item.User == dr.Cells[0].Value.ToString() && item.IsActive == true)
+                        {
+                            item.IsActive = false;
+                            context.Update(item);
+                            context.SaveChanges();
+                            break;
+                        }
+                    }
+                    MessageBox.Show(dr.Cells[0].Value.ToString() + " Silindi");
+                }
+                else
+                {
+                    MessageBox.Show(dr.Cells[0].Value.ToString() + " Silinmedi");
+                }
+                Listing();
+            }
+        }
     }
 }
