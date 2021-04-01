@@ -155,7 +155,7 @@ namespace ApmDbBackupManager
         #region Timer
         public void setTimer()
         {
-            aTimer = new System.Timers.Timer(3600000);//1saat
+            aTimer = new System.Timers.Timer(1000*60*10);//10 dakika
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
