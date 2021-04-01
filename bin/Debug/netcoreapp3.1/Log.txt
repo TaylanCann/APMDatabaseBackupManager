@@ -1,0 +1,9 @@
+
+1.04.2021 13:21:36=>Günlük-31.03.2021-13.14-kjj-DatabaseYonetimSistemi9 Backup alındı Form1.cs
+1.04.2021 13:21:36=>Günlük-31.03.2021-13.14-kjj-try Backup alındı Form1.cs
+1.04.2021 13:21:36=>Günlük-31.03.2021-13.14-kjj-Smthng Backup alındı Form1.cs
+1.04.2021 13:21:37=>Günlük-31.03.2021-13.14-kjj-attack Backup alındı Form1.cs
+1.04.2021 13:21:37=>Günlük-31.03.2021-13.14-kjj-TryDaBa Backup alındı Form1.cs
+1.04.2021 13:21:37=>Günlük-31.03.2021-13.14-kjj-Deneme Backup alındı Form1.cs
+1.04.2021 13:21:37=>Günlük-31.03.2021-13.14-kjj-AdventureWorks2014 Backup alındı Form1.cs
+1.04.2021 13:21:39=>Günlük-31.03.2021-13.14-kjj-HYBRID_Meyer Backup alındı Form1.cs
