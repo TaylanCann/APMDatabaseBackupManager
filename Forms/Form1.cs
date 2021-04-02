@@ -155,7 +155,7 @@ namespace ApmDbBackupManager
         #region Timer
         public void setTimer()
         {
-            aTimer = new System.Timers.Timer(1000*60);//10 dakika
+            aTimer = new System.Timers.Timer(1000*60*10);//10 dakikada 1
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
@@ -1754,8 +1754,6 @@ namespace ApmDbBackupManager
                 TxtLog("Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız" + " Form1.cs");
             }
         }
-
-
         #region Form1Load
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -1764,7 +1762,6 @@ namespace ApmDbBackupManager
         }
 
         #endregion
-
         private void Form1_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized)
@@ -1774,7 +1771,6 @@ namespace ApmDbBackupManager
                 notifyIcon1.ShowBalloonTip(1000);
             }
         }
-
         private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
         {
             Show();

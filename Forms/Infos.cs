@@ -75,7 +75,6 @@ namespace ApmDbBackupManager.Forms
             }
         }
 
-
         private void txtPort_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!Char.IsControl(e.KeyChar) && !(char.IsNumber(e.KeyChar)))   
@@ -83,7 +82,6 @@ namespace ApmDbBackupManager.Forms
                 e.Handled = true;
             }
         }
-
 
         #region Mail
         public bool SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
@@ -242,5 +240,7 @@ namespace ApmDbBackupManager.Forms
 
             #endregion
         }
+
+
     }
 }
