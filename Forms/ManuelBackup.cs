@@ -41,7 +41,6 @@ namespace ApmDbBackupManager.Forms
         public ManuelBackup()
         {
             InitializeComponent();
-
             #region Controls
             if (SqlAddress == "" || SqlPass == "" || SqlUid == "" || pathCTemp == "")
             {
@@ -55,11 +54,24 @@ namespace ApmDbBackupManager.Forms
             {
                 DatabaseNamesListing();
             }
+            if (CheckClient())
+            {
+                chbGoogle.Enabled = true;
+            }
+            else
+            {
+                chbGoogle.Enabled = false;
+            }
             #endregion
             DriveUsers();
             FtpAddresss();
         }
 
+        public bool CheckClient()
+        {
+            var CheckClientJson = Directory.GetFiles(Application.StartupPath).Any(e => e.Contains("client_secret.json"));
+            return CheckClientJson;
+        }
         public void TxtLog(string writeText)
         {
             try
@@ -75,7 +87,6 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("Txt oluştururken hata yapıldı.");
             }
         }
-
         #region DriveUsers
         public void DriveUsers()
         {
@@ -288,8 +299,6 @@ namespace ApmDbBackupManager.Forms
                 return false;
             }
         }
-
-
         #region GoogleDrive
         public bool DriveLogin(string username)
         {
@@ -376,7 +385,6 @@ namespace ApmDbBackupManager.Forms
         }
 
         #endregion
-
         public void Ftp(string path, FtpThing ftpModel)
         {
             FtpWebRequest request = (FtpWebRequest)FtpWebRequest.Create(ftpModel.FtpLocation + Path.GetFileName(path));
@@ -398,7 +406,6 @@ namespace ApmDbBackupManager.Forms
             }
 
         }
-
         #region CheckBoxs
         private void chbLocal_CheckedChanged(object sender, EventArgs e)
         {
@@ -454,8 +461,6 @@ namespace ApmDbBackupManager.Forms
             }
         }
         #endregion
-
-
         public void DeleteFullBackupsFromFolder(string pathCTemp, BackupSchedule backup)
         {
             try
@@ -472,7 +477,6 @@ namespace ApmDbBackupManager.Forms
                 TxtLog("Hata : " + error.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
             }
         }
-
         #region Mail
         public void SendMail(string SuccestOrNot, string ErrorMessage, string From, string To, string Pass, string Host, int Port)
         {
@@ -504,7 +508,6 @@ namespace ApmDbBackupManager.Forms
         }
 
         #endregion
-
         public bool addressCheck()
         {
             #region Adres kontrolleri
@@ -546,7 +549,6 @@ namespace ApmDbBackupManager.Forms
 
             #endregion
         }
-
         public bool SaveCheck()
         {
             #region Save kontolü
@@ -580,7 +582,6 @@ namespace ApmDbBackupManager.Forms
             return true;
             #endregion
         }
-
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             
@@ -682,22 +683,15 @@ namespace ApmDbBackupManager.Forms
                 }
             }
         }
-
-
-
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             pbManuel.Value = e.ProgressPercentage;
-
         }
-
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             pbManuel.Visible = false;
             lblBackup.Text = "Backup Alma Bitti";
         }
-
-       
         public void Save()
         {
             try
@@ -804,7 +798,6 @@ namespace ApmDbBackupManager.Forms
             }
 
         }
-
         private void btnSave_Click(object sender, EventArgs e)
         {
             

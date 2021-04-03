@@ -1,5 +1,4 @@
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.exe
-C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\win-x64\client_secret.json
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.deps.json
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.runtimeconfig.json
 C:\Users\HP\Desktop\iş\ApmDbBackupManager\bin\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.runtimeconfig.dev.json
@@ -1218,3 +1217,4 @@ C:\Users\MehmetAli\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\
 C:\Users\MehmetAli\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.dll
 C:\Users\MehmetAli\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.pdb
 C:\Users\MehmetAli\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.genruntimeconfig.cache
+C:\Users\HP\Desktop\iş\ApmDbBackupManager\obj\Release\netcoreapp3.1\win-x64\ApmDbBackupManager.csprojAssemblyReference.cache

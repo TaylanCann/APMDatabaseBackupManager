@@ -155,7 +155,7 @@ namespace ApmDbBackupManager
         #region Timer
         public void setTimer()
         {
-            aTimer = new System.Timers.Timer(1000*60*10);//10 dakika
+            aTimer = new System.Timers.Timer(1000*60);//10 dakika
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
@@ -1545,7 +1545,6 @@ namespace ApmDbBackupManager
         }
 
         #endregion
-
 
         public void Ftp(string path, FtpThing ftpModel)
         {

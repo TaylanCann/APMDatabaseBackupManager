@@ -13,9 +13,6 @@ namespace ApmDbBackupManager.Forms
 {
     public partial class AutoBackup : Form
     {
-
-        //Drive'a Ftp'ye giden eski diffBackupları sil
-
         DatabaseContext context = new DatabaseContext();
         BackupSchedule lastBackup = new BackupSchedule();
         List<string> names = new List<string>();
@@ -28,6 +25,7 @@ namespace ApmDbBackupManager.Forms
         public AutoBackup()
         {
             InitializeComponent();
+            #region Controls
             if (SqlAddress == "" || SqlPass == "" || SqlUid == "" || pathCTemp == "")
             {
                 lblInfos.Visible = true;
@@ -41,10 +39,23 @@ namespace ApmDbBackupManager.Forms
             {
                 TmpExists(pathCTemp);
             }
+            if (CheckClient())
+            {
+                chbGoogle.Enabled = true;
+            }
+            else
+            {
+                chbGoogle.Enabled = false;
+            }
+            #endregion
             DriveUsers();
             FtpAddress();
         }
-
+        public bool CheckClient()
+        {
+            var CheckClientJson = Directory.GetFiles(Application.StartupPath).Any(e => e.Contains("client_secret.json"));
+            return CheckClientJson;
+        }
         public void TxtLog(string writeText)
         {
             try
@@ -60,7 +71,6 @@ namespace ApmDbBackupManager.Forms
                 MessageBox.Show("Txt oluştururken hata yapıldı.");
             }
         }
-
         public void TmpExists(string pathCTemp)
         {
             try
@@ -86,7 +96,6 @@ namespace ApmDbBackupManager.Forms
                 }
             }
         }
-
         public void DatabaseNamesListing()
         {
             try
@@ -136,7 +145,6 @@ namespace ApmDbBackupManager.Forms
             }
 
         }
-
         public void DriveUsers()
         {
             var records = context.DriveUsers.Where(e=>e.IsActive)
@@ -150,7 +158,6 @@ namespace ApmDbBackupManager.Forms
                 }
             }
         }
-
         public void FtpAddress()
         {
             var records = context.FtpThings.Where(e => e.IsActive)
@@ -164,7 +171,6 @@ namespace ApmDbBackupManager.Forms
                 }
             }
         }
-
         public void listing()
         {
             try
@@ -186,7 +192,6 @@ namespace ApmDbBackupManager.Forms
                 TxtLog("Hata : " + e.Message + " Auto Backup Listelerken hata oluştu." + " AutoBackup");
             }
         }
-
         public void Save()
         {
             try
@@ -383,7 +388,6 @@ namespace ApmDbBackupManager.Forms
                 TxtLog("Hata : " + e.Message + " Otomatik Backup alınırken bir hata oluştu lütfen kontrol edin." + " AutoBackup");
             }
         }
-
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (cbAllDatabases.Checked)
@@ -528,7 +532,6 @@ namespace ApmDbBackupManager.Forms
             }
             
         }
-
         #region RadioButtons
         private void rbDaily_CheckedChanged(object sender, EventArgs e)
         {
@@ -554,7 +557,6 @@ namespace ApmDbBackupManager.Forms
         }
 
         #endregion
-
         #region Checks
         private void chbGoogle_CheckedChanged(object sender, EventArgs e)
         {
@@ -624,7 +626,6 @@ namespace ApmDbBackupManager.Forms
             }
         }
         #endregion
-
         private void dgBackupSchedule_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             dgBackupSchedule.CurrentRow.Selected = true;

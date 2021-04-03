@@ -7,3 +7,4 @@
 1.04.2021 13:21:37=>Günlük-31.03.2021-13.14-kjj-Deneme Backup alındı Form1.cs
 1.04.2021 13:21:37=>Günlük-31.03.2021-13.14-kjj-AdventureWorks2014 Backup alındı Form1.cs
 1.04.2021 13:21:39=>Günlük-31.03.2021-13.14-kjj-HYBRID_Meyer Backup alındı Form1.cs
+1.04.2021 15:51:02=>Hata : One or more errors occurred. (Key MUST have a value) Google Drive. Google Drive

@@ -16,20 +16,21 @@ namespace ApmDbBackupManager
         public DriveForm()
         {
             InitializeComponent();
-
+            if (CheckClient())
+            {
+                btnGoogleUser.Enabled = true;
+            }
+            else
+            {
+                btnGoogleUser.Enabled = false;
+            }
             Listing();
         }
 
         public bool CheckClient()
         {
-            if (Directory.Exists("Client_secret.json"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            var CheckClientJson = Directory.GetFiles(Application.StartupPath).Any(e => e.Contains("client_secret.json"));
+            return CheckClientJson;
         }
 
         string DriveUserName;
