@@ -308,7 +308,7 @@ namespace ApmDbBackupManager.Forms
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                 GoogleClientSecrets.Load(stream).Secrets,
-                new[] { DriveService.Scope.Drive },
+                new[] { DriveService.Scope.DriveFile },
                 username,
                 CancellationToken.None,
                 new FileDataStore(credPath, true)).Result;

@@ -41,7 +41,7 @@ namespace ApmDbBackupManager
 
         private readonly Task _preLoginTask;
 
-        static string[] Scopes = { DriveService.Scope.Drive, DriveService.Scope.DriveFile };
+        static string[] Scopes = { DriveService.Scope.DriveFile, DriveService.Scope.DriveFile };
         static string ApplicationName = "SqlBackup"; //Drive ile alakalı
         static DriveService service;
 
@@ -1401,7 +1401,7 @@ namespace ApmDbBackupManager
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                 GoogleClientSecrets.Load(stream).Secrets,
-                new[] { DriveService.Scope.Drive },
+                new[] { DriveService.Scope.DriveFile },
                 username,
                 CancellationToken.None,
                 new FileDataStore(credPath, true)).Result;
