@@ -64,7 +64,7 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
-                string fileName = @"txtLog.txt";
+                string fileName = @"Log.txt";
 
                 FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Close();
@@ -505,8 +505,6 @@ namespace ApmDbBackupManager.Forms
 
         #endregion
 
-
-
         public bool addressCheck()
         {
             #region Adres kontrolleri
@@ -582,11 +580,6 @@ namespace ApmDbBackupManager.Forms
             return true;
             #endregion
         }
-
-
-
-
-
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -665,7 +658,7 @@ namespace ApmDbBackupManager.Forms
                 }
                 #endregion
                 //Save Things backgroundWorker ile çalışmalı çöz
-
+                TxtLog( lastBackup.JustName + "Backup.bak Başarı ile alındı. ManuelBackup");
                 if (IsMailTrue)
                 {
                     SendMail("Alındı", lastBackup.JustName +

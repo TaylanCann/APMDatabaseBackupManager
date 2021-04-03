@@ -28,7 +28,7 @@ namespace ApmDbBackupManager
         {
             try
             {
-                string fileName = @"txtLog.txt";
+                string fileName = @"Log.txt";
 
                 FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Close();

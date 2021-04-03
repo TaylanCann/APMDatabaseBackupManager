@@ -28,6 +28,7 @@ namespace ApmDbBackupManager
     {
         DatabaseContext context = new DatabaseContext();
         private static System.Timers.Timer aTimer;
+        private static System.Timers.Timer aTimer2;
         string pathCTemp = @"" + Properties.Settings.Default.pathCTemp;
         string SqlAddress = Properties.Settings.Default.SqlAddress;
         string SqlPass = Properties.Settings.Default.SqlPass;
@@ -53,16 +54,15 @@ namespace ApmDbBackupManager
             InitializeComponent();
             _preLoginTask = PerformPreLoginWorkAsync();
             setTimer();
+            setTimer2();
             btnAutoBackup_Click(currentButton, EventArgs.Empty);
         }
-
-       
 
         public void TxtLog(string writeText)
         {
             try
             {
-                string fileName = @"txtLog.txt";
+                string fileName = @"Log.txt";
 
                 FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Close();
@@ -73,7 +73,6 @@ namespace ApmDbBackupManager
                 MessageBox.Show("Txt oluştururken hata yapıldı.");
             }
         }
-
         private async Task PerformPreLoginWorkAsync()
         {
             await Task.Run(() =>
@@ -156,7 +155,7 @@ namespace ApmDbBackupManager
         #region Timer
         public void setTimer()
         {
-            aTimer = new System.Timers.Timer(1000);//1saat
+            aTimer = new System.Timers.Timer(3600000);//1saat
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
@@ -232,6 +231,7 @@ namespace ApmDbBackupManager
                                 }
 
                                 #endregion
+                                TxtLog( item.JustName +" Backup alındı Form1.cs");
                                 if (IsMailTrue)
                                 {
                                     SendMail("Alındı", item.JustName +
@@ -373,6 +373,8 @@ namespace ApmDbBackupManager
                                 }
 
                                 #endregion
+                                TxtLog(item.JustName + " Backup alındı Form1.cs");
+
                                 if (IsMailTrue)
                                 {
                                     SendMail("Alındı", item.JustName +
@@ -561,6 +563,8 @@ namespace ApmDbBackupManager
                                     }
 
                                     #endregion
+                                    TxtLog(item.JustName + " Backup alındı Form1.cs");
+
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alındı", item.JustName +
@@ -714,6 +718,8 @@ namespace ApmDbBackupManager
                                     context.Update(item);
                                     context.SaveChanges();
                                     #endregion
+                                    TxtLog(item.JustName + " Backup alındı Form1.cs");
+
 
                                     if (IsMailTrue)
                                     {
@@ -816,6 +822,7 @@ namespace ApmDbBackupManager
                                     context.Update(item);
                                     context.SaveChanges();
                                     #endregion
+                                    TxtLog(item.JustName + " Backup alındı Form1.cs");
 
                                     if (IsMailTrue)
                                     {
@@ -1043,6 +1050,8 @@ namespace ApmDbBackupManager
                                     }
 
                                     #endregion
+                                    TxtLog(item.JustName + " Backup alındı Form1.cs");
+
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alındı", item.JustName +
@@ -1223,6 +1232,7 @@ namespace ApmDbBackupManager
                                     context.Update(item);
                                     context.SaveChanges();
                                     #endregion
+                                    TxtLog(item.JustName + " Backup alındı Form1.cs");
 
                                     if (IsMailTrue)
                                     {
@@ -1343,6 +1353,8 @@ namespace ApmDbBackupManager
                                     context.Update(item);
                                     context.SaveChanges();
                                     #endregion
+                                    TxtLog(item.JustName + " Backup alındı Form1.cs");
+
                                     if (IsMailTrue)
                                     {
                                         SendMail("Alındı", item.JustName +
@@ -1378,6 +1390,24 @@ namespace ApmDbBackupManager
             }
             finally
             {
+                aTimer.Start();
+            }
+        }
+        #endregion
+
+        #region Timer2
+        public void setTimer2()
+        {
+            aTimer2 = new System.Timers.Timer(3600000*6);//6saat
+            aTimer2.Elapsed += OnTimedEvent2;
+            aTimer2.AutoReset = true;
+            aTimer2.Enabled = true;
+        }
+        public void OnTimedEvent2(Object source, ElapsedEventArgs e)
+        {
+            if (!aTimer.Enabled)
+            {
+                aTimer.Enabled = true;
                 aTimer.Start();
             }
         }
@@ -1733,9 +1763,6 @@ namespace ApmDbBackupManager
             aTimer.Stop();
             aTimer.Dispose();
         }
-
-
-
 
         #endregion
 
