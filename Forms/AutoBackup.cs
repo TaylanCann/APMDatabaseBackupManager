@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -287,7 +288,11 @@ namespace ApmDbBackupManager.Forms
                 #endregion
 
                 backupSchedule.HaveIt = false;
-                backupSchedule.BackupName = txtName.Text.ToString();
+                backupSchedule.BackupName = nameCheck(txtName.Text);
+                if (cbRar.Checked)
+                {
+                    backupSchedule.PassRar = txtRar.Text;
+                }
                 backupSchedule.DbName = cbDatabaseName.SelectedItem.ToString();
                 backupSchedule.IsDiffBackup = false;
                 //Database'e gömülmesi muhtemel Backup bilgileri kontrol için tamamen toplandı.
@@ -296,19 +301,19 @@ namespace ApmDbBackupManager.Forms
                 string D;
                 if (backupSchedule.BackupScheme == 1)
                 {
-                    D = "Günlük";
+                    D = "Gunluk";
                 }
                 else if (backupSchedule.BackupScheme == 2)
                 {
-                    D = "Haftalık";
+                    D = "Haftalik";
                 }
                 else if (backupSchedule.BackupScheme == 3)
                 {
-                    D = "Aylık";
+                    D = "Aylik";
                 }
                 else
                 {
-                    D = "Yıllık";
+                    D = "Yillik";
                 }
                 string time4Name = D + "-" + backupSchedule.Time.Date.ToShortDateString() + "-" + backupSchedule.Time.Hour + "." + backupSchedule.Time.Minute + "-";
                 #endregion
@@ -322,19 +327,19 @@ namespace ApmDbBackupManager.Forms
                     string BS;
                     if (backupSchedule.BackupScheme == 1)
                     {
-                        BS = "Günlük";
+                        BS = "Gunluk";
                     }
                     else if (backupSchedule.BackupScheme == 2)
                     {
-                        BS = "Haftalık";
+                        BS = "Haftalik";
                     }
                     else if (backupSchedule.BackupScheme == 3)
                     {
-                        BS = "Aylık";
+                        BS = "Aylik";
                     }
                     else
                     {
-                        BS = "Yıllık";
+                        BS = "Yillik";
                     }
                     string time4NameDiff = BS + "-" + backupSchedule.DiffTime.Value.Date.ToShortDateString() + "-" + backupSchedule.DiffTime.Value.Hour + "." + backupSchedule.DiffTime.Value.Minute + "-";
                     #endregion
@@ -432,6 +437,10 @@ namespace ApmDbBackupManager.Forms
                         else if (txtName.Text == "")
                         {
                             MessageBox.Show("Lütfen backup ismini verin.");
+                        }
+                        else if (cbRar.Checked && txtRar.Text=="")
+                        {
+                            MessageBox.Show("Lütfen rar şifrenizi girin");
                         }
                         else if (cbDatabaseName.SelectedIndex < 0)
                         {
@@ -598,7 +607,26 @@ namespace ApmDbBackupManager.Forms
                 cbDatabaseName.Enabled = true;
             }
 
-        }   
+        }
+
+        public string nameCheck(string text)
+        {   
+            var unaccentedText = String.Join("", text.Normalize(NormalizationForm.FormD).
+                Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)).Replace("ı", "i");
+            return unaccentedText;
+        }
+
+        private void cbRar_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbRar.Checked)
+            {
+                txtRar.Visible = true;
+            }
+            else
+            {
+                txtRar.Visible = false;
+            }
+        }
 
         private void chbLocal_CheckedChanged(object sender, EventArgs e)
         {

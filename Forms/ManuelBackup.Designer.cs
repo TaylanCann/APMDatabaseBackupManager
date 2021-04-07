@@ -46,6 +46,8 @@ namespace ApmDbBackupManager.Forms
             this.pbManuel = new System.Windows.Forms.ProgressBar();
             this.lblBackup = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.txtRar = new System.Windows.Forms.TextBox();
+            this.cbRar = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // cbDatabaseName
@@ -60,7 +62,7 @@ namespace ApmDbBackupManager.Forms
             // chbLocal
             // 
             this.chbLocal.AutoSize = true;
-            this.chbLocal.Location = new System.Drawing.Point(313, 86);
+            this.chbLocal.Location = new System.Drawing.Point(328, 137);
             this.chbLocal.Name = "chbLocal";
             this.chbLocal.Size = new System.Drawing.Size(134, 24);
             this.chbLocal.TabIndex = 53;
@@ -71,7 +73,7 @@ namespace ApmDbBackupManager.Forms
             // chbFtp
             // 
             this.chbFtp.AutoSize = true;
-            this.chbFtp.Location = new System.Drawing.Point(234, 86);
+            this.chbFtp.Location = new System.Drawing.Point(249, 137);
             this.chbFtp.Name = "chbFtp";
             this.chbFtp.Size = new System.Drawing.Size(52, 24);
             this.chbFtp.TabIndex = 52;
@@ -82,7 +84,7 @@ namespace ApmDbBackupManager.Forms
             // chbGoogle
             // 
             this.chbGoogle.AutoSize = true;
-            this.chbGoogle.Location = new System.Drawing.Point(127, 86);
+            this.chbGoogle.Location = new System.Drawing.Point(142, 137);
             this.chbGoogle.Name = "chbGoogle";
             this.chbGoogle.Size = new System.Drawing.Size(80, 24);
             this.chbGoogle.TabIndex = 51;
@@ -110,7 +112,7 @@ namespace ApmDbBackupManager.Forms
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(229, 121);
+            this.btnSave.Location = new System.Drawing.Point(142, 172);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(94, 29);
             this.btnSave.TabIndex = 45;
@@ -128,7 +130,7 @@ namespace ApmDbBackupManager.Forms
             // cbDriveUsers
             // 
             this.cbDriveUsers.FormattingEnabled = true;
-            this.cbDriveUsers.Location = new System.Drawing.Point(176, 203);
+            this.cbDriveUsers.Location = new System.Drawing.Point(165, 243);
             this.cbDriveUsers.Name = "cbDriveUsers";
             this.cbDriveUsers.Size = new System.Drawing.Size(166, 28);
             this.cbDriveUsers.TabIndex = 56;
@@ -137,7 +139,7 @@ namespace ApmDbBackupManager.Forms
             // lblGoogle
             // 
             this.lblGoogle.AutoSize = true;
-            this.lblGoogle.Location = new System.Drawing.Point(187, 180);
+            this.lblGoogle.Location = new System.Drawing.Point(176, 220);
             this.lblGoogle.Name = "lblGoogle";
             this.lblGoogle.Size = new System.Drawing.Size(135, 20);
             this.lblGoogle.TabIndex = 55;
@@ -147,7 +149,7 @@ namespace ApmDbBackupManager.Forms
             // cbFtp
             // 
             this.cbFtp.FormattingEnabled = true;
-            this.cbFtp.Location = new System.Drawing.Point(383, 203);
+            this.cbFtp.Location = new System.Drawing.Point(372, 243);
             this.cbFtp.Name = "cbFtp";
             this.cbFtp.Size = new System.Drawing.Size(166, 28);
             this.cbFtp.TabIndex = 58;
@@ -156,7 +158,7 @@ namespace ApmDbBackupManager.Forms
             // lblFtp
             // 
             this.lblFtp.AutoSize = true;
-            this.lblFtp.Location = new System.Drawing.Point(429, 180);
+            this.lblFtp.Location = new System.Drawing.Point(418, 220);
             this.lblFtp.Name = "lblFtp";
             this.lblFtp.Size = new System.Drawing.Size(72, 20);
             this.lblFtp.TabIndex = 57;
@@ -166,7 +168,7 @@ namespace ApmDbBackupManager.Forms
             // lblAddress
             // 
             this.lblAddress.AutoSize = true;
-            this.lblAddress.Location = new System.Drawing.Point(415, 121);
+            this.lblAddress.Location = new System.Drawing.Point(328, 172);
             this.lblAddress.Name = "lblAddress";
             this.lblAddress.Size = new System.Drawing.Size(47, 20);
             this.lblAddress.TabIndex = 59;
@@ -185,7 +187,7 @@ namespace ApmDbBackupManager.Forms
             // 
             // pbManuel
             // 
-            this.pbManuel.Location = new System.Drawing.Point(176, 284);
+            this.pbManuel.Location = new System.Drawing.Point(165, 324);
             this.pbManuel.Name = "pbManuel";
             this.pbManuel.Size = new System.Drawing.Size(436, 29);
             this.pbManuel.TabIndex = 73;
@@ -194,7 +196,7 @@ namespace ApmDbBackupManager.Forms
             // lblBackup
             // 
             this.lblBackup.AutoSize = true;
-            this.lblBackup.Location = new System.Drawing.Point(229, 261);
+            this.lblBackup.Location = new System.Drawing.Point(218, 301);
             this.lblBackup.Name = "lblBackup";
             this.lblBackup.Size = new System.Drawing.Size(313, 20);
             this.lblBackup.TabIndex = 74;
@@ -208,11 +210,32 @@ namespace ApmDbBackupManager.Forms
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
+            // txtRar
+            // 
+            this.txtRar.Location = new System.Drawing.Point(279, 95);
+            this.txtRar.Name = "txtRar";
+            this.txtRar.Size = new System.Drawing.Size(125, 27);
+            this.txtRar.TabIndex = 76;
+            this.txtRar.Visible = false;
+            // 
+            // cbRar
+            // 
+            this.cbRar.AutoSize = true;
+            this.cbRar.Location = new System.Drawing.Point(139, 95);
+            this.cbRar.Name = "cbRar";
+            this.cbRar.Size = new System.Drawing.Size(134, 24);
+            this.cbRar.TabIndex = 75;
+            this.cbRar.Text = "Rar Şifreli olsun";
+            this.cbRar.UseVisualStyleBackColor = true;
+            this.cbRar.CheckedChanged += new System.EventHandler(this.cbRar_CheckedChanged);
+            // 
             // ManuelBackup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.txtRar);
+            this.Controls.Add(this.cbRar);
             this.Controls.Add(this.lblBackup);
             this.Controls.Add(this.pbManuel);
             this.Controls.Add(this.lblInfos);
@@ -253,5 +276,7 @@ namespace ApmDbBackupManager.Forms
         private System.Windows.Forms.ProgressBar pbManuel;
         private System.Windows.Forms.Label lblBackup;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.TextBox txtRar;
+        private System.Windows.Forms.CheckBox cbRar;
     }
 }

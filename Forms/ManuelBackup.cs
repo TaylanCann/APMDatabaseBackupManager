@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
 using Google.Apis.Auth.OAuth2;
@@ -15,6 +14,10 @@ using System.Threading;
 using System.Net;
 using System.Net.Mail;
 using System.ComponentModel;
+using System.Globalization;
+using System.Text;
+using Ionic.Zip;
+
 
 namespace ApmDbBackupManager.Forms
 {
@@ -232,20 +235,20 @@ namespace ApmDbBackupManager.Forms
             }
 
         }
-        public void DeleteBak(string pathCTemp)
+        public void DeleteBak(string pathCTemp, BackupSchedule backup)
         {
             try
             {
-                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains("Backup.bak") || f.Contains("DiffBackup.bak")).ToList();
+                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains(backup.JustName + "Backup.bak")).ToList();
                 foreach (var DFB in deleteFull)
                 {
                     File.Delete(DFB);
                 }
             }
-            catch (Exception error)
+            catch (Exception e)
             {
                 MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
-                TxtLog("Hata : " + error.Message + " DeleteFullBackupsFromFolder Başarısız." + " ManuelBackup");
+                TxtLog("Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız" + " Form1.cs");
             }
         }
         public bool Backup(BackupSchedule backup)
@@ -279,16 +282,28 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
-                string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
-                string fileName = pathCTemp + backup.JustName + "Backup.bak";
-                if (!File.Exists(zipLocation))
+                //string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
+                //string fileName = pathCTemp + backup.JustName + "Backup.bak";
+                //if (!File.Exists(zipLocation))
+                //{
+                //    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
+                //    {
+                //        FileInfo fi = new FileInfo(fileName);
+                //        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
+                //        zipArchive.Dispose();
+                //    }
+                //}
+                using (ZipFile archive = new ZipFile())
                 {
-                    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
+                    string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
+                    string fileName = pathCTemp + backup.JustName + "Backup.bak";
+                    if (backup.PassRar != "")
                     {
-                        FileInfo fi = new FileInfo(fileName);
-                        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
-                        zipArchive.Dispose();
+                        archive.Password = backup.PassRar;
                     }
+                    archive.AddFile(fileName, "");
+                    archive.Encryption = EncryptionAlgorithm.PkzipWeak; // the default: you might need to select the proper value here
+                    archive.Save(zipLocation);
                 }
                 return true;
             }
@@ -510,8 +525,7 @@ namespace ApmDbBackupManager.Forms
         #endregion
         public bool addressCheck()
         {
-            #region Adres kontrolleri
-
+            
             try
             {
                 if (chbLocal.Checked == true && selectedPath == null)
@@ -547,17 +561,20 @@ namespace ApmDbBackupManager.Forms
 
             return true;
 
-            #endregion
         }
         public bool SaveCheck()
         {
-            #region Save kontolü
 
             try
             {
                 if (chbFtp.Checked == false && chbGoogle.Checked == false && chbLocal.Checked == false)
                 {
                     MessageBox.Show("Lütfen kaydedileceği alanı seçin");
+                    return false;
+                }
+                else if (cbRar.Checked && txtRar.Text=="")
+                {
+                    MessageBox.Show("Lütfen rar şifresini girin");
                     return false;
                 }
                 else
@@ -580,7 +597,7 @@ namespace ApmDbBackupManager.Forms
 
 
             return true;
-            #endregion
+            
         }
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -618,7 +635,7 @@ namespace ApmDbBackupManager.Forms
                     return;
                 }
 
-                DeleteBak(pathCTemp);
+                DeleteBak(pathCTemp , lastBackup);
 
                 if (chbGoogle.Checked == true)
                 {
@@ -744,7 +761,8 @@ namespace ApmDbBackupManager.Forms
                 }
                 #endregion
 
-                backupSchedule.BackupName = txtName.Text.ToString();
+                backupSchedule.BackupName = nameCheck(txtName.Text);
+                backupSchedule.PassRar = txtRar.Text;
                 backupSchedule.DbName = cbDatabaseName.SelectedItem.ToString();
                 //Database'e gömülmesi muhtemel Backup bilgileri kontrol için tamamen toplandı.
 
@@ -797,6 +815,24 @@ namespace ApmDbBackupManager.Forms
                 TxtLog("Hata : " + es.Message + " Manuel Backup alınırken bir hata oluştu." + " ManuelBackup");
             }
 
+        }
+        private void cbRar_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbRar.Checked)
+            {
+                txtRar.Visible = true;
+            }
+            else
+            {
+                txtRar.Visible = false;
+            }
+        }
+
+        public string nameCheck(string text)
+        {
+            var unaccentedText = String.Join("", text.Normalize(NormalizationForm.FormD).
+                Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)).Replace("ı", "i");
+            return unaccentedText;
         }
         private void btnSave_Click(object sender, EventArgs e)
         {

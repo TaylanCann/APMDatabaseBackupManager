@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
 using System.Timers;
@@ -18,6 +17,7 @@ using System.Drawing;
 using System.Net.Mail;
 using ApmDbBackupManager.Forms;
 using System.Threading.Tasks;
+using Ionic.Zip;
 
 
 //İki kere aynı kayıdı yapınca patlıyor bak
@@ -155,7 +155,7 @@ namespace ApmDbBackupManager
         #region Timer
         public void setTimer()
         {
-            aTimer = new System.Timers.Timer(1000*60*10);//10 dakikada 1
+            aTimer = new System.Timers.Timer(1000);//10 dakikada 1
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
@@ -188,7 +188,7 @@ namespace ApmDbBackupManager
                                 await _preLoginTask;
                                 Rar(item);
                                 await _preLoginTask;
-                                DeleteBak(pathCTemp);
+                                DeleteBak(pathCTemp , item);
 
                                 if (item.IsDrive == true)
                                 {
@@ -231,7 +231,7 @@ namespace ApmDbBackupManager
                                 }
 
                                 #endregion
-                                TxtLog( item.JustName +" Backup alındı Form1.cs");
+                                TxtLog(item.JustName + " Backup alındı Form1.cs");
                                 if (IsMailTrue)
                                 {
                                     SendMail("Alındı", item.JustName +
@@ -257,7 +257,7 @@ namespace ApmDbBackupManager
 
                         #endregion
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------------
+                        //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
                         #region Yıllık ve dönemi dolmuş backup 
 
@@ -333,7 +333,7 @@ namespace ApmDbBackupManager
                                 #region SaveDbTo
                                 Backup(item);
                                 Rar(item);
-                                DeleteBak(pathCTemp);
+                                DeleteBak(pathCTemp, item);
 
                                 if (item.IsDrive == true)
                                 {
@@ -400,7 +400,7 @@ namespace ApmDbBackupManager
 
                         #endregion
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------------
+                        //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
                         #region Günlük veya haftalık backup
 
@@ -474,19 +474,19 @@ namespace ApmDbBackupManager
                                     string D;
                                     if (item.BackupScheme == 1)
                                     {
-                                        D = "Günlük";
+                                        D = "Gunluk";
                                     }
                                     else if (item.BackupScheme == 2)
                                     {
-                                        D = "Haftalık";
+                                        D = "Haftalik";
                                     }
                                     else if (item.BackupScheme == 3)
                                     {
-                                        D = "Aylık";
+                                        D = "Aylik";
                                     }
                                     else
                                     {
-                                        D = "Yıllık";
+                                        D = "Yillik";
                                     }
                                     string time4Name = D + "-" + item.Time.Date.ToShortDateString() + "-" + item.Time.Hour + "." + item.Time.Minute + "-";
 
@@ -496,19 +496,19 @@ namespace ApmDbBackupManager
                                     string BS;
                                     if (item.BackupScheme == 1)
                                     {
-                                        BS = "Günlük";
+                                        BS = "Gunluk";
                                     }
                                     else if (item.BackupScheme == 2)
                                     {
-                                        BS = "Haftalık";
+                                        BS = "Haftalik";
                                     }
                                     else if (item.BackupScheme == 3)
                                     {
-                                        BS = "Aylık";
+                                        BS = "Aylik";
                                     }
                                     else
                                     {
-                                        BS = "Yıllık";
+                                        BS = "Yillik";
                                     }
                                     string time4NameDiff = BS + "-" + item.DiffTime.Value.Date.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
 
@@ -524,7 +524,7 @@ namespace ApmDbBackupManager
                                     #region SaveDbTo
                                     Backup(item);
                                     Rar(item);
-                                    DeleteBak(pathCTemp);
+                                    DeleteBak(pathCTemp, item);
                                     if (item.IsDrive == true)
                                     {
                                         DriveUser driveUser = new DriveUser();
@@ -648,19 +648,19 @@ namespace ApmDbBackupManager
                                     string BS;
                                     if (item.BackupScheme == 1)
                                     {
-                                        BS = "Günlük";
+                                        BS = "Gunluk";
                                     }
                                     else if (item.BackupScheme == 2)
                                     {
-                                        BS = "Haftalık";
+                                        BS = "Haftalik";
                                     }
                                     else if (item.BackupScheme == 3)
                                     {
-                                        BS = "Aylık";
+                                        BS = "Aylik";
                                     }
                                     else
                                     {
-                                        BS = "Yıllık";
+                                        BS = "Yillik";
                                     }
                                     string time4NameDiff = BS + "-" + item.DiffTime.Value.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
                                     item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
@@ -672,7 +672,7 @@ namespace ApmDbBackupManager
                                     #region SaveDbTo
                                     DifferentialBackup(item);
                                     DiffRar(item);
-                                    DeleteBak(pathCTemp);
+                                    DeleteDiffBak(pathCTemp, item);
                                     if (item.IsDrive == true)
                                     {
                                         DriveUser driveUser = new DriveUser();
@@ -760,7 +760,7 @@ namespace ApmDbBackupManager
                                     #region SaveFromDb
                                     DifferentialBackup(item);
                                     DiffRar(item);
-                                    DeleteBak(pathCTemp);
+                                    DeleteDiffBak(pathCTemp, item);
                                     if (item.IsDrive == true)
                                     {
                                         DriveUser driveUser = new DriveUser();
@@ -851,7 +851,7 @@ namespace ApmDbBackupManager
 
                         #endregion
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------
+                        //---------------------------------------------------------------------------------------------------------------------------------------------------
 
                         #region Aylık Backup
 
@@ -956,19 +956,19 @@ namespace ApmDbBackupManager
                                     string D;
                                     if (item.BackupScheme == 1)
                                     {
-                                        D = "Günlük";
+                                        D = "Gunluk";
                                     }
                                     else if (item.BackupScheme == 2)
                                     {
-                                        D = "Haftalık";
+                                        D = "Haftalik";
                                     }
                                     else if (item.BackupScheme == 3)
                                     {
-                                        D = "Aylık";
+                                        D = "Aylik";
                                     }
                                     else
                                     {
-                                        D = "Yıllık";
+                                        D = "Yillik";
                                     }
                                     string time4Name = D + "-" + item.Time.Date.ToShortDateString() + "-" + item.Time.Hour + "." + item.Time.Minute + "-";
 
@@ -981,19 +981,19 @@ namespace ApmDbBackupManager
                                         string BS;
                                         if (item.BackupScheme == 1)
                                         {
-                                            BS = "Günlük";
+                                            BS = "Gunluk";
                                         }
                                         else if (item.BackupScheme == 2)
                                         {
-                                            BS = "Haftalık";
+                                            BS = "Haftalik";
                                         }
                                         else if (item.BackupScheme == 3)
                                         {
-                                            BS = "Aylık";
+                                            BS = "Aylik";
                                         }
                                         else
                                         {
-                                            BS = "Yıllık";
+                                            BS = "Yillik";
                                         }
                                         string time4NameDiff = BS + "-" + item.DiffTime.Value.Date.ToShortDateString() + "-" + item.DiffTime.Value.Hour + "." + item.DiffTime.Value.Minute + "-";
 
@@ -1010,7 +1010,7 @@ namespace ApmDbBackupManager
                                     #region SaveDbTo
                                     Backup(item);
                                     Rar(item);
-                                    DeleteBak(pathCTemp);
+                                    DeleteBak(pathCTemp, item);
                                     if (item.IsDrive == true)
                                     {
                                         DriveUser driveUser = new DriveUser();
@@ -1134,19 +1134,19 @@ namespace ApmDbBackupManager
                                     string BS;
                                     if (item.BackupScheme == 1)
                                     {
-                                        BS = "Günlük";
+                                        BS = "Gunluk";
                                     }
                                     else if (item.BackupScheme == 2)
                                     {
-                                        BS = "Haftalık";
+                                        BS = "Haftalik";
                                     }
                                     else if (item.BackupScheme == 3)
                                     {
-                                        BS = "Aylık";
+                                        BS = "Aylik";
                                     }
                                     else
                                     {
-                                        BS = "Yıllık";
+                                        BS = "Yillik";
                                     }
                                     string time4NameDiff = BS + "-" + DateTime.Now.ToShortDateString() + "-" + DateTime.Now.Hour + "." + DateTime.Now.Minute + "-";
                                     item.JustDiffName = time4NameDiff + item.BackupName + "-" + item.DbName;
@@ -1159,7 +1159,7 @@ namespace ApmDbBackupManager
                                     #region SaveDbTo
                                     DifferentialBackup(item);
                                     DiffRar(item);
-                                    DeleteBak(pathCTemp);
+                                    DeleteDiffBak(pathCTemp, item);
                                     if (item.IsDrive == true)
                                     {
                                         DriveUser driveUser = new DriveUser();
@@ -1268,7 +1268,7 @@ namespace ApmDbBackupManager
                                     #region SaveDbTo
                                     DifferentialBackup(item);
                                     DiffRar(item);
-                                    DeleteBak(pathCTemp);
+                                    DeleteDiffBak(pathCTemp, item);
                                     if (item.IsDrive == true)
                                     {
                                         DriveUser driveUser = new DriveUser();
@@ -1398,7 +1398,7 @@ namespace ApmDbBackupManager
         #region Timer2
         public void setTimer2()
         {
-            aTimer2 = new System.Timers.Timer(3600000*6);//6saat
+            aTimer2 = new System.Timers.Timer(3600000 * 6);//6saat
             aTimer2.Elapsed += OnTimedEvent2;
             aTimer2.AutoReset = true;
             aTimer2.Enabled = true;
@@ -1588,9 +1588,9 @@ namespace ApmDbBackupManager
                                 + "=" + SqlUid + "; password=" + SqlPass + "; MultipleActiveResultSets = True; ";
                 cnn = new SqlConnection(connetionString);
                 cnn.Open();
-                string cmdText = "backup database " + backup.DbName + 
+                string cmdText = "backup database " + backup.DbName +
                                  " to disk = '" + pathCTemp + backup.JustName + "Backup.bak';";
-                
+
                 using (SqlCommand RetrieveOrderCommand = new SqlCommand(cmdText, cnn))
                 {
                     RetrieveOrderCommand.CommandTimeout = 150;
@@ -1608,17 +1608,31 @@ namespace ApmDbBackupManager
         {
             try
             {
-                string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
-                string fileName = pathCTemp + backup.JustName + "Backup.bak";
-                if (!File.Exists(zipLocation))
+                using (ZipFile archive = new ZipFile())
                 {
-                    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
+                    string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
+                    string fileName = pathCTemp + backup.JustName + "Backup.bak";
+                    if (backup.PassRar != "")
                     {
-                        FileInfo fi = new FileInfo(fileName);
-                        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
-                        zipArchive.Dispose();
+                        archive.Password = backup.PassRar;
                     }
+                    archive.AddFile(fileName, "");
+                    archive.Encryption = EncryptionAlgorithm.PkzipWeak; // the default: you might need to select the proper value here
+                    archive.Save(zipLocation);
                 }
+
+
+                //string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
+                //string fileName = pathCTemp + backup.JustName + "Backup.bak";
+                //if (!File.Exists(zipLocation))
+                //{
+                //    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
+                //    {
+                //        FileInfo fi = new FileInfo(fileName);
+                //        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
+                //        zipArchive.Dispose();
+                //    }
+                //}
             }
             catch (Exception e)
             {
@@ -1626,11 +1640,11 @@ namespace ApmDbBackupManager
                 TxtLog("Hata : " + e.Message + " Rar Başarısız" + " Form1.cs");
             }
         }
-        public void DeleteBak(string pathCTemp)
+        public void DeleteBak(string pathCTemp ,BackupSchedule backup)
         {
             try
             {
-                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains("Backup.bak") || f.Contains("DiffBackup.bak")).ToList();
+                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains(backup.JustName + "Backup.bak")).ToList();
                 foreach (var DFB in deleteFull)
                 {
                     File.Delete(DFB);
@@ -1642,7 +1656,24 @@ namespace ApmDbBackupManager
                 TxtLog("Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız" + " Form1.cs");
             }
         }
-        public void sendFile(string pathCTemp, string selectedPath,BackupSchedule backup)
+        public void DeleteDiffBak(string pathCTemp, BackupSchedule backup)
+        {
+            try
+            {
+                var deleteFull = Directory.GetFiles(pathCTemp).ToList().Where(f => f.Contains(backup.JustDiffName + "DiffBackup.bak")).ToList();
+                foreach (var DFB in deleteFull)
+                {
+                    File.Delete(DFB);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("DeleteFullBackupsFromFolder Başarısız");
+                TxtLog("Hata : " + e.Message + " DeleteFullBackupsFromFolder Başarısız" + " Form1.cs");
+            }
+        }
+
+        public void sendFile(string pathCTemp, string selectedPath, BackupSchedule backup)
         {
             try
             {
@@ -1660,14 +1691,14 @@ namespace ApmDbBackupManager
                 {
                     name1 = item.Split('\\').LastOrDefault();
                     sourceName = name1;
-                    
+
                     foreach (var item2 in destFiles)
                     {
                         name2 = item2.Split('\\').LastOrDefault();
                         if (name1 == name2)
                         {
                             Check = false;
-                        }   
+                        }
                     }
                     if (Check)
                     {
@@ -1720,25 +1751,38 @@ namespace ApmDbBackupManager
         {
             try
             {
-                string zipLocation = pathCTemp + backup.JustDiffName + "DiffBackup.zip";
-                string fileName = pathCTemp + backup.JustDiffName + "DiffBackup.bak";
-                if (!File.Exists(zipLocation))
+                using (ZipFile archive = new ZipFile())
                 {
-                    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
+                    string zipLocation = pathCTemp + backup.JustDiffName + "DiffBackup.zip";
+                    string fileName = pathCTemp + backup.JustDiffName + "DiffBackup.bak";
+                    if (backup.PassRar != "")
                     {
-                        FileInfo fi = new FileInfo(fileName);
-                        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
-                        zipArchive.Dispose();
+                        archive.Password = backup.PassRar;
                     }
+                    archive.AddFile(fileName, "");
+                    archive.Encryption = EncryptionAlgorithm.PkzipWeak; // the default: you might need to select the proper value here
+                    archive.Save(zipLocation);
                 }
+
+                //string zipLocation = pathCTemp + backup.JustDiffName + "DiffBackup.zip";
+                //string fileName = pathCTemp + backup.JustDiffName + "DiffBackup.bak";
+                //if (!File.Exists(zipLocation))
+                //{
+                //    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
+                //    {
+                //        FileInfo fi = new FileInfo(fileName);
+                //        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
+                //        zipArchive.Dispose();
+                //    }
+                //}
             }
             catch (Exception e)
             {
-                MessageBox.Show("DiffRar Başarısız");
+                MessageBox.Show("DiffRar Başarısız"+e.Message);
                 TxtLog("Hata : " + e.Message + " DiffRar Başarısız" + " Form1.cs");
             }
         }
-        public void DeleteFullBackupsFromFolder(string pathCTemp,BackupSchedule backup)
+        public void DeleteFullBackupsFromFolder(string pathCTemp, BackupSchedule backup)
         {
             try
             {

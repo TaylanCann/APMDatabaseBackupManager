@@ -22,6 +22,7 @@ namespace ApmDbBackupManager.Models
         //Backupscheme == 4 Yearly
         public string DbName { get; set; }
         //DbName orijinal isimdir. Yedeğini aldığımız database'in SQL'deki kayıtlı adı.
+        public string PassRar { get; set; } // Backup rar şifresi
         public int? DaysAdd { get; set; } //DiffBackup almak için geçmesi gereken gün sayısı
         public int? MonthAdd { get; set; }//DiffBackup almak için geçmesi gereken ay sayısı.
         public int DayOfMonth { get; set; }//Ayın günü.
