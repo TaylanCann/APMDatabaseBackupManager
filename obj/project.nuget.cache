@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Xsp1DgxbFkHQz2ZLCR9jbAxB03xEiToStvOqt7bD138IB+OKgfb4dDY4uHjrv7MkuMdBrFXb1LwokQ4PSH3bSA==",
+  "dgSpecHash": "cpz3vPEVM4IOcurt8ohtPA1cr+ISzeAi1AxJM+ChuTf2uOdaPKaloONLs0oXSPxlTPEKU1ohjVGf/oGIy7oWqA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\ApmDbBackupManager.csproj",
+  "projectFilePath": "C:\\Users\\HP\\source\\repos\\TaylanCann\\APMDatabaseBackupManager\\ApmDbBackupManager.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\HP\\.nuget\\packages\\dotnetzip\\1.15.0\\dotnetzip.1.15.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\google.apis\\1.50.0\\google.apis.1.50.0.nupkg.sha512",

@@ -295,6 +295,8 @@ namespace ApmDbBackupManager.Forms
                 //}
                 using (ZipFile archive = new ZipFile())
                 {
+                    archive.UseZip64WhenSaving = Zip64Option.Always;
+                    archive.CompressionMethod = CompressionMethod.BZip2;
                     string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
                     string fileName = pathCTemp + backup.JustName + "Backup.bak";
                     if (backup.PassRar != "")

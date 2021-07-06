@@ -60,6 +60,11 @@ namespace ApmDbBackupManager.Forms
             Properties.Settings.Default.Uid = txtSqlUid.Text;         
             Properties.Settings.Default.Save();
             listing();
+            txtSqlUid.Text = "";
+            txtSqlPass.Text = "";
+            txtSql.Text = "";
+            MessageBox.Show("Kaydedildi");
+           
         }
 
         public static bool mailFormCheck(string email)

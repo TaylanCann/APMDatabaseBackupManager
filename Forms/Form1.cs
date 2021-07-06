@@ -48,9 +48,7 @@ namespace ApmDbBackupManager
 
         public Form1()
         {
-            //Properties.Settings.Default.Reset();
-            //Properties.Settings.Default.Save();
-            //Application.Exit();
+           
             InitializeComponent();
             _preLoginTask = PerformPreLoginWorkAsync();
             setTimer();
@@ -1610,6 +1608,8 @@ namespace ApmDbBackupManager
             {
                 using (ZipFile archive = new ZipFile())
                 {
+                    archive.UseZip64WhenSaving = Zip64Option.Always;
+                    archive.CompressionMethod = CompressionMethod.BZip2;
                     string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
                     string fileName = pathCTemp + backup.JustName + "Backup.bak";
                     if (backup.PassRar != "")
@@ -1753,6 +1753,8 @@ namespace ApmDbBackupManager
             {
                 using (ZipFile archive = new ZipFile())
                 {
+                    archive.UseZip64WhenSaving = Zip64Option.Always;
+                    archive.CompressionMethod = CompressionMethod.BZip2;
                     string zipLocation = pathCTemp + backup.JustDiffName + "DiffBackup.zip";
                     string fileName = pathCTemp + backup.JustDiffName + "DiffBackup.bak";
                     if (backup.PassRar != "")

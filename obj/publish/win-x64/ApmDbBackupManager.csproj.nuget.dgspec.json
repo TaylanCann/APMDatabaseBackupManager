@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\ApmDbBackupManager.csproj": {}
+    "C:\\Users\\HP\\source\\repos\\TaylanCann\\APMDatabaseBackupManager\\ApmDbBackupManager.csproj": {}
   },
   "projects": {
-    "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\ApmDbBackupManager.csproj": {
+    "C:\\Users\\HP\\source\\repos\\TaylanCann\\APMDatabaseBackupManager\\ApmDbBackupManager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\ApmDbBackupManager.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\source\\repos\\TaylanCann\\APMDatabaseBackupManager\\ApmDbBackupManager.csproj",
         "projectName": "ApmDbBackupManager",
-        "projectPath": "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\ApmDbBackupManager.csproj",
+        "projectPath": "C:\\Users\\HP\\source\\repos\\TaylanCann\\APMDatabaseBackupManager\\ApmDbBackupManager.csproj",
         "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\HP\\Desktop\\iş\\ApmDbBackupManager\\obj\\publish\\win-x64\\",
+        "outputPath": "C:\\Users\\HP\\source\\repos\\TaylanCann\\APMDatabaseBackupManager\\obj\\publish\\win-x64\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -40,6 +40,10 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "dependencies": {
+            "DotNetZip": {
+              "target": "Package",
+              "version": "[1.15.0, )"
+            },
             "Google.Apis.Drive.v3": {
               "target": "Package",
               "version": "[1.50.0.2236, )"
@@ -96,15 +100,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[3.1.11, 3.1.11]"
+              "version": "[3.1.16, 3.1.16]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[3.1.11, 3.1.11]"
+              "version": "[3.1.16, 3.1.16]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[3.1.11, 3.1.11]"
+              "version": "[3.1.16, 3.1.16]"
             }
           ],
           "frameworkReferences": {
@@ -115,7 +119,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
