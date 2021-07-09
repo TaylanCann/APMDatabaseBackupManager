@@ -23,6 +23,7 @@ namespace ApmDbBackupManager.Forms
 {
     public partial class ManuelBackup : Form
     {
+        //Process process = new Process();
         DatabaseContext context = new DatabaseContext();
         List<string> names = new List<string>();
         BackupSchedule lastBackup = new BackupSchedule();
@@ -282,19 +283,10 @@ namespace ApmDbBackupManager.Forms
         {
             try
             {
-                //string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
-                //string fileName = pathCTemp + backup.JustName + "Backup.bak";
-                //if (!File.Exists(zipLocation))
-                //{
-                //    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
-                //    {
-                //        FileInfo fi = new FileInfo(fileName);
-                //        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
-                //        zipArchive.Dispose();
-                //    }
-                //}
+                
                 using (ZipFile archive = new ZipFile())
                 {
+                    archive.UseZip64WhenSaving = Zip64Option.AsNecessary;
                     archive.UseZip64WhenSaving = Zip64Option.Always;
                     archive.CompressionMethod = CompressionMethod.BZip2;
                     string zipLocation = pathCTemp + backup.JustName + "Backup.zip";

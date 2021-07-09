@@ -26,6 +26,7 @@ namespace ApmDbBackupManager
 {
     public partial class Form1 : Form
     {
+        //Process process = new Process();
         DatabaseContext context = new DatabaseContext();
         private static System.Timers.Timer aTimer;
         private static System.Timers.Timer aTimer2;
@@ -48,7 +49,6 @@ namespace ApmDbBackupManager
 
         public Form1()
         {
-           
             InitializeComponent();
             _preLoginTask = PerformPreLoginWorkAsync();
             setTimer();
@@ -229,7 +229,7 @@ namespace ApmDbBackupManager
                                 }
 
                                 #endregion
-                                TxtLog(item.JustName + " Backup alındı Form1.cs");
+                               TxtLog(item.JustName + " Backup alındı Form1.cs");
                                 if (IsMailTrue)
                                 {
                                     SendMail("Alındı", item.JustName +
@@ -241,7 +241,7 @@ namespace ApmDbBackupManager
                             }
                             catch (Exception es)
                             {
-                                TxtLog("Hata : " + es.Message + " İlk backup alırken hata oluştu." + " Form1.cs");
+                               TxtLog("Hata : " + es.Message + " İlk backup alırken hata oluştu." + " Form1.cs");
                                 if (IsMailTrue)
                                 {
                                     SendMail("Alınamadı", item.JustName +
@@ -1563,8 +1563,8 @@ namespace ApmDbBackupManager
                     response.Close();
                 }
             }
-
         }
+
         private string FtpDeleteFile(string fileName, FtpThing ftpModel)
         {
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpModel.FtpLocation + fileName);
@@ -1608,7 +1608,7 @@ namespace ApmDbBackupManager
             {
                 using (ZipFile archive = new ZipFile())
                 {
-                    archive.UseZip64WhenSaving = Zip64Option.Always;
+                    archive.UseZip64WhenSaving = Zip64Option.AsNecessary;
                     archive.CompressionMethod = CompressionMethod.BZip2;
                     string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
                     string fileName = pathCTemp + backup.JustName + "Backup.bak";
@@ -1621,23 +1621,11 @@ namespace ApmDbBackupManager
                     archive.Save(zipLocation);
                 }
 
-
-                //string zipLocation = pathCTemp + backup.JustName + "Backup.zip";
-                //string fileName = pathCTemp + backup.JustName + "Backup.bak";
-                //if (!File.Exists(zipLocation))
-                //{
-                //    using (ZipArchive zipArchive = ZipFile.Open(zipLocation, ZipArchiveMode.Create))
-                //    {
-                //        FileInfo fi = new FileInfo(fileName);
-                //        zipArchive.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
-                //        zipArchive.Dispose();
-                //    }
-                //}
             }
             catch (Exception e)
             {
                 MessageBox.Show("Rar Başarısız" + e.Message);
-                TxtLog("Hata : " + e.Message + " Rar Başarısız" + " Form1.cs");
+                TxtLog("Hata : " + e.Message + " Rar Başarısız");
             }
         }
         public void DeleteBak(string pathCTemp ,BackupSchedule backup)

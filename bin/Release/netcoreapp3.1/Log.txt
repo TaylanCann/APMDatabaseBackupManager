@@ -1,0 +1,7 @@
+
+9.07.2021 11:31:01=>Hata : Cannot open backup device 'C:\Users\HP\Desktop\Geçici Kayıt Klasörü\Manuel-9.07.2021-11.30-asd-APMDBDemoUtkuBackup.bak'. Operating system error 5(Erişim engellendi.).
+BACKUP DATABASE is terminating abnormally. Backup alma başarısız. ManuelBackup
+9.07.2021 11:31:03=>Hata : Could not find file 'C:\Users\HP\Desktop\Geçici Kayıt Klasörü\Manuel-9.07.2021-11.30-asd-APMDBDemoUtkuBackup.bak'. Rar Başarısız. ManuelBackup
+9.07.2021 11:31:03=>Manuel-9.07.2021-11.30-asd-APMDBDemoUtkuBackup.bak Başarı ile alındı. ManuelBackup
+9.07.2021 11:38:36=>Manuel-9.07.2021-11.31-asd-APMDBDemoUtkuBackup.bak Başarı ile alındı. ManuelBackup
+9.07.2021 11:47:39=>Gunluk-9.07.2021-11.40-asdasd-APMDBDemoUtku Backup alındı Form1.cs

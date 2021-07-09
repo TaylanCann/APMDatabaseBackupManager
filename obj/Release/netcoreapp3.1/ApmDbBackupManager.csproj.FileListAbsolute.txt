@@ -478,3 +478,4 @@ C:\Users\HP\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcore
 C:\Users\HP\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcoreapp3.1\ApmDbBackupManager.dll
 C:\Users\HP\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcoreapp3.1\ApmDbBackupManager.pdb
 C:\Users\HP\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcoreapp3.1\ApmDbBackupManager.genruntimeconfig.cache
+C:\Users\HP\source\repos\TaylanCann\APMDatabaseBackupManager\obj\Release\netcoreapp3.1\ApmDbBackupManager.csproj.AssemblyReference.cache
